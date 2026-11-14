@@ -23,6 +23,16 @@
   .team .mark { margin-left: auto; font-family: var(--f-mono); font-size: .66rem; letter-spacing: .14em; color: var(--grass); }
   .team.won { background: color-mix(in srgb, var(--grass) 16%, transparent); }
   .team.lost { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--stitch); }
+  .tools { display: flex; gap: 6px; flex: none; }
+  .blind { padding: 12px; border-bottom: 1px solid var(--line); display: grid; gap: 10px; background: color-mix(in srgb, var(--grass) 6%, transparent); }
+  .blind label { font-family: var(--f-mono); font-size: .64rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); display: grid; gap: 5px; }
+  .blind textarea { width: 100%; min-height: 70px; resize: vertical; font: inherit; font-size: .92rem; letter-spacing: 0; text-transform: none;
+    color: var(--ink); background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; }
+  .blind .ans { text-align: left; font: inherit; color: var(--ink); background: var(--card); border: 1px solid var(--line); border-radius: 6px;
+    padding: 10px 12px; cursor: pointer; white-space: pre-wrap; }
+  .blind .ans:hover { border-color: var(--stitch); }
+  .blind .ans b { display: block; font-family: var(--f-mono); font-size: .64rem; letter-spacing: .14em; text-transform: uppercase; color: var(--stitch); margin-bottom: 4px; }
+  .blind .hint { margin: 0; font-size: .82rem; color: var(--muted); }
   .champ { border: 2px dashed var(--stitch); border-radius: 8px; padding: 22px 16px; text-align: center; }
   .champ .k { font-family: var(--f-mono); font-size: .68rem; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); }
   .champ .who { font-family: var(--f-display); font-weight: 800; text-transform: uppercase;
@@ -76,7 +86,7 @@
 
       <div class="snaps">
         <div class="snap reveal"><span class="tag">The idea</span><h3>Humor is hard</h3><p>A model can pass a bar exam and still step on a punchline. Timing, surprise and restraint don't show up on a benchmark.</p></div>
-        <div class="snap reveal"><span class="tag">The rules</span><h3>Same pitch, both hitters</h3><p>Each matchup uses one prompt for both models. First answer only — no rerolls, no coaching from the dugout.</p></div>
+        <div class="snap reveal"><span class="tag">The rules</span><h3>Same pitch, both hitters</h3><p>Each matchup uses one prompt for both models. First answer only — no rerolls. Use “Judge blind” to hide which model wrote which.</p></div>
         <div class="snap reveal"><span class="tag">The judge</span><h3>You</h3><p>Funny is personal. Run the bracket twice with different prompts and see whether your champion holds up.</p></div>
       </div>
     </div>
@@ -99,7 +109,7 @@
   ];
   var grid = document.getElementById('bracketGrid');
   var statusEl = document.getElementById('status');
-  var draw, prompts, semi, champ;
+  var draw, prompts, semi, champ, blind = {};
   var KEY = 'llmadness-titles', titles = {}, counted = null;
   try { titles = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { titles = {}; }
   function saveTitles() { try { localStorage.setItem(KEY, JSON.stringify(titles)); } catch (e) {} }
@@ -126,10 +136,10 @@
     return a;
   }
   function pickPrompts() { prompts = shuffled(PROMPTS).slice(0, 3); }
-  function clear() { semi = [null, null]; champ = null; counted = null; }
+  function clear() { semi = [null, null]; champ = null; counted = null; blind = {}; }
   function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
 
-  function game(label, prompt, a, b, winner, onPick) {
+  function game(key, label, prompt, a, b, winner, onPick) {
     var g = el('div', 'game');
     var p = el('div', 'prompt');
     var txt = el('span'); txt.appendChild(el('b', null, label + ' · ' + prompt[0])); txt.appendChild(document.createTextNode(prompt[1]));
@@ -138,7 +148,15 @@
       var done = function () { copy.textContent = 'Copied'; setTimeout(function () { copy.textContent = 'Copy'; }, 1200); };
       if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(prompt[1]).then(done, function () {});
     });
-    p.appendChild(txt); p.appendChild(copy); g.appendChild(p);
+    var tools = el('span', 'tools'); tools.appendChild(copy);
+    if (a && b && !winner) {
+      var bb = el('button', 'copy', blind[key] ? 'Close' : 'Judge blind'); bb.type = 'button';
+      bb.setAttribute('aria-expanded', String(!!blind[key]));
+      bb.addEventListener('click', function () { if (blind[key]) delete blind[key]; else blind[key] = { text: {}, order: null }; render(); });
+      tools.appendChild(bb);
+    }
+    p.appendChild(txt); p.appendChild(tools); g.appendChild(p);
+    if (blind[key] && a && b && !winner) g.appendChild(blindPanel(blind[key], a, b, onPick));
     [a, b].forEach(function (name) {
       var t = el('button', 'team'); t.type = 'button';
       t.appendChild(el('span', 'seed', name ? String(draw.indexOf(name) + 1) : '–'));
@@ -152,16 +170,44 @@
     return g;
   }
 
+  /* Blind judging: paste both answers, hide the names, pick by the joke alone. Nothing is saved. */
+  function blindPanel(st, a, b, onPick) {
+    var box = el('div', 'blind');
+    if (!st.order) {
+      [a, b].forEach(function (name) {
+        var lab = el('label', null, name + '\u2019s answer');
+        var ta = document.createElement('textarea'); ta.value = st.text[name] || '';
+        ta.addEventListener('input', function () { st.text[name] = ta.value; go.disabled = !(st.text[a] || '').trim() || !(st.text[b] || '').trim(); });
+        lab.appendChild(ta); box.appendChild(lab);
+      });
+      var go = el('button', 'btn', 'Hide the names'); go.type = 'button';
+      go.disabled = !(st.text[a] || '').trim() || !(st.text[b] || '').trim();
+      go.addEventListener('click', function () { st.order = shuffled([a, b]); render(); });
+      box.appendChild(go);
+      box.appendChild(el('p', 'hint', 'Paste what each model wrote. The page shuffles them and hides who said what.'));
+    } else {
+      st.order.forEach(function (name, i) {
+        var ans = el('button', 'ans'); ans.type = 'button';
+        ans.appendChild(el('b', null, 'Answer ' + 'AB'.charAt(i)));
+        ans.appendChild(document.createTextNode(st.text[name]));
+        ans.addEventListener('click', function () { onPick(name); });
+        box.appendChild(ans);
+      });
+      box.appendChild(el('p', 'hint', 'Click the funnier answer. The winner\u2019s name shows once you pick.'));
+    }
+    return box;
+  }
+
   function render() {
     grid.textContent = '';
     var r1 = el('div', 'round'); r1.appendChild(el('h3', null, 'Semifinals'));
     [0, 1].forEach(function (i) {
-      r1.appendChild(game('Game ' + (i + 1), prompts[i], draw[i * 2], draw[i * 2 + 1], semi[i], function (name) {
+      r1.appendChild(game('s' + i, 'Game ' + (i + 1), prompts[i], draw[i * 2], draw[i * 2 + 1], semi[i], function (name) {
         if (semi[i] !== name) { semi[i] = name; champ = null; render(); }
       }));
     });
     var r2 = el('div', 'round'); r2.appendChild(el('h3', null, 'Final'));
-    r2.appendChild(game('Final', prompts[2], semi[0], semi[1], champ, function (name) { champ = name; render(); }));
+    r2.appendChild(game('f', 'Final', prompts[2], semi[0], semi[1], champ, function (name) { champ = name; render(); }));
     var r3 = el('div', 'round'); r3.appendChild(el('h3', null, 'Champion'));
     var c = el('div', 'champ'); c.setAttribute('aria-live', 'polite');
     c.appendChild(el('div', 'k', champ ? 'Cuts down the net' : 'Awaiting a winner'));
