@@ -1,0 +1,92 @@
+/* Shared polish for every page on matt-jones.org. Loaded after each page's own styles. */
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+html { scroll-padding-top: 76px; -webkit-text-size-adjust: 100%; }
+::selection { background: var(--stitch, var(--cerise, var(--accent, #CC3B2E))); color: #fff; }
+p, li { text-wrap: pretty; }
+html { scrollbar-width: thin; scrollbar-color: var(--line, #C9CFBE) transparent; }
+
+/* ---- Scroll progress + header state ---- */
+.mj-progress {
+  position: fixed; top: 0; left: 0; height: 3px; width: 100%; z-index: 60;
+  transform-origin: 0 50%; transform: scaleX(0);
+  background: var(--stitch, var(--cerise, var(--accent, #CC3B2E)));
+  pointer-events: none;
+}
+header.bar { transition: box-shadow .2s ease; }
+header.bar.mj-scrolled { box-shadow: 0 10px 24px -18px rgba(0,0,0,.55); }
+
+/* ---- Nav: current page, tools ---- */
+.bar .wrap > nav.top, .bar .bar-wrap > nav.top { margin-left: auto; }
+nav.top a.mj-current { color: var(--ink, inherit); border-bottom-color: var(--stitch, var(--cerise, var(--accent, currentColor))); }
+.mj-tools { display: flex; align-items: center; gap: 6px; margin-left: 18px; }
+.mj-tool {
+  width: 38px; height: 38px; display: inline-grid; place-items: center;
+  background: transparent; color: var(--ink, inherit); cursor: pointer;
+  border: 1px solid var(--line, rgba(128,128,128,.35)); border-radius: 999px;
+  font: inherit; padding: 0; transition: border-color .15s, transform .12s, background .15s;
+}
+.mj-tool:hover { border-color: var(--stitch, var(--cerise, var(--accent, currentColor))); transform: translateY(-1px); }
+.mj-tool:focus-visible { outline: 2px solid var(--stitch, var(--cerise, var(--accent, currentColor))); outline-offset: 3px; }
+.mj-tool svg { width: 18px; height: 18px; display: block; }
+.mj-burger { display: none; }
+.mj-compact .mj-burger { display: inline-grid; }
+
+/* ---- Mobile drawer ---- */
+.mj-drawer {
+  position: fixed; inset: 60px 0 auto 0; z-index: 19; max-height: calc(100dvh - 60px); overflow: auto;
+  background: var(--card, var(--paper, #fff)); color: var(--ink, inherit);
+  border-bottom: 2px dashed var(--stitch, var(--cerise, var(--accent, currentColor)));
+  box-shadow: 0 24px 40px -24px rgba(0,0,0,.6);
+  padding: 8px 20px 20px; display: none;
+}
+.mj-drawer.open { display: block; animation: mj-drop .18s ease; }
+@keyframes mj-drop { from { opacity: 0; transform: translateY(-8px); } }
+.mj-drawer a {
+  display: block; padding: 14px 4px; text-decoration: none; color: inherit;
+  font-family: var(--f-mono, var(--mono, ui-monospace, Menlo, monospace));
+  font-size: .82rem; letter-spacing: .12em; text-transform: uppercase;
+  border-bottom: 1px solid var(--line, rgba(128,128,128,.25));
+}
+.mj-drawer a.mj-sub { padding-left: 22px; opacity: .8; }
+.mj-drawer a.mj-current { color: var(--stitch, var(--cerise, var(--accent, inherit))); }
+.mj-drawer a:last-child { border-bottom: 0; }
+
+/* ---- Baseball-theme polish (pages that define --stitch) ---- */
+.mj-ball .hero { position: relative; isolation: isolate; }
+.mj-ball .hero::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background-image: repeating-linear-gradient(90deg,
+    color-mix(in srgb, var(--ink) 7%, transparent) 0 1px, transparent 1px 64px);
+  -webkit-mask-image: linear-gradient(180deg, #000, transparent 92%);
+          mask-image: linear-gradient(180deg, #000, transparent 92%);
+}
+.mj-ball .card, .mj-ball .snap { border-radius: 10px; }
+.mj-ball .snap { transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease; }
+.mj-ball .snap:hover { transform: translateY(-3px); border-color: var(--stitch);
+  box-shadow: 0 1px 0 rgba(0,0,0,.04), 0 22px 36px -22px rgba(0,0,0,.5); }
+.mj-ball .btn { border-radius: 4px; }
+.mj-ball .btn.primary { box-shadow: 0 10px 20px -12px var(--stitch); }
+.mj-ball .btn:active { transform: translateY(0); }
+.mj-ball .tagline { text-wrap: balance; }
+.mj-ball .foot-links a { transition: color .15s, transform .15s; }
+.mj-ball .foot-links a:hover { transform: translateX(3px); }
+.mj-ball .eyebrow::before {
+  content: ""; width: 8px; height: 8px; border-radius: 50%; flex: none;
+  background: var(--stitch); box-shadow: 0 0 0 3px color-mix(in srgb, var(--stitch) 22%, transparent);
+}
+
+/* ---- Back to top ---- */
+.mj-top {
+  position: fixed; right: 18px; bottom: 18px; z-index: 30;
+  background: var(--card, var(--paper, #fff));
+  opacity: 0; pointer-events: none; transform: translateY(8px);
+  transition: opacity .2s, transform .2s, border-color .15s;
+}
+.mj-top.show { opacity: 1; pointer-events: auto; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .mj-drawer.open { animation: none; }
+  .mj-tool, .mj-top, .mj-ball .snap, .mj-ball .foot-links a { transition: none; }
+  .mj-tool:hover, .mj-ball .snap:hover, .mj-ball .foot-links a:hover { transform: none; }
+}
+@media print { .mj-progress, .mj-tools, .mj-drawer, .mj-top { display: none !important; } }

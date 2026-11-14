@@ -300,6 +300,49 @@
   }
 </style>
 
+<style data-demo>
+  /* ---- Demo shell ---- */
+  button.btn { background: transparent; color: inherit; cursor: pointer; font-family: var(--f-mono); }
+  button.btn.primary { background: var(--stitch); color: #fff; }
+  button.btn[disabled] { opacity: .45; cursor: default; transform: none; }
+  .demo { margin-top: 30px; background: var(--card); border: 1px solid var(--line);
+    border-radius: 10px; box-shadow: var(--shadow); overflow: hidden; }
+  .demo-body { padding: 22px 20px; }
+  .controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 18px; }
+  .note { margin: 14px 4px 0; font-family: var(--f-mono); font-size: .74rem; letter-spacing: .04em; color: var(--muted); }
+  .bracket { display: grid; grid-template-columns: 1.15fr 1.15fr 1fr; gap: 18px; align-items: stretch; }
+  .round { display: flex; flex-direction: column; justify-content: space-around; gap: 18px; }
+  .round > h3 { margin: 0; font-family: var(--f-mono); font-size: .7rem; letter-spacing: .18em;
+    text-transform: uppercase; color: var(--muted); font-weight: 500; }
+  .game { border: 1px solid var(--line); border-radius: 8px; background: var(--paper); overflow: hidden; }
+  .game .prompt { display: flex; gap: 10px; align-items: flex-start; justify-content: space-between;
+    padding: 10px 12px; border-bottom: 1px dashed var(--line); font-size: .9rem; color: var(--muted); }
+  .game .prompt b { display: block; font-family: var(--f-mono); font-size: .64rem; letter-spacing: .16em;
+    text-transform: uppercase; color: var(--grass); font-weight: 600; }
+  .copy { flex: none; font-family: var(--f-mono); font-size: .64rem; letter-spacing: .1em; text-transform: uppercase;
+    background: transparent; color: var(--muted); border: 1px solid var(--line); border-radius: 999px;
+    padding: 5px 10px; cursor: pointer; }
+  .copy:hover { color: var(--ink); border-color: var(--stitch); }
+  .team { display: flex; width: 100%; align-items: center; gap: 10px; padding: 13px 12px;
+    background: transparent; color: var(--ink); border: 0; border-bottom: 1px solid var(--line);
+    font-family: var(--f-display); font-weight: 700; text-transform: uppercase; font-size: 1.02rem;
+    letter-spacing: .01em; text-align: left; cursor: pointer; transition: background .14s; }
+  .team:last-child { border-bottom: 0; }
+  .team:hover:not([disabled]) { background: color-mix(in srgb, var(--grass) 12%, transparent); }
+  .team[disabled] { cursor: default; color: var(--muted); font-weight: 500; }
+  .team .seed { font-family: var(--f-mono); font-size: .72rem; color: var(--stitch); width: 1.2em; }
+  .team .mark { margin-left: auto; font-family: var(--f-mono); font-size: .66rem; letter-spacing: .14em; color: var(--grass); }
+  .team.won { background: color-mix(in srgb, var(--grass) 16%, transparent); }
+  .team.lost { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--stitch); }
+  .champ { border: 2px dashed var(--stitch); border-radius: 8px; padding: 22px 16px; text-align: center; }
+  .champ .k { font-family: var(--f-mono); font-size: .68rem; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); }
+  .champ .who { font-family: var(--f-display); font-weight: 800; text-transform: uppercase;
+    font-size: clamp(1.5rem, 4vw, 2.3rem); line-height: 1.05; margin-top: 8px; color: var(--stitch); }
+  .champ .who.tbd { color: var(--line); }
+  .champ .sub { color: var(--muted); font-size: .9rem; margin-top: 8px; }
+  @media (max-width: 820px) { .bracket { grid-template-columns: 1fr; } }
+</style>
+<link rel="stylesheet" href="/assets/site.css"><script src="/assets/site.js"></script>
 <header class="bar">
   <div class="wrap">
     <a class="wordmark" href="/"><span class="ball" aria-hidden="true"></span> Matt Jones</a>
@@ -336,28 +379,38 @@
       <p class="eyebrow reveal">Software &nbsp;·&nbsp; Batting 1st</p>
       <h1 class="name reveal">LLMAdness</h1>
       <p class="tagline reveal">Bracket-style madness for language models.</p>
-      <p class="lede reveal">Models face off head to head until one cuts down the net. The full write-up and live demo land here soon — this page is warming up in the bullpen.</p>
+      <p class="lede reveal">Grok, Claude, Gemini and ChatGPT, head to head, judged on the only stat that matters: are they funny? Same prompt, both models, you're the umpire.</p>
       <div class="cta-row reveal">
-        <a class="btn primary" href="/portfolio/">Back to the lineup <span aria-hidden="true">→</span></a>
-        <a class="btn ghost" href="mailto:mscottjones24@gmail.com">Ask about it</a>
+        <a class="btn primary" href="#bracket">Call the games <span aria-hidden="true">→</span></a>
+        <a class="btn ghost" href="/portfolio/">Back to the lineup</a>
       </div>
     </div>
   </section>
 
   <div class="wrap"><div class="stitch" aria-hidden="true"></div></div>
 
-  <section id="notes">
+  <section id="bracket">
     <div class="wrap">
-      <div class="sec-head reveal"><span class="sec-kicker">Game notes</span></div>
-      <h2 class="sec-title reveal">The Card</h2>
-      <div class="card reveal">
-        <div class="card-top"><span>Attribute · Detail</span><span class="mono">№ 1</span></div>
-        <ul class="roster">
-          <li><span class="k">Side</span><span class="v">Software</span></li>
-          <li><span class="k">Lineup spot</span><span class="v">1 — Leadoff</span></li>
-          <li><span class="k">Status</span><span class="v">Warming up<small>Write-up and demo coming soon.</small></span></li>
-          <li><span class="k">Built on</span><span class="v">Claude</span></li>
-        </ul>
+      <div class="sec-head reveal"><span class="sec-kicker">The Funny Four</span></div>
+      <h2 class="sec-title reveal">The Bracket</h2>
+      <p class="sec-sub reveal">Copy each prompt, run it in both models, and click whichever answer made you laugh. Two semifinals, one final, one champion.</p>
+      <div class="demo reveal">
+        <div class="card-top"><span>Humor bracket · 4 models</span><span class="mono" id="status">0 of 3 called</span></div>
+        <div class="demo-body">
+          <div class="bracket" id="bracketGrid"></div>
+          <div class="controls">
+            <button class="btn" type="button" id="shuffle">Shuffle the draw</button>
+            <button class="btn" type="button" id="newPrompts">New prompts</button>
+            <button class="btn" type="button" id="reset">Reset</button>
+          </div>
+        </div>
+      </div>
+      <p class="note">No jokes are stored here and nothing is scored for you — the bracket only records your calls, in this browser tab.</p>
+
+      <div class="snaps">
+        <div class="snap reveal"><span class="tag">The idea</span><h3>Humor is hard</h3><p>A model can pass a bar exam and still step on a punchline. Timing, surprise and restraint don't show up on a benchmark.</p></div>
+        <div class="snap reveal"><span class="tag">The rules</span><h3>Same pitch, both hitters</h3><p>Each matchup uses one prompt for both models. First answer only — no rerolls, no coaching from the dugout.</p></div>
+        <div class="snap reveal"><span class="tag">The judge</span><h3>You</h3><p>Funny is personal. Run the bracket twice with different prompts and see whether your champion holds up.</p></div>
       </div>
     </div>
   </section>
@@ -397,4 +450,82 @@
   })();
 </script>
 
+<script data-demo>
+(function () {
+  var MODELS = ['Grok', 'Claude', 'Gemini', 'ChatGPT'];
+  var PROMPTS = [
+    ['One-liner', 'Write a one-liner about a rain delay.'],
+    ['Dad joke', 'Tell me a dad joke about spreadsheets.'],
+    ['Roast', 'Gently roast a person who claps when the plane lands.'],
+    ['Limerick', 'Write a limerick about a cat who distrusts the vacuum.'],
+    ['Pun', 'Give me your best pun about sourdough.'],
+    ['Deadpan', 'Explain why the meeting could have been an email, as a nature documentary.'],
+    ['Absurd', 'Write a one-star review of the moon.'],
+    ['Observational', 'Do thirty seconds of stand-up about self-checkout machines.'],
+    ['Baseball', 'Heckle an umpire, but politely.'],
+    ['Haiku', 'Write a funny haiku about a Monday.']
+  ];
+  var grid = document.getElementById('bracketGrid');
+  var statusEl = document.getElementById('status');
+  var draw, prompts, semi, champ;
+
+  function shuffled(a) {
+    a = a.slice();
+    for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; }
+    return a;
+  }
+  function pickPrompts() { prompts = shuffled(PROMPTS).slice(0, 3); }
+  function clear() { semi = [null, null]; champ = null; }
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+
+  function game(label, prompt, a, b, winner, onPick) {
+    var g = el('div', 'game');
+    var p = el('div', 'prompt');
+    var txt = el('span'); txt.appendChild(el('b', null, label + ' · ' + prompt[0])); txt.appendChild(document.createTextNode(prompt[1]));
+    var copy = el('button', 'copy', 'Copy'); copy.type = 'button';
+    copy.addEventListener('click', function () {
+      var done = function () { copy.textContent = 'Copied'; setTimeout(function () { copy.textContent = 'Copy'; }, 1200); };
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(prompt[1]).then(done, function () {});
+    });
+    p.appendChild(txt); p.appendChild(copy); g.appendChild(p);
+    [a, b].forEach(function (name) {
+      var t = el('button', 'team'); t.type = 'button';
+      t.appendChild(el('span', 'seed', name ? String(draw.indexOf(name) + 1) : '–'));
+      t.appendChild(el('span', null, name || 'To be decided'));
+      if (!name || !a || !b) t.disabled = true;
+      if (winner && name === winner) { t.classList.add('won'); t.appendChild(el('span', 'mark', 'W')); t.setAttribute('aria-pressed', 'true'); }
+      else if (winner && name) { t.classList.add('lost'); t.setAttribute('aria-pressed', 'false'); }
+      t.addEventListener('click', function () { onPick(name); });
+      g.appendChild(t);
+    });
+    return g;
+  }
+
+  function render() {
+    grid.textContent = '';
+    var r1 = el('div', 'round'); r1.appendChild(el('h3', null, 'Semifinals'));
+    [0, 1].forEach(function (i) {
+      r1.appendChild(game('Game ' + (i + 1), prompts[i], draw[i * 2], draw[i * 2 + 1], semi[i], function (name) {
+        if (semi[i] !== name) { semi[i] = name; champ = null; render(); }
+      }));
+    });
+    var r2 = el('div', 'round'); r2.appendChild(el('h3', null, 'Final'));
+    r2.appendChild(game('Final', prompts[2], semi[0], semi[1], champ, function (name) { champ = name; render(); }));
+    var r3 = el('div', 'round'); r3.appendChild(el('h3', null, 'Champion'));
+    var c = el('div', 'champ'); c.setAttribute('aria-live', 'polite');
+    c.appendChild(el('div', 'k', champ ? 'Cuts down the net' : 'Awaiting a winner'));
+    c.appendChild(el('div', 'who' + (champ ? '' : ' tbd'), champ || '— — —'));
+    c.appendChild(el('div', 'sub', champ ? 'Funniest of the four, according to you.' : 'Call both semifinals, then the final.'));
+    r3.appendChild(c);
+    grid.appendChild(r1); grid.appendChild(r2); grid.appendChild(r3);
+    var n = (semi[0] ? 1 : 0) + (semi[1] ? 1 : 0) + (champ ? 1 : 0);
+    statusEl.textContent = n + ' of 3 called';
+  }
+
+  document.getElementById('shuffle').addEventListener('click', function () { draw = shuffled(MODELS); clear(); render(); });
+  document.getElementById('newPrompts').addEventListener('click', function () { pickPrompts(); clear(); render(); });
+  document.getElementById('reset').addEventListener('click', function () { clear(); render(); });
+  draw = MODELS.slice(); pickPrompts(); clear(); render();
+})();
+</script>
 </body></html>

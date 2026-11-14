@@ -1,0 +1,164 @@
+<style>
+  .sky { display: block; width: 100%; height: 380px; background: var(--paper); border-bottom: 1px solid var(--line); }
+  .wind-row { display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; }
+  .wind-row label { font-family: var(--f-mono); font-size: .7rem; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+  .wind-row output { font-family: var(--f-mono); font-variant-numeric: tabular-nums; min-width: 6ch; text-align: right; }
+  input[type=range] { width: 100%; accent-color: var(--stitch); }
+  .gauges { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border-top: 1px solid var(--line); }
+  .gauges div { padding: 16px 20px; border-right: 1px solid var(--line);
+    font-family: var(--f-mono); font-size: .66rem; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+  .gauges div:last-child { border-right: 0; }
+  .gauges b { display: block; font-family: var(--f-display); font-size: 1.7rem; letter-spacing: 0; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .gauges b.hold { color: var(--grass); }
+  @media (max-width: 560px) { .gauges { grid-template-columns: 1fr; } .gauges div { border-right: 0; border-bottom: 1px solid var(--line); } .sky { height: 300px; } }
+</style>
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <p class="eyebrow reveal">Software &nbsp;·&nbsp; Batting 5th</p>
+      <h1 class="name reveal">Windhover</h1>
+      <p class="tagline reveal">Named for the kestrel that hangs on the wind.</p>
+      <p class="lede reveal">A kestrel hovers by flying into the wind at exactly the wind's speed — working hard to go nowhere. Turn the wind up, throw a gust, and watch it fight back to its spot.</p>
+      <div class="cta-row reveal">
+        <a class="btn primary" href="#hover">Make some wind <span aria-hidden="true">→</span></a>
+        <a class="btn ghost" href="/portfolio/">Back to the lineup</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap"><div class="stitch" aria-hidden="true"></div></div>
+
+  <section id="hover">
+    <div class="wrap">
+      <div class="sec-head reveal"><span class="sec-kicker">Holding station</span></div>
+      <h2 class="sec-title reveal">The Hover</h2>
+      <p class="sec-sub reveal">The dashed line is the spot. Airspeed has to match the wind for ground speed to stay at zero.</p>
+      <div class="demo reveal">
+        <div class="card-top"><span>Wind tunnel</span><span class="mono" id="hoverState">Holding</span></div>
+        <canvas class="sky" id="sky" role="img" aria-label="Animation of a kestrel hovering in place against the wind"></canvas>
+        <div class="demo-body">
+          <div class="wind-row">
+            <label for="wind">Wind</label>
+            <input id="wind" type="range" min="0" max="40" value="14" step="1">
+            <output id="windOut" for="wind">14 mph</output>
+          </div>
+          <div class="controls">
+            <button class="btn primary" type="button" id="gust">Throw a gust</button>
+            <button class="btn" type="button" id="pause">Pause</button>
+          </div>
+        </div>
+        <div class="gauges">
+          <div><b id="gAir">14</b>Airspeed · mph</div>
+          <div><b id="gGround">0.0</b>Ground speed · mph</div>
+          <div><b id="gDrift" class="hold">0.0</b>Drift off the spot · ft</div>
+        </div>
+      </div>
+      <p class="note">A toy model, not ornithology: the bird steers with a simple correct-toward-the-spot rule.</p>
+
+      <div class="snaps">
+        <div class="snap reveal"><span class="tag">The name</span><h3>Windhover</h3><p>An old English name for the kestrel, and the title of a Gerard Manley Hopkins poem about watching one ride the air.</p></div>
+        <div class="snap reveal"><span class="tag">The trick</span><h3>Zero ground speed</h3><p>The bird is flying the whole time. It only looks still because the air is moving just as fast the other way.</p></div>
+        <div class="snap reveal"><span class="tag">The lesson</span><h3>Small corrections</h3><p>Holding a spot isn't one big effort. It's a stream of tiny adjustments, made before the drift gets large.</p></div>
+      </div>
+    </div>
+  </section>
+</main>
+<script>
+(function () {
+  var cv = document.getElementById('sky'), ctx = cv.getContext('2d');
+  var $ = function (id) { return document.getElementById(id); };
+  var slider = $('wind'), W = 0, H = 0, dpr = 1;
+  var wind = +slider.value, gust = 0, thrust = wind, drift = 0, vel = 0, flap = 0, t = 0;
+  var paused = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var col = {}, streaks = [], last = 0, frame = 0;
+
+  function colors() {
+    var s = getComputedStyle(document.documentElement);
+    ['ink', 'muted', 'line', 'stitch', 'grass', 'card'].forEach(function (k) { col[k] = s.getPropertyValue('--' + k).trim() || '#888'; });
+  }
+  function size() {
+    dpr = Math.min(2, window.devicePixelRatio || 1);
+    W = cv.clientWidth; H = cv.clientHeight;
+    cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    streaks = [];
+    for (var i = 0; i < 46; i++) streaks.push({ x: Math.random() * W, y: 14 + Math.random() * (H - 80), l: 14 + Math.random() * 40, z: .4 + Math.random() * .8 });
+  }
+  function update(dt) {
+    t += dt;
+    gust *= Math.pow(.25, dt);
+    var w = wind + gust + Math.sin(t * 1.7) * .6;                 /* mph, blowing right to left */
+    vel += (w - thrust) * 1.6 * dt;                                /* downwind speed over ground */
+    drift += vel * dt * 1.467;                                     /* mph to ft/s */
+    thrust += ((w + drift * .9 + vel * 1.4) - thrust) * 3.2 * dt;  /* the bird's correction */
+    if (thrust < 0) thrust = 0;
+    flap += (4 + thrust * .55) * dt;
+    streaks.forEach(function (s) {
+      s.x -= (w * 9 * s.z + 4) * dt;
+      if (s.x + s.l < 0) { s.x = W + Math.random() * 40; s.y = 14 + Math.random() * (H - 80); }
+    });
+    if (frame % 6 === 0) {
+      $('gAir').textContent = Math.round(thrust);
+      $('gGround').textContent = Math.abs(vel).toFixed(1);
+      var d = Math.abs(drift);
+      $('gDrift').textContent = d.toFixed(1); $('gDrift').classList.toggle('hold', d < .5);
+      $('hoverState').textContent = d < .5 ? 'Holding' : (vel > .1 ? 'Blown back' : 'Clawing back');
+    }
+  }
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    var gy = H - 44, sx = W * .5, x = sx - drift * 14, y = H * .42 + Math.sin(t * 2.3) * 4;
+    x = Math.max(40, Math.min(W - 40, x));
+    /* wind */
+    ctx.lineCap = 'round';
+    streaks.forEach(function (s) {
+      ctx.globalAlpha = .18 + .3 * s.z; ctx.strokeStyle = col.muted; ctx.lineWidth = s.z;
+      ctx.beginPath(); ctx.moveTo(s.x, s.y); ctx.lineTo(s.x + s.l * (.4 + (wind + gust) / 30), s.y); ctx.stroke();
+    });
+    ctx.globalAlpha = 1;
+    /* ground + the spot */
+    ctx.strokeStyle = col.grass; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(W, gy); ctx.stroke();
+    ctx.lineWidth = 1.5;
+    for (var gx = 8; gx < W; gx += 22) {
+      var lean = Math.min(9, (wind + gust) * .3) + Math.sin(t * 3 + gx) * 1.5;
+      ctx.beginPath(); ctx.moveTo(gx, gy); ctx.lineTo(gx - lean, gy - 10); ctx.stroke();
+    }
+    ctx.setLineDash([5, 6]); ctx.strokeStyle = col.stitch; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(sx, 12); ctx.lineTo(sx, gy); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = col.stitch; ctx.beginPath(); ctx.arc(sx, gy, 4, 0, 6.3); ctx.fill();
+    /* kestrel, facing right into the wind */
+    var tilt = -Math.min(.5, thrust / 70), a = Math.sin(flap) * (.55 + Math.min(.5, thrust / 60));
+    ctx.save(); ctx.translate(x, y); ctx.rotate(tilt);
+    ctx.fillStyle = col.muted;                                     /* far wing */
+    wing(-a * .9, .8);
+    ctx.fillStyle = col.ink;                                       /* tail, fanned */
+    ctx.beginPath(); ctx.moveTo(-20, 0); ctx.lineTo(-52, -9); ctx.lineTo(-56, 3); ctx.lineTo(-50, 13); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(0, 0, 26, 10, 0, 0, 6.3); ctx.fill();   /* body */
+    ctx.beginPath(); ctx.arc(24, -5, 8.5, 0, 6.3); ctx.fill();            /* head */
+    ctx.fillStyle = col.stitch;
+    ctx.beginPath(); ctx.moveTo(31, -6); ctx.lineTo(40, -2); ctx.lineTo(31, 0); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = col.card; ctx.beginPath(); ctx.arc(26, -7, 1.8, 0, 6.3); ctx.fill();
+    ctx.fillStyle = col.ink; wing(a, 1);                           /* near wing */
+    ctx.restore();
+    function wing(ang, k) {
+      ctx.save(); ctx.translate(4, -4); ctx.rotate(-Math.PI / 2 + ang * .9 - .25);
+      ctx.beginPath(); ctx.moveTo(-9 * k, 0); ctx.quadraticCurveTo(-4 * k, 34 * k, 6 * k, 58 * k);
+      ctx.quadraticCurveTo(12 * k, 30 * k, 11 * k, 0); ctx.closePath(); ctx.fill(); ctx.restore();
+    }
+  }
+  function loop(now) {
+    var dt = Math.min(.05, (now - last) / 1000 || 0); last = now; frame++;
+    if (frame % 30 === 1) colors();
+    if (!paused) update(dt);
+    draw();
+    requestAnimationFrame(loop);
+  }
+  slider.addEventListener('input', function () { wind = +slider.value; $('windOut').textContent = wind + ' mph'; });
+  $('gust').addEventListener('click', function () { gust += 14; });
+  $('pause').addEventListener('click', function () { paused = !paused; this.textContent = paused ? 'Play' : 'Pause'; });
+  if (paused) $('pause').textContent = 'Play';
+  window.addEventListener('resize', size);
+  window.addEventListener('mj-themechange', colors);
+  colors(); size(); requestAnimationFrame(loop);
+})();
+</script>

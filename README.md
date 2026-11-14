@@ -25,5 +25,11 @@ and the Software/Baseball menu items go to each project's own page.
 Deploys run from `.github/workflows/pages.yml` on every push to `main`
 (Settings → Pages → Source: **GitHub Actions**).
 
+Every page loads `assets/site.css` and `assets/site.js`: the theme toggle, the phone menu, the current-page
+highlight, the scroll progress bar and shared polish. Change those two files to change all pages at once.
+
+The LLMAdness, Bullzen and Windhover demos are edited in `_build/<page>.html` and written into their pages
+with `python3 _build/build.py`. Black Ink and Scouting Report came from the `calendar` repo.
+
 Other files: `CNAME` (records the custom domain; the live setting is in Settings → Pages), `.nojekyll` (serve files as-is),
 `favicon.svg`. DNS and email setup is in `dns/records.md`.
