@@ -220,6 +220,33 @@
   footer.site-foot .copyright{max-width:1080px;margin:14px auto 0;padding:0 24px;font-family:var(--mono);
     font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
 </style>
+<style data-polish>
+  /* ---- Box Score polish ---- */
+  body{background:
+    radial-gradient(900px 420px at 12% -80px, color-mix(in srgb,var(--green-ok) 16%,transparent), transparent 70%),
+    radial-gradient(700px 380px at 92% -60px, color-mix(in srgb,var(--amber) 10%,transparent), transparent 70%),
+    var(--paper); background-repeat:no-repeat}
+  header.wrap{padding-top:clamp(36px,6vw,68px); padding-bottom:26px}
+  header.wrap .wordmark{margin-top:14px; align-items:center; gap:20px}
+  header.wrap .wordmark h1{font-size:clamp(3rem,11vw,6.6rem); line-height:.9; letter-spacing:-.01em}
+  .dek{margin-top:18px; line-height:1.55}
+  .strip .in{padding:10px 20px}
+  .callbtn{display:flex; flex-direction:column; align-items:center; justify-content:flex-start; padding:16px 10px 12px; cursor:pointer;
+    transition:transform .12s, border-color .15s, background .15s}
+  .callbtn .ic{font-size:26px}
+  .callbtn .cn{font-size:14px; font-weight:800; margin-top:10px}
+  .callbtn .cd{font-size:10.5px}
+  .callbtn .key{margin-top:10px}
+  .callbtn:hover:not(:disabled){background:var(--pop2)}
+  .mcard,.playcard,.booth,.final .f-board{border-radius:10px}
+  .mcard{border-top:3px solid var(--edge); transition:transform .16s}
+  .mcard:nth-child(1){border-top-color:var(--green-ok)}
+  .mcard:nth-child(2){border-top-color:var(--amber)}
+  .mcard:nth-child(3){border-top-color:var(--accent)}
+  .mcard:hover{transform:translateY(-3px)}
+  footer.site-foot{margin-top:64px}
+  footer.site-foot .foot-sub{font-family:var(--ui)}
+</style>
 <link rel="stylesheet" href="/assets/site.css"><script src="/assets/site.js"></script>
 <header class="bar">
   <div class="bar-wrap">

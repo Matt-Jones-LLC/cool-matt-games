@@ -90,3 +90,12 @@ nav.top a.mj-current { color: var(--ink, inherit); border-bottom-color: var(--st
   .mj-tool:hover, .mj-ball .snap:hover, .mj-ball .foot-links a:hover { transform: none; }
 }
 @media print { .mj-progress, .mj-tools, .mj-drawer, .mj-top { display: none !important; } }
+
+/* ---- Skip link ---- */
+.mj-skip {
+  position: fixed; left: 12px; top: -60px; z-index: 70; padding: 10px 14px; border-radius: 4px;
+  background: var(--ink, #171A12); color: var(--paper, #fff); text-decoration: none;
+  font-family: var(--f-mono, var(--mono, ui-monospace, Menlo, monospace)); font-size: .78rem; letter-spacing: .08em; text-transform: uppercase;
+}
+.mj-skip:focus { top: 12px; outline: 2px solid var(--stitch, var(--cerise, var(--accent, currentColor))); outline-offset: 2px; }
+main:focus { outline: none; }
