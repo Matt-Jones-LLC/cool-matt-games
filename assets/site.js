@@ -29,6 +29,16 @@
     var nav = bar && bar.querySelector('nav.top');
     if (getComputedStyle(root).getPropertyValue('--stitch').trim()) root.classList.add('mj-ball');
 
+    /* Skip link for keyboard users */
+    var mainEl = document.querySelector('main');
+    if (mainEl) {
+      if (!mainEl.id) mainEl.id = 'main';
+      mainEl.setAttribute('tabindex', '-1');
+      var skip = document.createElement('a');
+      skip.className = 'mj-skip'; skip.href = '#' + mainEl.id; skip.textContent = 'Skip to content';
+      document.body.insertBefore(skip, document.body.firstChild);
+    }
+
     /* Current page */
     var here = norm(location.pathname);
     function markCurrent(scope) {
