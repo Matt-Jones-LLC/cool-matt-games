@@ -99,3 +99,7 @@ nav.top a.mj-current { color: var(--ink, inherit); border-bottom-color: var(--st
 }
 .mj-skip:focus { top: 12px; outline: 2px solid var(--stitch, var(--cerise, var(--accent, currentColor))); outline-offset: 2px; }
 main:focus { outline: none; }
+
+/* ---- Keep the header on one line when the tools are added ---- */
+.bar .wordmark, nav.top a.pill { white-space: nowrap; }
+@media (max-width: 420px) { .mj-compact nav.top a.pill { padding-left: 14px; padding-right: 14px; font-size: 14px; } .mj-compact .mj-tools { margin-left: 8px; } }
