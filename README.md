@@ -29,7 +29,10 @@ Every page loads `assets/site.css` and `assets/site.js`: the theme toggle, the p
 highlight, the scroll progress bar and shared polish. Change those two files to change all pages at once.
 
 The LLMAdness, Bullzen and Windhover demos are edited in `_build/<page>.html` and written into their pages
-with `python3 _build/build.py`. Black Ink and Scouting Report came from the `calendar` repo.
+with `python3 _build/build.py`, which also writes `404.html`. Black Ink and Scouting Report came from the `calendar` repo.
+
+`python3 _build/meta.py` writes each page's description and share tags (edit the text in that file), plus
+`sitemap.xml` and `robots.txt`. `/hibob/` is left out of the sitemap. `assets/og.png` is the share image.
 
 Other files: `CNAME` (records the custom domain; the live setting is in Settings → Pages), `.nojekyll` (serve files as-is),
 `favicon.svg`. DNS and email setup is in `dns/records.md`.
