@@ -102,6 +102,15 @@
 </head>
 <body>
 
+<style data-polish>
+  .bi-modes{display:flex;flex-wrap:wrap;gap:8px;margin-top:26px;}
+  .bi-modes + .card{margin-top:14px;}
+  .bi-mode{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;background:transparent;color:var(--muted);
+    border:1px solid var(--line);border-radius:999px;padding:9px 14px;cursor:pointer;}
+  .bi-mode[aria-pressed="true"]{color:var(--ink);border-color:var(--stitch);background:color-mix(in srgb,var(--stitch) 10%,transparent);}
+  .bi-verdict{margin:14px 4px 0;font-size:.98rem;}
+  .bi-verdict b{font-family:var(--f-display);text-transform:uppercase;}
+</style>
 <link rel="stylesheet" href="/assets/site.css"><script src="/assets/site.js"></script>
 <header class="bar">
   <div class="wrap">
@@ -151,12 +160,16 @@
       <h2 class="sec-title reveal">Count the Bold</h2>
       <p class="sec-sub reveal">Enter how many seasons the hitter led the league in each category. Heavier categories carry more weight — leading in homers says more than leading in games played.</p>
 
+      <div class="bi-modes reveal" role="group" aria-label="Which test">
+        <button type="button" class="bi-mode" data-mode="black" aria-pressed="true">Black Ink · led the league</button>
+        <button type="button" class="bi-mode" data-mode="gray" aria-pressed="false">Gray Ink · top ten</button>
+      </div>
       <div class="card reveal">
-        <div class="card-top"><span>Black Ink — Batting</span><span id="bi-status">0 points</span></div>
+        <div class="card-top"><span id="bi-title">Black Ink — Batting</span><span id="bi-status">0 points</span></div>
         <div class="bi-scroll">
           <table class="bi">
             <thead>
-              <tr><th>Category</th><th class="r">Weight</th><th class="r">Times led</th><th class="r">Points</th></tr>
+              <tr><th>Category</th><th class="r">Weight</th><th class="r" id="bi-col">Times led</th><th class="r">Points</th></tr>
             </thead>
             <tbody id="bi-body">
               <tr><td class="cat">Home Runs</td><td class="wt r">4</td><td class="r"><input class="bi-in" type="number" min="0" max="30" value="0" data-wt="4"></td><td class="pts r">0</td></tr>
@@ -168,20 +181,23 @@
               <tr><td class="cat">Doubles</td><td class="wt r">2</td><td class="r"><input class="bi-in" type="number" min="0" max="30" value="0" data-wt="2"></td><td class="pts r">0</td></tr>
               <tr><td class="cat">Walks</td><td class="wt r">2</td><td class="r"><input class="bi-in" type="number" min="0" max="30" value="0" data-wt="2"></td><td class="pts r">0</td></tr>
               <tr><td class="cat">Stolen Bases</td><td class="wt r">2</td><td class="r"><input class="bi-in" type="number" min="0" max="30" value="0" data-wt="2"></td><td class="pts r">0</td></tr>
+              <tr><td class="cat">Games</td><td class="wt r">1</td><td class="r"><input class="bi-in" type="number" min="0" max="30" value="0" data-wt="1"></td><td class="pts r">0</td></tr>
+              <tr><td class="cat">At Bats</td><td class="wt r">1</td><td class="r"><input class="bi-in" type="number" min="0" max="30" value="0" data-wt="1"></td><td class="pts r">0</td></tr>
               <tr><td class="cat">Triples</td><td class="wt r">1</td><td class="r"><input class="bi-in" type="number" min="0" max="30" value="0" data-wt="1"></td><td class="pts r">0</td></tr>
             </tbody>
           </table>
         </div>
         <div class="bi-total">
-          <span class="lbl">Black Ink score</span>
+          <span class="lbl" id="bi-lbl">Black Ink score</span>
           <span class="val tnum" id="bi-total">0</span>
         </div>
       </div>
-      <p class="bench reveal">Rough benchmarks — average Hall of Famer ≈ 27 · strong candidate ≈ 40+ · the all-time greats clear 100.</p>
+      <p class="bi-verdict reveal" id="bi-verdict" aria-live="polite"></p>
+      <p class="bench reveal" id="bi-bench">Rough benchmarks — average Hall of Famer ≈ 27 · strong candidate ≈ 40+ · the all-time greats clear 100.</p>
 
       <div class="snaps">
         <div class="snap reveal"><span class="tag">The idea</span><h3>Bold = led</h3><p>Every league-leading finish once got printed in bold type. More bold, more dominance.</p></div>
-        <div class="snap reveal"><span class="tag">Companion</span><h3>Gray Ink</h3><p>Its sibling test rewards top-ten finishes — steady excellence rather than outright titles.</p></div>
+        <div class="snap reveal"><span class="tag">Companion</span><h3>Gray Ink</h3><p>Its sibling test rewards top-ten finishes — steady excellence rather than outright titles. Flip the switch above the table to tally it.</p></div>
         <div class="snap reveal"><span class="tag">Careful</span><h3>Era matters</h3><p>Leading a 16-team league isn't the same as a 30-team one. Read the number in context.</p></div>
       </div>
     </div>
@@ -222,6 +238,26 @@
     var inputs = Array.prototype.slice.call(document.querySelectorAll('.bi-in'));
     var totalEl = document.getElementById('bi-total');
     var statusEl = document.getElementById('bi-status');
+    var MODES = {
+      black: { title: 'Black Ink — Batting', col: 'Times led', lbl: 'Black Ink score', avg: 27,
+        bench: 'Rough benchmarks — average Hall of Famer ≈ 27 · strong candidate ≈ 40+ · the all-time greats clear 100.' },
+      gray:  { title: 'Gray Ink — Batting', col: 'Top-10 finishes', lbl: 'Gray Ink score', avg: 144,
+        bench: 'Rough benchmark — the average Hall of Famer scores about 144. Same weights, but every top-ten finish counts.' }
+    };
+    var mode = 'black', saved = { black: null, gray: null };
+    function $(id){ return document.getElementById(id); }
+    function setMode(next){
+      saved[mode] = inputs.map(function(i){ return i.value; });
+      mode = next;
+      inputs.forEach(function(i, k){ i.value = saved[mode] ? saved[mode][k] : 0; });
+      var m = MODES[mode];
+      $('bi-title').textContent = m.title; $('bi-col').textContent = m.col; $('bi-lbl').textContent = m.lbl; $('bi-bench').textContent = m.bench;
+      Array.prototype.forEach.call(document.querySelectorAll('.bi-mode'), function(b){ b.setAttribute('aria-pressed', String(b.getAttribute('data-mode') === mode)); });
+      recalc();
+    }
+    Array.prototype.forEach.call(document.querySelectorAll('.bi-mode'), function(b){
+      b.addEventListener('click', function(){ if (b.getAttribute('data-mode') !== mode) setMode(b.getAttribute('data-mode')); });
+    });
     function recalc(){
       var total = 0;
       inputs.forEach(function(inp){
@@ -233,6 +269,13 @@
       });
       totalEl.textContent = total;
       statusEl.textContent = total + (total === 1 ? ' point' : ' points');
+      var v = $('bi-verdict'), avg = MODES[mode].avg; v.textContent = '';
+      if (total > 0) {
+        var b = document.createElement('b'); b.textContent = total >= avg ? 'Cooperstown pace. ' : 'Short of the plaque. ';
+        v.appendChild(b);
+        v.appendChild(document.createTextNode(total >= avg ? 'That meets the average Hall of Famer\u2019s ' + avg + '.'
+          : (avg - total) + ' shy of the average Hall of Famer\u2019s ' + avg + '.'));
+      }
     }
     inputs.forEach(function(inp){ inp.addEventListener('input', recalc); });
     recalc();

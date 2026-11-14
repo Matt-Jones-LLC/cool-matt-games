@@ -105,6 +105,23 @@
 </head>
 <body>
 
+<style data-polish>
+  /* ---- Interactive tool grades ---- */
+  .tslider{-webkit-appearance:none;appearance:none;width:100%;height:10px;border-radius:999px;margin:0;cursor:pointer;
+    background:linear-gradient(90deg,var(--grass) var(--p,50%),color-mix(in srgb,var(--line) 45%,transparent) var(--p,50%));}
+  .tslider::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--card);border:2px solid var(--stitch);box-shadow:var(--shadow);}
+  .tslider::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--card);border:2px solid var(--stitch);}
+  .tslider::-moz-range-track{background:transparent;}
+  .tslider:focus-visible{outline:2px solid var(--stitch);outline-offset:4px;}
+  .tool .grade{display:block;}
+  .sr-line{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding:16px 24px;border-top:1px solid var(--line);
+    background:color-mix(in srgb,var(--grass) 8%,transparent);}
+  .sr-line p{margin:0;font-size:.98rem;}
+  .sr-line b{font-family:var(--f-display);text-transform:uppercase;letter-spacing:.01em;}
+  .sr-reset{font-family:var(--f-mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;background:transparent;color:var(--muted);
+    border:1px solid var(--line);border-radius:999px;padding:7px 12px;cursor:pointer;}
+  .sr-reset:hover{color:var(--ink);border-color:var(--stitch);}
+</style>
 <link rel="stylesheet" href="/assets/site.css"><script src="/assets/site.js"></script>
 <header class="bar">
   <div class="wrap">
@@ -142,7 +159,7 @@
       <p class="eyebrow reveal">The 20–80 scale</p>
       <h1 class="name reveal">Scouting Report</h1>
       <p class="tagline reveal">Five tools, one honest grade.</p>
-      <p class="lede reveal">Scouts grade every tool on a 20–80 scale, where 50 is big-league average and every ten points is a standard deviation. Below is a report in that language — a template you can drop any player into.</p>
+      <p class="lede reveal">Scouts grade every tool on a 20–80 scale, where 50 is big-league average and every ten points is a standard deviation. Below is a report in that language — drag the grades and build your own player.</p>
     </div>
   </section>
 
@@ -152,7 +169,7 @@
     <div class="wrap">
       <div class="sec-head reveal"><span class="sec-kicker">The card</span></div>
       <h2 class="sec-title reveal">Tool Grades</h2>
-      <p class="sec-sub reveal">Present grades are what a player shows today; the OFP (Overall Future Potential) rolls the projected tools into a single number.</p>
+      <p class="sec-sub reveal">Drag any tool to regrade it. The OFP (Overall Future Potential) rolls the five tools into a single number — here, their average rounded to the nearest 5.</p>
 
       <div class="card reveal">
         <div class="sr-head">
@@ -161,18 +178,22 @@
             <div class="sr-meta">SS · R/R · 6'1", 190 · Age 21 · Double-A</div>
           </div>
           <div class="sr-ofp">
-            <div class="n tnum">55</div>
+            <div class="n tnum" id="ofp" aria-live="polite">55</div>
             <div class="l">OFP</div>
           </div>
         </div>
         <div class="sr-tools">
-          <div class="tool"><span class="tname">Hit</span><span class="bar"><span style="width:58%"></span></span><span class="grade tnum">55</span></div>
-          <div class="tool"><span class="tname">Power</span><span class="bar"><span style="width:67%"></span></span><span class="grade tnum">60</span></div>
-          <div class="tool"><span class="tname">Run</span><span class="bar"><span style="width:42%"></span></span><span class="grade tnum">45</span></div>
-          <div class="tool"><span class="tname">Arm</span><span class="bar"><span style="width:67%"></span></span><span class="grade tnum">60</span></div>
-          <div class="tool"><span class="tname">Field</span><span class="bar"><span style="width:50%"></span></span><span class="grade tnum">50</span></div>
+          <div class="tool"><label class="tname" for="g-hit">Hit</label><input class="tslider" id="g-hit" type="range" min="20" max="80" step="5" value="55"><output class="grade tnum" for="g-hit">55</output></div>
+          <div class="tool"><label class="tname" for="g-power">Power</label><input class="tslider" id="g-power" type="range" min="20" max="80" step="5" value="60"><output class="grade tnum" for="g-power">60</output></div>
+          <div class="tool"><label class="tname" for="g-run">Run</label><input class="tslider" id="g-run" type="range" min="20" max="80" step="5" value="45"><output class="grade tnum" for="g-run">45</output></div>
+          <div class="tool"><label class="tname" for="g-arm">Arm</label><input class="tslider" id="g-arm" type="range" min="20" max="80" step="5" value="60"><output class="grade tnum" for="g-arm">60</output></div>
+          <div class="tool"><label class="tname" for="g-field">Field</label><input class="tslider" id="g-field" type="range" min="20" max="80" step="5" value="50"><output class="grade tnum" for="g-field">50</output></div>
         </div>
-        <div class="sr-notes">
+        <div class="sr-line">
+          <p id="srLine"></p>
+          <button class="sr-reset" type="button" id="srReset" hidden>Reset to the sample</button>
+        </div>
+        <div class="sr-notes" id="srNotes">
           <h4>Report</h4>
           <p>Advanced feel to hit from the right side with a compact, repeatable stroke and the strength to punish mistakes to the pull side. Chase rate ticked down in the second half — the plate discipline is real, not a small-sample mirage.</p>
           <p>Actions at short are steady rather than flashy; average range plays up on a plus, accurate arm. Fringe-average runner underway, but reads and first-step quickness keep him at the position long-term. Everyday shortstop with a chance for more if the power fully arrives.</p>
@@ -218,5 +239,41 @@
   })();
 </script>
 
+<script data-polish>
+(function () {
+  var WORD = { 20: 'poor', 25: 'poor', 30: 'well below average', 35: 'well below average', 40: 'below average', 45: 'fringe-average',
+    50: 'average', 55: 'above average', 60: 'plus', 65: 'plus', 70: 'plus-plus', 75: 'plus-plus', 80: 'elite' };
+  var ROLE = { 80: 'a generational talent', 75: 'an MVP candidate', 70: 'a perennial All-Star', 65: 'an All-Star', 60: 'a first-division regular',
+    55: 'an above-average regular', 50: 'an average everyday player', 45: 'a platoon or second-division player', 40: 'a bench piece',
+    35: 'organizational depth', 30: 'organizational depth', 25: 'organizational depth', 20: 'organizational depth' };
+  var sliders = Array.prototype.slice.call(document.querySelectorAll('.tslider'));
+  var start = sliders.map(function (s) { return s.value; });
+  var line = document.getElementById('srLine'), notes = document.getElementById('srNotes'), reset = document.getElementById('srReset');
+  function name(s) { return document.querySelector('label[for="' + s.id + '"]').textContent; }
+  function paint() {
+    var sum = 0, hi = sliders[0], lo = sliders[0];
+    sliders.forEach(function (s) {
+      var v = +s.value; sum += v;
+      s.style.setProperty('--p', ((v - 20) / 60 * 100) + '%');
+      s.nextElementSibling.textContent = v;
+      s.setAttribute('aria-valuetext', v + ', ' + WORD[v]);
+      if (v > +hi.value) hi = s; if (v < +lo.value) lo = s;
+    });
+    var ofp = Math.round(sum / sliders.length / 5) * 5;
+    document.getElementById('ofp').textContent = ofp;
+    line.textContent = '';
+    var parts = [['b', 'OFP ' + ofp], [null, ' — projects as ' + ROLE[ofp] + '. ']];
+    if (hi.value !== lo.value) parts.push([null, 'Carrying tool: ' + name(hi).toLowerCase() + ' (' + hi.value + ', ' + WORD[+hi.value] + '). Soft spot: ' +
+      name(lo).toLowerCase() + ' (' + lo.value + ', ' + WORD[+lo.value] + ').']);
+    else parts.push([null, 'Every tool grades ' + WORD[+hi.value] + '.']);
+    parts.forEach(function (p) { line.appendChild(p[0] ? Object.assign(document.createElement(p[0]), { textContent: p[1] }) : document.createTextNode(p[1])); });
+    var changed = sliders.some(function (s, i) { return s.value !== start[i]; });
+    notes.hidden = changed; reset.hidden = !changed;   /* the written report describes the sample grades only */
+  }
+  sliders.forEach(function (s) { s.addEventListener('input', paint); });
+  reset.addEventListener('click', function () { sliders.forEach(function (s, i) { s.value = start[i]; }); paint(); });
+  paint();
+})();
+</script>
 </body>
 </html>
