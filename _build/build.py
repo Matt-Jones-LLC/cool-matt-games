@@ -15,3 +15,15 @@ for page in ["llmadness", "the-bullzen", "windhover"]:
     s = re.sub(r"<main>.*?</main>\n?", lambda m: main + "</main>\n", s, count=1, flags=re.S)
     s = s.replace("</body>", script.replace("<script>", "<script data-demo>", 1) + "</body>", 1)
     f.write_text(s); print("built", page)
+
+# 404 page: the Bullzen page's shell with its own <main>.
+s = (root / "the-bullzen" / "index.html").read_text()
+part = (here / "404.html").read_text()
+style, rest = part.split("</style>\n", 1)
+main = rest.split("</main>\n", 1)[0]
+s = re.sub(r"<style data-demo>.*?</style>\n", style.replace("<style>", "<style data-demo>") + "</style>\n", s, flags=re.S)
+s = re.sub(r"<script data-demo>.*?</script>\n", "", s, flags=re.S)
+s = re.sub(r"<main>.*?</main>\n?", lambda m: main + "</main>\n", s, count=1, flags=re.S)
+s = re.sub(r"<title>.*?</title>", "<title>Page not found | Matt Jones</title>", s, count=1)
+s = re.sub(r'<!--meta-->.*?<!--/meta-->', '<meta name="robots" content="noindex">', s, flags=re.S)
+(root / "404.html").write_text(s); print("built 404")

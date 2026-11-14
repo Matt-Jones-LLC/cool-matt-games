@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}</style><title>LLMAdness | Matt Jones</title>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}</style><title>LLMAdness | Matt Jones</title><!--meta--><meta name="description" content="LLMAdness: a humor bracket for Grok, Claude, Gemini and ChatGPT. Same prompt, both models, you call the games."><link rel="canonical" href="https://matt-jones.org/llmadness/"><meta property="og:type" content="website"><meta property="og:site_name" content="Matt Jones"><meta property="og:title" content="LLMAdness | Matt Jones"><meta property="og:description" content="LLMAdness: a humor bracket for Grok, Claude, Gemini and ChatGPT. Same prompt, both models, you call the games."><meta property="og:url" content="https://matt-jones.org/llmadness/"><meta property="og:image" content="https://matt-jones.org/assets/og.png"><meta name="twitter:card" content="summary_large_image"><!--/meta-->
 <link rel="icon" href="/favicon.svg"></head><body>
 
 <style>
@@ -341,6 +341,13 @@
   .champ .who.tbd { color: var(--line); }
   .champ .sub { color: var(--muted); font-size: .9rem; margin-top: 8px; }
   @media (max-width: 820px) { .bracket { grid-template-columns: 1fr; } }
+  .trophies { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--line); }
+  .trophies div { padding: 16px 20px; border-right: 1px solid var(--line);
+    font-family: var(--f-mono); font-size: .68rem; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+  .trophies div:last-child { border-right: 0; }
+  .trophies b { display: block; font-family: var(--f-display); font-size: 1.8rem; letter-spacing: 0; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .trophies .lead b { color: var(--stitch); }
+  @media (max-width: 560px) { .trophies { grid-template-columns: repeat(2, 1fr); } .trophies div:nth-child(2) { border-right: 0; } .trophies div:nth-child(-n+2) { border-bottom: 1px solid var(--line); } }
 </style>
 <link rel="stylesheet" href="/assets/site.css"><script src="/assets/site.js"></script>
 <header class="bar">
@@ -402,10 +409,12 @@
             <button class="btn" type="button" id="shuffle">Shuffle the draw</button>
             <button class="btn" type="button" id="newPrompts">New prompts</button>
             <button class="btn" type="button" id="reset">Reset</button>
+            <button class="btn" type="button" id="clearRecord">Clear the record</button>
           </div>
         </div>
+        <div class="trophies" id="trophies" aria-label="Titles won in this browser"></div>
       </div>
-      <p class="note">No jokes are stored here and nothing is scored for you — the bracket only records your calls, in this browser tab.</p>
+      <p class="note">No jokes are stored here and nothing is scored for you. The trophy case counts the champions you've crowned, and it lives only in this browser.</p>
 
       <div class="snaps">
         <div class="snap reveal"><span class="tag">The idea</span><h3>Humor is hard</h3><p>A model can pass a bar exam and still step on a punchline. Timing, surprise and restraint don't show up on a benchmark.</p></div>
@@ -468,6 +477,25 @@
   var grid = document.getElementById('bracketGrid');
   var statusEl = document.getElementById('status');
   var draw, prompts, semi, champ;
+  var KEY = 'llmadness-titles', titles = {}, counted = null;
+  try { titles = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { titles = {}; }
+  function saveTitles() { try { localStorage.setItem(KEY, JSON.stringify(titles)); } catch (e) {} }
+  /* one title per finished bracket; changing the pick moves it */
+  function score() {
+    if (counted === champ) return;
+    if (counted) titles[counted] = Math.max(0, (titles[counted] || 0) - 1);
+    if (champ) titles[champ] = (titles[champ] || 0) + 1;
+    counted = champ; saveTitles();
+  }
+  function trophies() {
+    var box = document.getElementById('trophies'); box.textContent = '';
+    var best = Math.max.apply(null, MODELS.map(function (m) { return titles[m] || 0; }));
+    MODELS.forEach(function (m) {
+      var n = titles[m] || 0, d = el('div', n && n === best ? 'lead' : '');
+      d.appendChild(el('b', null, String(n))); d.appendChild(document.createTextNode(m + (n === 1 ? ' title' : ' titles')));
+      box.appendChild(d);
+    });
+  }
 
   function shuffled(a) {
     a = a.slice();
@@ -475,7 +503,7 @@
     return a;
   }
   function pickPrompts() { prompts = shuffled(PROMPTS).slice(0, 3); }
-  function clear() { semi = [null, null]; champ = null; }
+  function clear() { semi = [null, null]; champ = null; counted = null; }
   function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
 
   function game(label, prompt, a, b, winner, onPick) {
@@ -520,11 +548,13 @@
     grid.appendChild(r1); grid.appendChild(r2); grid.appendChild(r3);
     var n = (semi[0] ? 1 : 0) + (semi[1] ? 1 : 0) + (champ ? 1 : 0);
     statusEl.textContent = n + ' of 3 called';
+    score(); trophies();
   }
 
   document.getElementById('shuffle').addEventListener('click', function () { draw = shuffled(MODELS); clear(); render(); });
   document.getElementById('newPrompts').addEventListener('click', function () { pickPrompts(); clear(); render(); });
   document.getElementById('reset').addEventListener('click', function () { clear(); render(); });
+  document.getElementById('clearRecord').addEventListener('click', function () { titles = {}; counted = champ; saveTitles(); trophies(); });
   draw = MODELS.slice(); pickPrompts(); clear(); render();
 })();
 </script>
