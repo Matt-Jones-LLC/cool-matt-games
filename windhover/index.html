@@ -313,6 +313,13 @@
   .qa { display: block; }
   .plat { display: block; width: 100%; height: auto; touch-action: none; user-select: none;
     background: color-mix(in srgb, var(--grass) 9%, var(--paper)); }
+  .plat-hint { display: none; }
+  @media (max-width: 700px) {
+    .platscroll { overflow-x: auto; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
+    .platscroll .plat { width: 780px; max-width: none; touch-action: pan-x pan-y; }
+    .platscroll .plat .h { touch-action: none; }
+    .plat-hint { display: block; margin: 0; padding: 8px 16px; font-family: var(--f-mono); font-size: .66rem; letter-spacing: .06em; color: var(--muted); border-top: 1px dashed var(--line); }
+  }
   .plat .road { fill: color-mix(in srgb, var(--ink) 9%, var(--paper)); }
   .plat .lane { stroke: var(--card); stroke-width: 2; stroke-dasharray: 16 14; }
   .plat .prop { fill: color-mix(in srgb, var(--grass) 14%, var(--card)); stroke: var(--ink); stroke-width: 1.6; stroke-dasharray: 2 5; }
@@ -401,7 +408,10 @@
       <div class="demo reveal">
         <div class="card-top"><span>Sec. 14 — fictional plat</span><span class="mono" id="qaState">Checking…</span></div>
         <div class="qa">
-          <svg class="plat" id="plat" viewBox="0 0 1000 560" role="img" aria-label="Map of six properties with editable geofences"></svg>
+          <div class="platscroll" id="platScroll">
+            <svg class="plat" id="plat" viewBox="0 0 1000 560" role="img" aria-label="Map of six properties with editable geofences"></svg>
+          </div>
+          <p class="plat-hint">Swipe the map sideways to see it all · drag the round handles to reshape a fence</p>
           <div class="report">
             <div class="report-top"><b id="qaScore">0 / 6</b><span>Fences passing</span>
               <div class="controls">
@@ -596,6 +606,8 @@
     else f.p[drag.k] = q;
     if (!queued) { queued = true; requestAnimationFrame(function () { queued = false; refresh(); }); }
   });
+  /* A touch that starts on a handle drags the fence; anywhere else it pans the map. */
+  svg.addEventListener('touchstart', function (e) { if (e.target.classList && e.target.classList.contains('h')) e.preventDefault(); }, { passive: false });
   function end() { if (drag) { drag = null; refresh(); } }
   svg.addEventListener('pointerup', end);
   svg.addEventListener('pointercancel', end);

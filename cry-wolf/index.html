@@ -218,6 +218,15 @@
   .fineprint{margin-top:34px}
   footer.site-foot{margin-top:64px}
   footer.site-foot .foot-sub{font-family:var(--ui)}
+  /* Phones: show the map at a usable size and let it pan sideways; handles still drag. */
+  .mapscroll-hint{display:none}
+  @media (max-width:700px){
+    .mapscroll{overflow-x:auto; -webkit-overflow-scrolling:touch; overscroll-behavior-x:contain}
+    .mapscroll svg#field{width:760px; max-width:none; touch-action:pan-x pan-y}
+    .mapscroll [data-handle]{touch-action:none}
+    .mapscroll-hint{display:block; margin:0; padding:8px 14px; font-family:var(--mono); font-size:10.5px; letter-spacing:.06em;
+      color:var(--ink-soft); border-top:1px dashed var(--edge)}
+  }
 </style>
 <link rel="stylesheet" href="/assets/site.css"><script src="/assets/site.js"></script>
 <header class="bar">
@@ -267,7 +276,10 @@
       <span class="mh-l">SEC. 12 — HARRIS CO. (FICTIONAL PLAT)</span>
       <span class="mh-r">100 m ═ · N ↑ · fences are editable between runs</span>
     </div>
-    <svg id="field" viewBox="0 0 1000 620" xmlns="http://www.w3.org/2000/svg" aria-label="Geofencing sandbox map"></svg>
+    <div class="mapscroll" id="mapScroll">
+      <svg id="field" viewBox="0 0 1000 620" xmlns="http://www.w3.org/2000/svg" aria-label="Geofencing sandbox map"></svg>
+    </div>
+    <p class="mapscroll-hint">Swipe the map sideways to see it all · drag the handles to reshape the fences</p>
     <div class="statusrow">
       <div class="st"><div class="k">TRUCK</div><div class="v out" id="stTruck">off property</div></div>
       <div class="st"><div class="k">CIRCLE</div><div class="v out" id="stCirc">outside</div></div>
@@ -818,4 +830,12 @@ $("simClock").textContent = clock(0);
 </script>
 
 
+<script data-polish>
+/* On phones the map is wider than the screen: start centred on the warehouse. */
+(function(){ var m = document.getElementById('mapScroll'); if (m && m.scrollWidth > m.clientWidth) m.scrollLeft = (m.scrollWidth - m.clientWidth) * .42; })();
+/* A touch that starts on a handle drags the fence; anywhere else it pans the map. */
+document.getElementById('field').addEventListener('touchstart', function (e) {
+  if (e.target.getAttribute && e.target.getAttribute('data-handle')) e.preventDefault();
+}, { passive: false });
+</script>
 </body></html>
