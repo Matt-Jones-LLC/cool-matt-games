@@ -17,6 +17,14 @@ PAGES = {
     "calendar": "Book a time with Matt Jones: pick a day and a window, and the email writes itself.",
     "hibob": "Matt Jones for HiBob Customer Experience: Follow the Sun, an interactive map of five CX pods sharing one queue.",
 }
+DARK_ONLY = {"box-score", "cry-wolf"}
+def theme(slug):
+    """Browser chrome colour, matching each page's own background."""
+    if slug in DARK_ONLY: return '<meta name="theme-color" content="#0D1310">'
+    if slug == "hibob": return '<meta name="theme-color" content="#F6F1E7">'
+    return ('<meta name="theme-color" content="#F2F4EC" media="(prefers-color-scheme: light)">'
+            '<meta name="theme-color" content="#0D1310" media="(prefers-color-scheme: dark)">')
+
 for slug, desc in PAGES.items():
     f = root / slug / "index.html"; s = f.read_text()
     title = re.search(r"<title>(.*?)</title>", s).group(1)
@@ -28,6 +36,8 @@ for slug, desc in PAGES.items():
         f'<meta property="og:title" content="{title}"><meta property="og:description" content="{desc}">'
         f'<meta property="og:url" content="{url}"><meta property="og:image" content="{SITE}/assets/og.png">'
         '<meta name="twitter:card" content="summary_large_image">'
+        '<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">'
+        + theme(slug) +
         "<!--/meta-->")
     s = re.sub(r"<!--meta-->.*?<!--/meta-->", "", s, flags=re.S)
     s = re.sub(r'\n?<meta name="description"[^>]*>', "", s)

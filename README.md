@@ -36,3 +36,6 @@ with `python3 _build/build.py`, which also writes `404.html`. Black Ink and Scou
 
 Other files: `CNAME` (records the custom domain; the live setting is in Settings → Pages), `.nojekyll` (serve files as-is),
 `favicon.svg`. DNS and email setup is in `dns/records.md`.
+
+`python3 _build/check.py` checks every internal link, anchor and page's metadata. It runs on each pull request
+(`.github/workflows/check.yml`), which also fails if a generated page was edited by hand instead of through `_build/`.
