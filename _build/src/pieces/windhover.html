@@ -1,3 +1,4 @@
+<!--lede:A kestrel hovers over a field and spots what doesn't belong. Windhover does that for geofences. There are six fences on this map and four checks on each. The dotted outlines are the true property lines. Click a fence and drag its handles until the report comes back clean.-->
 <style>
   .qa { display: block; }
   .plat { display: block; width: 100%; height: auto; touch-action: none; user-select: none;
@@ -7,12 +8,12 @@
     .platscroll { overflow-x: auto; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
     .platscroll .plat { width: 780px; max-width: none; touch-action: pan-x pan-y; }
     .platscroll .plat .h { touch-action: none; }
-    .plat-hint { display: block; margin: 0; padding: 8px 16px; font-family: var(--f-mono); font-size: .66rem; letter-spacing: .06em; color: var(--muted); border-top: 1px dashed var(--line); }
+    .plat-hint { display: block; margin: 0; padding: 8px 16px; font-family: var(--f-mono); font-size: .85rem; color: var(--muted); border-top: 1px dashed var(--line); }
   }
   .plat .road { fill: color-mix(in srgb, var(--ink) 9%, var(--paper)); }
   .plat .lane { stroke: var(--card); stroke-width: 2; stroke-dasharray: 16 14; }
   .plat .prop { fill: color-mix(in srgb, var(--grass) 14%, var(--card)); stroke: var(--ink); stroke-width: 1.6; stroke-dasharray: 2 5; }
-  .plat .lbl { font-family: var(--f-mono); font-size: 11px; letter-spacing: .12em; fill: var(--muted); text-transform: uppercase; pointer-events: none; }
+  .plat .lbl { font-family: var(--f-mono); font-size:13.5px; fill: var(--muted); pointer-events: none; }
   .plat .fence { fill: color-mix(in srgb, var(--grass) 22%, transparent); stroke: var(--grass); stroke-width: 2.5; cursor: pointer; }
   .plat .fence.bad { fill: color-mix(in srgb, var(--stitch) 16%, transparent); stroke: var(--stitch); }
   .plat .fence.sel { stroke-width: 4; }
@@ -23,7 +24,7 @@
   .report-top { padding: 16px 18px; border-bottom: 1px solid var(--line); display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; }
   .report-top .controls { margin: 0 0 0 auto; }
   .report-top b { font-family: var(--f-display); font-size: 1.9rem; line-height: 1; font-variant-numeric: tabular-nums; }
-  .report-top span { font-family: var(--f-mono); font-size: .68rem; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+  .report-top span { font-family: var(--f-mono); font-size: .85rem; color: var(--muted); }
   .rows { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
   .rows li { border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); margin: 0 -1px -1px 0; }
   .rows button { height: 100%; display: flex; flex-direction: column; justify-content: flex-start; }
@@ -33,38 +34,18 @@
   .rows button:hover { background: color-mix(in srgb, var(--grass) 8%, transparent); }
   .rows button[aria-pressed="true"] { border-left-color: var(--stitch); background: color-mix(in srgb, var(--grass) 10%, transparent); }
   .rows .nm { display: flex; justify-content: space-between; gap: 10px; align-items: baseline;
-    font-family: var(--f-display); font-weight: 700; text-transform: uppercase; font-size: .98rem; }
-  .verdict { font-family: var(--f-mono); font-size: .66rem; letter-spacing: .14em; color: var(--grass); }
+    font-family: var(--f-display); font-weight: 700; font-size: .98rem; }
+  .verdict { font-family: var(--f-mono); font-size: .85rem; color: var(--grass); }
   .verdict.fail { color: var(--stitch); }
   .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-  .chip { font-family: var(--f-mono); font-size: .64rem; letter-spacing: .06em; text-transform: uppercase;
+  .chip { font-family: var(--f-mono); font-size: .85rem;
     border: 1px solid var(--line); border-radius: 999px; padding: 3px 8px; color: var(--muted); }
   .chip.fail { color: var(--stitch); border-color: var(--stitch); }
   .why { margin: 8px 0 0; font-size: .86rem; color: var(--muted); }
 </style>
-<main>
-  <section class="hero">
-    <div class="wrap">
-      <p class="eyebrow reveal">Software &nbsp;·&nbsp; Batting 5th</p>
-      <h1 class="name reveal">Windhover</h1>
-      <p class="tagline reveal">Named for the kestrel that hangs on the wind.</p>
-      <p class="lede reveal">A kestrel hovers over a field and spots what doesn't belong. Windhover does that for geofences: a QA/QC simulator that checks every fence on a plat and flags the ones that will lie to you.</p>
-      <div class="cta-row reveal">
-        <a class="btn primary" href="#qa">Inspect the plat <span aria-hidden="true">→</span></a>
-        <a class="btn ghost" href="/cry-wolf/">See its sibling, Cry Wolf</a>
-      </div>
-    </div>
-  </section>
 
-  <div class="wrap"><div class="stitch" aria-hidden="true"></div></div>
-
-  <section id="qa">
-    <div class="wrap">
-      <div class="sec-head reveal"><span class="sec-kicker">Quality control</span></div>
-      <h2 class="sec-title reveal">The Flyover</h2>
-      <p class="sec-sub reveal">Six fences, four checks each. Dotted outlines are the true property lines. Click a fence, then drag its handles until the report comes back clean.</p>
-      <div class="demo reveal">
-        <div class="card-top"><span>Sec. 14 — fictional plat</span><span class="mono" id="qaState">Checking…</span></div>
+<div class="stage">
+        <div class="stage-top"><span>Section 14, a made-up plat</span><span class="mono" id="qaState">Checking…</span></div>
         <div class="qa">
           <div class="platscroll" id="platScroll">
             <svg class="plat" id="plat" viewBox="0 0 1000 560" role="img" aria-label="Map of six properties with editable geofences"></svg>
@@ -81,16 +62,14 @@
           </div>
         </div>
       </div>
-      <p class="note">A sandbox with made-up sites. Areas are measured by sampling the map on a grid, so percentages are approximate.</p>
+      <p class="fine">A sandbox with made-up sites. Areas are measured by sampling the map on a grid, so percentages are approximate.</p>
 
-      <div class="snaps">
-        <div class="snap reveal"><span class="tag">Check 1 · Shape</span><h3>No bow-ties</h3><p>A polygon whose edges cross itself has no reliable inside. Usually two corners were clicked in the wrong order.</p></div>
-        <div class="snap reveal"><span class="tag">Checks 2 &amp; 3 · Fit</span><h3>Cover it, don't spill</h3><p>A fence should cover at least 95% of the property and keep spill past the line under 15%. A circle around a rectangle can't do both.</p></div>
-        <div class="snap reveal"><span class="tag">Check 4 · Neighbors</span><h3>One truck, one site</h3><p>Where two fences overlap, a truck is "at" both customers at once. Dwell time gets counted twice and nobody trusts either number.</p></div>
+      <div class="notes">
+        <div><span class="tag">Check 1 · Shape</span><h3>No bow-ties</h3><p>A polygon whose edges cross itself has no reliable inside. Usually two corners were clicked in the wrong order.</p></div>
+        <div><span class="tag">Checks 2 &amp; 3 · Fit</span><h3>Cover it, don't spill</h3><p>A fence should cover at least 95% of the property and keep spill past the line under 15%. A circle around a rectangle can't do both.</p></div>
+        <div><span class="tag">Check 4 · Neighbors</span><h3>One truck, one site</h3><p>Where two fences overlap, a truck is "at" both customers at once. Dwell time gets counted twice and nobody trusts either number.</p></div>
       </div>
-    </div>
-  </section>
-</main>
+
 <script>
 (function () {
   var NS = 'http://www.w3.org/2000/svg';

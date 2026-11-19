@@ -1,0 +1,54 @@
+<section class="hero wrap">
+  <div>
+    <h1 class="logo" id="logo" aria-label="Cool Matt Games">
+      <span data-kind="games" aria-hidden="true"><b>C</b><span class="eye"><i></i></span><span class="eye"><i></i></span><b>l</b></span>
+      <span data-kind="toys" aria-hidden="true"><b>M</b><b>a</b><b>t</b><b>t</b></span>
+      <span data-kind="tools" aria-hidden="true"><b>G</b><b>a</b><b>m</b><b>e</b><b>s</b></span>
+    </h1>
+    <p class="hero-tail">Games, tools, toys and widgets by Matt Jones.<small>Free, no ads, no sign-up. Everything runs right here in the page. The letters up there come off if you pull them.</small></p>
+  </div>
+  <a class="feature" href="/slick-shift/" data-kind="games">
+    <span class="badge">New</span>
+    <img src="/assets/shots/slick-shift.jpg" alt="A robot on a tiled warehouse floor with batteries, pits and conveyors" width="720" height="450">
+    <span class="feature-text"><h2>Slick Shift</h2><p>A sliding-robot puzzle. Twelve levels, and it gets tricky around level five.</p><span class="btn primary">Play</span></span>
+  </a>
+</section>
+
+{shelves}
+
+<script>
+(function () {
+  var calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* the two o's in "Cool" are eyes that follow the pointer */
+  var eyes = Array.prototype.slice.call(document.querySelectorAll('.eye'));
+  function look(cx, cy) {
+    eyes.forEach(function (e) {
+      var r = e.getBoundingClientRect(), dx = cx - (r.left + r.width / 2), dy = cy - (r.top + r.height / 2);
+      var d = Math.hypot(dx, dy) || 1, reach = Math.min(1, d / 120) * r.width * .2;
+      e.firstChild.style.transform = 'translate(' + (dx / d * reach) + 'px,' + (dy / d * reach) + 'px)';
+    });
+  }
+  window.addEventListener('pointermove', function (e) { look(e.clientX, e.clientY); }, { passive: true });
+  window.addEventListener('pointerdown', function (e) { look(e.clientX, e.clientY); }, { passive: true });
+  if (!calm) setInterval(function () {
+    eyes.forEach(function (e) { e.classList.add('blink'); setTimeout(function () { e.classList.remove('blink'); }, 240); });
+  }, 4200);
+
+  /* every other letter is on a spring */
+  Array.prototype.forEach.call(document.querySelectorAll('#logo b'), function (el) {
+    var x = 0, y = 0, vx = 0, vy = 0, held = false, ox = 0, oy = 0, raf = null;
+    function paint() { el.style.transform = 'translate(' + x + 'px,' + y + 'px) rotate(' + (x * .12) + 'deg)'; }
+    function step() {
+      if (held) { raf = null; return; }
+      vx += -x * .12; vy += -y * .12; vx *= .82; vy *= .82; x += vx; y += vy;
+      if (Math.abs(x) + Math.abs(y) + Math.abs(vx) + Math.abs(vy) < .2) { x = y = 0; paint(); raf = null; return; }
+      paint(); raf = requestAnimationFrame(step);
+    }
+    el.addEventListener('pointerdown', function (e) { held = true; ox = e.clientX - x; oy = e.clientY - y; el.setPointerCapture(e.pointerId); e.preventDefault(); });
+    el.addEventListener('pointermove', function (e) { if (!held) return; x = e.clientX - ox; y = e.clientY - oy; paint(); });
+    function drop() { if (!held) return; held = false; if (calm) { x = y = 0; paint(); } else if (!raf) raf = requestAnimationFrame(step); }
+    el.addEventListener('pointerup', drop); el.addEventListener('pointercancel', drop);
+  });
+})();
+</script>

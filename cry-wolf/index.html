@@ -1,8 +1,20 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}</style><title>Cry Wolf | Matt Jones</title><!--meta--><meta name="description" content="Cry Wolf: a circle-vs-polygon geofencing sandbox. Run a truck past a warehouse and see which fence cries wolf."><link rel="canonical" href="https://matt-jones.org/cry-wolf/"><meta property="og:type" content="website"><meta property="og:site_name" content="Matt Jones"><meta property="og:title" content="Cry Wolf | Matt Jones"><meta property="og:description" content="Cry Wolf: a circle-vs-polygon geofencing sandbox. Run a truck past a warehouse and see which fence cries wolf."><meta property="og:url" content="https://matt-jones.org/cry-wolf/"><meta property="og:image" content="https://matt-jones.org/assets/og.png"><meta name="twitter:card" content="summary_large_image"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png"><meta name="theme-color" content="#0D1310"><!--/meta-->
-<link rel="icon" href="/favicon.svg"></head><body>
-
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cry Wolf | Cool Matt Games</title>
+<meta name="description" content="Cry Wolf: a circle-versus-polygon geofencing sandbox. Run a truck past a warehouse and see which fence raises false alarms."><link rel="canonical" href="https://matt-jones.org/cry-wolf/"><meta property="og:type" content="website"><meta property="og:site_name" content="Cool Matt Games"><meta property="og:title" content="Cry Wolf | Cool Matt Games"><meta property="og:description" content="Cry Wolf: a circle-versus-polygon geofencing sandbox. Run a truck past a warehouse and see which fence raises false alarms."><meta property="og:url" content="https://matt-jones.org/cry-wolf/"><meta property="og:image" content="https://matt-jones.org/assets/og.png"><meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#ECEEF8" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#121130" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="/favicon.svg"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<script>try{var t=localStorage.getItem('mj-theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Recursive:slnt,wght,CASL,CRSV,MONO@-15..0,300..1000,0..1,0..1,0..1&display=swap">
+<link rel="stylesheet" href="/assets/site.css">
+<script src="/assets/site.js" defer></script>
 <style>
-  :root{
+.cw{
+  &{
     --paper:#0D1310; --ink:#EDEFE6; --ink-soft:#9AA394; --edge:#2A3326; --card:#141B14;
     --board:#0D1310; --board2:#141B14; --board3:#1F2B20; --line:#2A3326;
     --chalk:#EDEFE6; --dim:#9AA394;
@@ -11,7 +23,7 @@
   }
   *{box-sizing:border-box; margin:0; padding:0}
   @media (prefers-reduced-motion: reduce){ *, *::before, *::after{animation:none !important; transition:none !important} }
-  body{background:var(--paper); color:var(--ink); font-family:var(--ui); font-size:16px; line-height:1.5}
+  &{background:var(--paper); color:var(--ink); font-family:var(--ui); font-size:16px; line-height:1.5}
   a{color:var(--amber-ink); text-decoration-color:rgba(143,93,12,.4)}
   button, select, input, label{font-family:inherit}
   button{cursor:pointer}
@@ -20,16 +32,16 @@
 
   /* ---------- header ---------- */
   header{padding:32px 0 6px}
-  .eyebrow{font-family:var(--mono); font-size:11px; letter-spacing:.28em; color:var(--ink-soft); text-transform:uppercase}
+  .eyebrow{font-family:var(--mono); font-size:13.5px; color:var(--ink-soft);}
   .wordmark{display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; margin-top:8px}
-  h1{font-family:var(--disp); font-weight:800; font-size:clamp(30px,5.4vw,54px); letter-spacing:.04em; line-height:1; color:var(--ink)}
+  h1{font-family:var(--disp); font-weight:800; font-size:clamp(30px,5.4vw,54px); line-height:1; color:var(--ink)}
   .clock-tile{display:inline-flex; flex-direction:column; align-items:center; transform:translateY(4px)}
   .clock-tile .num{font-family:var(--mono); font-weight:700; font-size:clamp(15px,2.6vw,22px); line-height:1; color:var(--amber);
-    background:var(--board2); border:1px solid var(--board); border-radius:6px; padding:10px 13px 9px; box-shadow:inset 0 -3px 0 rgba(0,0,0,.35); letter-spacing:.05em}
-  .clock-tile .lbl{font-family:var(--mono); font-size:9.5px; letter-spacing:.14em; color:var(--ink-soft); margin-top:5px; text-transform:uppercase}
+    background:var(--board2); border:1px solid var(--board); border-radius:6px; padding:10px 13px 9px; box-shadow:inset 0 -3px 0 rgba(0,0,0,.35);}
+  .clock-tile .lbl{font-family:var(--mono); font-size:13.5px; color:var(--ink-soft); margin-top:5px;}
   .dek{color:var(--ink-soft); font-size:17px; max-width:68ch; margin-top:10px}
   .dek b{color:var(--ink)}
-  .howto{font-family:var(--mono); font-size:12px; color:var(--ink-soft); letter-spacing:.04em; margin-top:12px}
+  .howto{font-family:var(--mono); font-size:13.5px; color:var(--ink-soft); margin-top:12px}
   .howto b{color:var(--amber-ink)}
 
   /* ---------- map card ---------- */
@@ -37,13 +49,13 @@
     box-shadow:0 2px 10px rgba(27,51,37,.10)}
   .map-head{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;
     background:var(--board2); color:var(--chalk); padding:10px 16px}
-  .map-head .mh-l{font-family:var(--mono); font-size:11px; letter-spacing:.16em; color:var(--amber)}
-  .map-head .mh-r{font-family:var(--mono); font-size:11px; letter-spacing:.08em; color:var(--dim)}
+  .map-head .mh-l{font-family:var(--mono); font-size:13.5px; color:var(--amber)}
+  .map-head .mh-r{font-family:var(--mono); font-size:13.5px; color:var(--dim)}
   svg#field{display:block; width:100%; height:auto; background:#E9EDDA; touch-action:none}
   .statusrow{display:grid; grid-template-columns:repeat(3,1fr); border-top:1px solid var(--edge)}
   .st{padding:10px 8px; text-align:center; border-right:1px solid var(--edge)}
   .st:last-child{border-right:none}
-  .st .k{font-family:var(--mono); font-size:9.5px; letter-spacing:.18em; color:var(--ink-soft); text-transform:uppercase}
+  .st .k{font-family:var(--mono); font-size:13.5px; color:var(--ink-soft);}
   .st .v{font-family:var(--mono); font-size:14px; font-weight:700; margin-top:3px; color:var(--ink-soft)}
   .st .v.in{color:var(--green-ok)}
   .st .v.out{color:var(--ink-soft)}
@@ -53,37 +65,37 @@
   .panels{display:grid; grid-template-columns:1.05fr .95fr; gap:16px; margin-top:16px}
   @media (max-width:860px){ .panels{grid-template-columns:1fr} }
   .panel{background:var(--card); border:1px solid var(--edge); border-radius:12px; overflow:hidden}
-  .p-head{background:var(--board2); color:var(--amber); font-family:var(--mono); font-size:11px; letter-spacing:.16em; padding:9px 16px}
-  .p-body{padding:14px 16px}
+  .p-head{background:var(--board2); color:var(--amber); font-family:var(--mono); font-size:13.5px; padding:9px 16px}
+  .p-&{padding:14px 16px}
 
   /* controls */
   .ctl-row{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:12px}
   .ctl-row:last-child{margin-bottom:0}
-  .ctl-lbl{font-family:var(--mono); font-size:10px; letter-spacing:.16em; color:var(--ink-soft); text-transform:uppercase; min-width:64px}
+  .ctl-lbl{font-family:var(--mono); font-size:13.5px; color:var(--ink-soft); min-width:64px}
   .seg{display:inline-flex; border:1px solid var(--edge); border-radius:9px; overflow:hidden; background:var(--pop)}
-  .seg button{font-family:var(--mono); font-size:12px; font-weight:600; padding:9px 12px; border:none; background:transparent; color:var(--ink-soft)}
+  .seg button{font-family:var(--mono); font-size:13.5px; font-weight:600; padding:9px 12px; border:none; background:transparent; color:var(--ink-soft)}
   .seg button + button{border-left:1px solid var(--edge)}
   .seg button.sel{background:var(--board2); color:var(--amber)}
-  .runbtn{font-family:var(--mono); font-weight:700; font-size:13px; letter-spacing:.06em; background:var(--accent); color:#fff;
+  .runbtn{font-family:var(--mono); font-weight:700; font-size:13.5px; background:var(--accent); color:#fff;
     border:1px solid #A32E23; border-radius:7px; padding:10px 18px; box-shadow:0 2px 0 #A32E23}
   .runbtn:hover{background:#EA6B55}
   .runbtn:disabled{opacity:.55; cursor:default}
-  .ghostbtn{font-family:var(--mono); font-weight:600; font-size:12px; letter-spacing:.05em; background:var(--pop); color:var(--ink);
+  .ghostbtn{font-family:var(--mono); font-weight:600; font-size:13.5px; background:var(--pop); color:var(--ink);
     border:1px solid var(--edge); border-radius:7px; padding:9px 13px}
   .ghostbtn:hover{border-color:var(--amber-ink); color:var(--amber-ink)}
-  .ck{display:inline-flex; align-items:center; gap:7px; font-family:var(--mono); font-size:12px; color:var(--ink-soft); cursor:pointer; user-select:none}
+  .ck{display:inline-flex; align-items:center; gap:7px; font-family:var(--mono); font-size:13.5px; color:var(--ink-soft); cursor:pointer; user-select:none}
   .ck input{width:15px; height:15px; accent-color:var(--green-ok); cursor:pointer}
   input[type=range]{accent-color:var(--amber-ink); width:150px}
-  .radlbl{font-family:var(--mono); font-size:12px; color:var(--ink); font-weight:600; min-width:56px}
+  .radlbl{font-family:var(--mono); font-size:13.5px; color:var(--ink); font-weight:600; min-width:56px}
 
   /* legend */
   .legend{display:flex; gap:14px; flex-wrap:wrap; padding:10px 16px; border-top:1px dashed var(--edge)}
-  .lg{display:flex; align-items:center; gap:6px; font-family:var(--mono); font-size:10px; letter-spacing:.08em; color:var(--ink-soft); text-transform:uppercase}
+  .lg{display:flex; align-items:center; gap:6px; font-family:var(--mono); font-size:13.5px; color:var(--ink-soft);}
   .lg .sw{width:16px; height:0; border-top:3px solid}
   .lg .dotsw{width:9px; height:9px; border-radius:50%}
 
   /* event log */
-  .log{font-family:var(--mono); font-size:12px; line-height:1.9; max-height:250px; overflow-y:auto}
+  .log{font-family:var(--mono); font-size:13.5px; line-height:1.9; max-height:250px; overflow-y:auto}
   .log .le{display:flex; gap:10px}
   .log .le .t{color:var(--ink-soft); flex:none}
   .log .le.circ .m{color:var(--amber-ink)}
@@ -94,30 +106,30 @@
 
   /* scoreboard table */
   table.sb{border-collapse:collapse; width:100%; font-family:var(--mono)}
-  table.sb th, table.sb td{border:1px solid var(--edge); padding:7px 9px; font-size:12px; text-align:center}
-  table.sb th{background:var(--board2); color:var(--dim); font-size:9.5px; letter-spacing:.14em}
-  table.sb th:first-child, table.sb td:first-child{text-align:left; font-size:10px; letter-spacing:.1em; color:var(--ink-soft)}
+  table.sb th, table.sb td{border:1px solid var(--edge); padding:7px 9px; font-size:13.5px; text-align:center}
+  table.sb th{background:var(--board2); color:var(--dim); font-size:13.5px;}
+  table.sb th:first-child, table.sb td:first-child{text-align:left; font-size:13.5px; color:var(--ink-soft)}
   table.sb td.bad{color:var(--red-ink); font-weight:700}
   table.sb td.good{color:var(--green-ok); font-weight:700}
-  .sb-note{font-family:var(--mono); font-size:11px; color:var(--ink-soft); margin-top:10px; line-height:1.7}
+  .sb-note{font-family:var(--mono); font-size:13.5px; color:var(--ink-soft); margin-top:10px; line-height:1.7}
 
   /* ---------- methods & footer ---------- */
   .methods{margin-top:36px}
-  .methods h2{font-family:var(--disp); font-weight:800; font-size:20px; letter-spacing:.06em; margin-bottom:14px; color:var(--ink)}
+  .methods h2{font-family:var(--disp); font-weight:800; font-size:20px; margin-bottom:14px; color:var(--ink)}
   .mcards{display:grid; grid-template-columns:repeat(auto-fit,minmax(270px,1fr)); gap:14px}
   .mcard{background:var(--card); border:1px solid var(--edge); border-radius:12px; padding:18px}
   .mcard h3{font-size:16.5px; font-weight:700; margin-bottom:8px; color:var(--ink)}
   .mcard p{color:var(--ink-soft); font-size:14.5px; line-height:1.6}
   .mcard b{color:var(--ink)}
-  .mcard code{font-family:var(--mono); font-size:12px; color:var(--amber-ink); background:var(--pop2); border-radius:4px; padding:1px 5px}
-  .fineprint{font-family:var(--mono); font-size:11px; color:var(--ink-soft); line-height:1.8; margin:26px 0 0; border-top:1px solid var(--edge); padding-top:14px}
-  footer{border-top:1px solid var(--edge); margin-top:22px; padding:18px 0 42px; font-family:var(--mono); font-size:12px; color:var(--ink-soft)}
+  .mcard code{font-family:var(--mono); font-size:13.5px; color:var(--amber-ink); background:var(--pop2); border-radius:4px; padding:1px 5px}
+  .fineprint{font-family:var(--mono); font-size:13.5px; color:var(--ink-soft); line-height:1.8; margin:26px 0 0; border-top:1px solid var(--edge); padding-top:14px}
+  footer{border-top:1px solid var(--edge); margin-top:22px; padding:18px 0 42px; font-family:var(--mono); font-size:13.5px; color:var(--ink-soft)}
   footer b{color:var(--ink)}
 
   /* ---- stitch scorecard conversion (dark, single-theme) ---- */
-  :root{color-scheme:dark}
+  &{color-scheme:dark}
   header{padding:clamp(44px,7vw,84px) 0 10px}
-  h1{font-weight:800;font-size:clamp(2.6rem,9vw,5.6rem);letter-spacing:-.01em;line-height:.95}
+  h1{font-weight:800;font-size:clamp(2.6rem,9vw,5.6rem);line-height:.95}
   .eyebrow{display:flex;align-items:center;gap:12px;color:var(--green-ok)}
   .eyebrow::after{content:"";flex:1;height:1px;background:var(--edge)}
   .dek{font-size:1.075rem;color:var(--ink-soft)}
@@ -133,66 +145,20 @@
   .ghostbtn:hover{border-color:var(--accent);color:var(--accent)}
   table.sb th{background:transparent;color:var(--ink-soft)}
 
-</style>
-<!-- MJ uniform chrome: sticky header + footer styles, driven by the page tokens so both themes work -->
-<style>
-  header.bar{padding:0;position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--paper) 88%,transparent);
-    backdrop-filter:saturate(1.1) blur(8px);border-bottom:1px solid var(--edge)}
-  .bar .bar-wrap{display:flex;align-items:center;justify-content:space-between;height:60px;
-    max-width:1080px;margin:0 auto;padding:0 24px}
-  .bar .wordmark{font-family:var(--disp);font-weight:800;
-    letter-spacing:.14em;text-transform:uppercase;font-size:.95rem;text-decoration:none;color:var(--ink);
-    display:inline-flex;align-items:center;gap:.5em}
-  .bar .wordmark .ball{width:15px;height:15px;border-radius:50%;background:var(--card);
-    border:1.5px solid var(--accent);position:relative;display:inline-block}
-  .bar .wordmark .ball::before,.bar .wordmark .ball::after{content:"";position:absolute;inset:2px 4px;
-    border:1px solid var(--accent);border-top:0;border-bottom:0;border-radius:50%}
-  nav.top{display:flex;gap:22px}
-  nav.top a{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
-    text-decoration:none;color:var(--ink-soft);padding:6px 0;border-bottom:2px solid transparent;
-    transition:color .15s,border-color .15s}
-  nav.top a:hover{color:var(--ink);border-color:var(--accent)}
-  @media (max-width:620px){nav.top{display:none}}
-  nav.top .menu{position:relative;display:flex;align-items:center}
-  nav.top .menu > a .caret{font-size:.85em;color:var(--accent)}
-  nav.top .menu-list{position:absolute;top:100%;left:50%;transform:translateX(-50%);min-width:200px;
-    padding:6px 0;background:var(--card);border:1px solid var(--edge);border-top:2px dashed var(--accent);
-    border-radius:0 0 6px 6px;box-shadow:0 1px 0 rgba(23,26,18,.04),0 12px 30px -18px rgba(0,0,0,.45);
-    display:none;flex-direction:column}
-  nav.top .menu:hover .menu-list,nav.top .menu:focus-within .menu-list{display:flex}
-  nav.top .menu-list a{display:block;padding:10px 16px;border-bottom:0;white-space:nowrap}
-  nav.top .menu-list a:hover{color:var(--ink);background:color-mix(in srgb,var(--green-ok) 12%,transparent)}
-  footer.site-foot{border-top:2px dashed var(--accent);margin-top:22px;padding:38px 0 48px;background:transparent}
-  footer.site-foot .foot-grid{display:flex;justify-content:space-between;align-items:flex-end;gap:28px;
-    flex-wrap:wrap;max-width:1080px;margin:0 auto;padding:0 24px}
-  footer.site-foot .foot-name{font-family:var(--disp);font-weight:800;
-    text-transform:uppercase;font-size:clamp(1.6rem,5vw,2.4rem);letter-spacing:-.01em;line-height:1;color:var(--ink)}
-  footer.site-foot .foot-sub{color:var(--ink-soft);margin-top:12px;max-width:54ch;font-size:16px;line-height:1.6}
-  footer.site-foot .foot-links{display:flex;flex-direction:column;gap:8px}
-  footer.site-foot .foot-links a{font-family:var(--mono);font-size:.82rem;letter-spacing:.04em;
-    color:var(--ink-soft);text-decoration:none}
-  footer.site-foot .foot-links a:hover{color:var(--accent)}
-  footer.site-foot .credit{max-width:1080px;margin:26px auto 0;padding:0 24px;font-family:var(--mono);
-    font-size:12px;color:var(--ink-soft);line-height:1.8}
-  footer.site-foot .credit b{color:var(--ink)}
-  footer.site-foot .copyright{max-width:1080px;margin:14px auto 0;padding:0 24px;font-family:var(--mono);
-    font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
-</style>
-<style data-polish>
   /* ---- Cry Wolf polish ---- */
-  body{background:
+  &{background:
     radial-gradient(900px 420px at 12% -80px, color-mix(in srgb,var(--green-ok) 16%,transparent), transparent 70%),
     radial-gradient(700px 380px at 92% -60px, color-mix(in srgb,var(--amber) 10%,transparent), transparent 70%),
     var(--paper); background-repeat:no-repeat}
   header.wrap{padding-top:clamp(36px,6vw,68px)}
   header.wrap .wordmark{margin-top:14px; align-items:center; gap:20px}
-  header.wrap .wordmark h1{font-size:clamp(3rem,11vw,6.6rem); line-height:.9; letter-spacing:-.01em}
+  header.wrap .wordmark h1{font-size:clamp(3rem,11vw,6.6rem); line-height:.9;}
   .clock-tile{transform:none}
   .clock-tile .num{padding:10px 14px; border-radius:8px}
   .dek{margin-top:18px; line-height:1.55}
   .howto{margin-top:18px; line-height:2.2}
   .howto b:nth-of-type(-n+3){display:inline-grid; place-items:center; width:22px; height:22px; border-radius:50%;
-    border:1px solid var(--amber); font-size:11px}
+    border:1px solid var(--amber); font-size:13.5px}
   .mapcard{margin-top:30px}
   .mcard,.mapcard,.panel{border-radius:10px}
   .panels{grid-template-columns:1fr 1fr; gap:18px; margin-top:18px; align-items:start}
@@ -205,9 +171,8 @@
   .runbtn{box-shadow:0 10px 22px -12px var(--accent); transition:transform .12s, background .15s}
   .runbtn:hover:not(:disabled){transform:translateY(-1px)}
   .methods{margin-top:64px}
-  .methods h2{font-size:clamp(1.7rem,4.4vw,2.6rem); letter-spacing:-.01em; line-height:1; margin-bottom:22px}
-  .methods h2::before{content:"How it works"; display:block; font-family:var(--mono); font-weight:400; font-size:.72rem;
-    letter-spacing:.2em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:10px}
+  .methods h2{font-size:clamp(1.7rem,4.4vw,2.6rem); line-height:1; margin-bottom:22px}
+  .methods h2::before{content:"How it works"; display:block; font-family:var(--mono); font-weight:400; font-size: .85rem; color:var(--ink-soft); margin-bottom:10px}
   .mcards{gap:18px}
   .mcard{padding:22px; border-top:3px solid var(--edge); transition:transform .16s}
   .mcard:nth-child(1){border-top-color:var(--green-ok)}
@@ -224,66 +189,48 @@
     .mapscroll{overflow-x:auto; -webkit-overflow-scrolling:touch; overscroll-behavior-x:contain}
     .mapscroll svg#field{width:760px; max-width:none; touch-action:pan-x pan-y}
     .mapscroll [data-handle]{touch-action:none}
-    .mapscroll-hint{display:block; margin:0; padding:8px 14px; font-family:var(--mono); font-size:10.5px; letter-spacing:.06em;
+    .mapscroll-hint{display:block; margin:0; padding:8px 14px; font-family:var(--mono); font-size:13.5px;
       color:var(--ink-soft); border-top:1px dashed var(--edge)}
   }
+
+  &{ --paper:#121130; --card:#1B1A42; --ink:#ECEDFA; --ink-soft:#A6A7CE; --edge:#35346C; --line:#35346C;
+     --board:#121130; --board2:#1B1A42; --board3:#26255A; --chalk:#ECEDFA; --dim:#A6A7CE;
+     --amber:#FFC04A; --amber-ink:#FFC04A; --red-ink:#FF6B98; --green-ok:#43D3AE; --accent:#7F96FF; --pop:#1B1A42; --pop2:#26255A; --pop3:#1B1A42;
+     --disp:var(--sans); --ui:var(--sans); --mono:var(--sans);
+     color-scheme:dark; background:var(--paper); color:var(--ink); border:1.5px solid #1A1840; border-radius:18px; padding:clamp(12px,2.4vw,24px); font-size:16px; box-shadow:var(--shadow); }
+  .mapcard{margin-top:0}
+  .cw-clock{display:flex; align-items:center; gap:10px; margin-bottom:14px; color:var(--ink-soft); font-weight:650}
+  .cw-clock .num{color:var(--amber); font-size:1.3rem; font-weight:700}
+  .p-head, .map-head{font-weight:650}
+}
 </style>
-<link rel="stylesheet" href="/assets/site.css"><script src="/assets/site.js"></script>
-<header class="bar">
-  <div class="bar-wrap">
-    <a class="wordmark" href="/"><span class="ball" aria-hidden="true"></span> Matt Jones</a>
-    <nav class="top" aria-label="Primary">
-      <a href="/">Home</a>
-      <a href="/about/">About</a>
-      <a href="/portfolio/">Portfolio</a>
-      <div class="menu">
-        <a href="/portfolio/#software" aria-haspopup="true">Software <span class="caret" aria-hidden="true">▾</span></a>
-        <div class="menu-list">
-          <a href="/llmadness/">LLMAdness</a>
-          <a href="/cry-wolf/">Cry Wolf</a>
-          <a href="/the-bullzen/">The Bullzen</a>
-          <a href="/windhover/">Windhover</a>
-        </div>
-      </div>
-      <div class="menu">
-        <a href="/portfolio/#baseball" aria-haspopup="true">Baseball <span class="caret" aria-hidden="true">▾</span></a>
-        <div class="menu-list">
-          <a href="/magic-number/">Magic Number</a>
-          <a href="/black-ink/">Black Ink</a>
-          <a href="/scouting-report/">Scouting Report</a>
-        </div>
-      </div>
-      <a href="/box-score/">Box Score</a>
-      <a href="/calendar/">Book a time</a>
-    </nav>
-  </div>
-</header>
-<!-- end MJ uniform chrome header -->
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="bar"><div class="wrap">
+  <a class="mark" href="/">Cool Matt Games</a>
+  <nav aria-label="Site"><a href="/#games" data-kind="games">Games</a><a href="/#tools" data-kind="tools" aria-current="true">Tools</a><a href="/#toys" data-kind="toys">Toys</a><a href="/#widgets" data-kind="widgets">Widgets</a><a href="/about/">About</a><a class="book" href="/calendar/">Book a time</a></nav>
+  <button class="theme" type="button" aria-label="Switch colours"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg></button>
+</div></header>
+<main id="main" data-kind="tools">
+<div class="wrap">
+<header class="piece-head"><a class="kind" href="/#tools">Tools</a><h1>Cry Wolf</h1><p class="lede">Circle geofences fire arrival events from the freeway. Polygon fences fire at the property line. Pick a route, run the truck, and read the log: the circle raises false alarms and the polygon doesn't. Between runs you can drag the green corners or change the radius.</p></header>
 
-<header class="wrap">
-  <div class="eyebrow">A circle-vs-polygon geofencing sandbox · live geometry · no map tiles, no libraries</div>
-  <div class="wordmark">
-    <h1>CRY WOLF</h1>
-    <span class="clock-tile"><span class="num" id="simClock">11:47:00 AM</span><span class="lbl">sim clock</span></span>
-  </div>
-  <p class="dek">Circle geofences fire arrival events from the freeway. Polygon fences fire at the property line. <b>Run a truck past a distribution center and read the event log</b> — the circle cries wolf, the polygon stays quiet.</p>
-  <p class="howto"><b>1</b> · pick a route &nbsp; <b>2</b> · press run &nbsp; <b>3</b> · read the log &nbsp;·&nbsp; between runs: drag the <b style="color:var(--green-ok)">green corners</b> or the <b>amber radius</b></p>
-</header>
-
-<main class="wrap">
-  <div class="mapcard">
+<div class="cw">
+<div class="cw-clock">Simulated time <span class="num" id="simClock">11:47:00 AM</span></div>
+<div class="mapcard">
     <div class="map-head">
-      <span class="mh-l">SEC. 12 — HARRIS CO. (FICTIONAL PLAT)</span>
-      <span class="mh-r">100 m ═ · N ↑ · fences are editable between runs</span>
+      <span class="mh-l">Section 12, a made-up plat</span>
+      <span class="mh-r">North is up. Fences can be edited between runs.</span>
     </div>
     <div class="mapscroll" id="mapScroll">
       <svg id="field" viewBox="0 0 1000 620" xmlns="http://www.w3.org/2000/svg" aria-label="Geofencing sandbox map"></svg>
     </div>
-    <p class="mapscroll-hint">Swipe the map sideways to see it all · drag the handles to reshape the fences</p>
+    <p class="mapscroll-hint">Swipe the map sideways to see it all. Drag the handles to reshape the fences.</p>
     <div class="statusrow">
-      <div class="st"><div class="k">TRUCK</div><div class="v out" id="stTruck">off property</div></div>
-      <div class="st"><div class="k">CIRCLE</div><div class="v out" id="stCirc">outside</div></div>
-      <div class="st"><div class="k">POLYGON</div><div class="v out" id="stPoly">outside</div></div>
+      <div class="st"><div class="k">Truck</div><div class="v out" id="stTruck">off property</div></div>
+      <div class="st"><div class="k">Circle</div><div class="v out" id="stCirc">outside</div></div>
+      <div class="st"><div class="k">Polygon</div><div class="v out" id="stPoly">outside</div></div>
     </div>
     <div class="legend">
       <span class="lg"><span class="sw" style="border-color:var(--green-ok)"></span>polygon fence</span>
@@ -296,56 +243,56 @@
   <div class="panels">
     <div class="col">
       <div class="panel">
-        <div class="p-head">CONTROLS</div>
+        <div class="p-head">Controls</div>
         <div class="p-body">
           <div class="ctl-row">
-            <span class="ctl-lbl">ROUTE</span>
+            <span class="ctl-lbl">Route</span>
             <div class="seg" id="routeSeg">
-              <button data-r="0" class="sel">THE DELIVERY</button><button data-r="1">THE DRIVE-BY</button><button data-r="2">THE WRONG DOCK</button>
+              <button data-r="0" class="sel">The delivery</button><button data-r="1">The drive-by</button><button data-r="2">The wrong dock</button>
             </div>
           </div>
           <div class="ctl-row">
-            <button class="runbtn" id="runBtn">▶ RUN ROUTE</button>
-            <button class="ghostbtn" id="resetBtn">↺ RESET</button>
-            <span class="ctl-lbl" style="min-width:auto">SPEED</span>
+            <button class="runbtn" id="runBtn">▶ Run route</button>
+            <button class="ghostbtn" id="resetBtn">↺ Reset</button>
+            <span class="ctl-lbl" style="min-width:auto">Speed</span>
             <div class="seg" id="speedSeg">
               <button data-s="1" class="sel">1×</button><button data-s="2">2×</button><button data-s="4">4×</button>
             </div>
           </div>
           <div class="ctl-row">
-            <span class="ctl-lbl">FENCES</span>
+            <span class="ctl-lbl">Fences</span>
             <label class="ck"><input type="checkbox" id="ckCirc" checked> circle</label>
             <label class="ck"><input type="checkbox" id="ckPoly" checked> polygon</label>
             <label class="ck"><input type="checkbox" id="ckMath"> show the math</label>
           </div>
           <div class="ctl-row">
-            <span class="ctl-lbl">RADIUS</span>
+            <span class="ctl-lbl">Radius</span>
             <input type="range" id="radSlider" min="140" max="480" step="10" value="320">
             <span class="radlbl" id="radLbl">320 m</span>
           </div>
           <div class="ctl-row">
-            <button class="ghostbtn" id="fenceReset">RESET FENCES</button>
-            <button class="ghostbtn" id="dlGeo">↓ GEOJSON</button>
+            <button class="ghostbtn" id="fenceReset">Reset fences</button>
+            <button class="ghostbtn" id="dlGeo">↓ GeoJSON</button>
             <button class="ghostbtn" id="dlKml">↓ KML</button>
           </div>
         </div>
       </div>
       <div class="panel">
-        <div class="p-head">EVENT LOG</div>
-        <div class="p-body log" id="log"><div class="empty">— pick a route and press run —</div></div>
+        <div class="p-head">Event log</div>
+        <div class="p-body log" id="log"><div class="empty">Pick a route and press run.</div></div>
       </div>
     </div>
     <div class="col">
       <div class="panel">
-        <div class="p-head">SCOREBOARD — WHAT EACH FENCE <i>REPORTED</i> VS WHAT HAPPENED</div>
+        <div class="p-head">What each fence <i>reported</i>, against what happened</div>
         <div class="p-body">
           <table class="sb" id="sbTable">
-            <thead><tr><th></th><th>ACTUAL</th><th>POLYGON</th><th>CIRCLE</th></tr></thead>
+            <thead><tr><th></th><th>Actual</th><th>Polygon</th><th>Circle</th></tr></thead>
             <tbody>
-              <tr><td>ARRIVAL</td><td id="sb-arr-a">—</td><td id="sb-arr-p">—</td><td id="sb-arr-c">—</td></tr>
-              <tr><td>DEPARTURE</td><td id="sb-dep-a">—</td><td id="sb-dep-p">—</td><td id="sb-dep-c">—</td></tr>
-              <tr><td>DWELL</td><td id="sb-dw-a">—</td><td id="sb-dw-p">—</td><td id="sb-dw-c">—</td></tr>
-              <tr><td>FALSE EVENTS</td><td id="sb-fe-a">—</td><td id="sb-fe-p">—</td><td id="sb-fe-c">—</td></tr>
+              <tr><td>Arrival</td><td id="sb-arr-a">—</td><td id="sb-arr-p">—</td><td id="sb-arr-c">—</td></tr>
+              <tr><td>Departure</td><td id="sb-dep-a">—</td><td id="sb-dep-p">—</td><td id="sb-dep-c">—</td></tr>
+              <tr><td>Dwell</td><td id="sb-dw-a">—</td><td id="sb-dw-p">—</td><td id="sb-dw-c">—</td></tr>
+              <tr><td>False events</td><td id="sb-fe-a">—</td><td id="sb-fe-p">—</td><td id="sb-fe-c">—</td></tr>
             </tbody>
           </table>
           <div class="sb-note">Run a route to compare what each fence <i>reports</i> against what actually happened. A "false event" is a fence visit during which the truck never touched the property.</div>
@@ -353,43 +300,27 @@
       </div>
     </div>
   </div>
+</div>
+<p class="fine">Scale: 1 unit = 1 meter on a local planar projection anchored at 29.7215° N, 95.2810° W (Houston's East End — the plat is fictional). Exports convert back to WGS-84 lat/lon. No libraries, no map tiles: one HTML file and math from scratch.</p>
 
-  <section class="methods">
-    <h2>UNDER THE HOOD</h2>
-    <div class="mcards">
-      <div class="mcard">
-        <h3>Polygon test — ray casting</h3>
-        <p>Cast a ray from the truck's GPS ping to the edge of the map and count how many fence edges it crosses. <code>odd = inside</code>, <code>even = outside</code>. It's O(n) per ping and works for any shape — including boundaries with notches, easements, and a neighbor's driveway carved out. Flip on "show the math" and watch the crossings while the truck moves.</p>
-      </div>
-      <div class="mcard">
-        <h3>Circle test — one distance check</h3>
-        <p>Measure the ping's distance to the fence center and compare it to the radius: <code>d &lt; r = inside</code>. On a real globe that distance comes from the haversine formula on lat/lon; this sandbox projects everything onto a flat local plane in meters first — which is exactly what production geofence engines do before testing millions of pings.</p>
-      </div>
-      <div class="mcard">
-        <h3>Why anyone cares</h3>
-        <p>A fence that fires from the freeway inflates dwell time, corrupts detention data, and buries dispatchers in alerts they learn to ignore. Shrinking the radius doesn't fix it — it just trades false arrivals for missed ones (try the slider). The fix is a boundary that follows the property line. And a hand-drawn polygon is only as good as the hand that drew it — <b>drag a green corner into the freeway and watch it start lying too.</b></p>
-      </div>
-    </div>
-    <p class="fineprint">Scale: 1 unit = 1 meter on a local planar projection anchored at 29.7215° N, 95.2810° W (Houston's East End — the plat is fictional). Exports convert back to WGS-84 lat/lon. No libraries, no map tiles: one HTML file and math from scratch.</p>
-  </section>
+<div class="notes">
+  <div><h3>Polygon test — ray casting</h3><p>Cast a ray from the truck's GPS ping to the edge of the map and count how many fence edges it crosses. <code>odd = inside</code>, <code>even = outside</code>. It's O(n) per ping and works for any shape — including boundaries with notches, easements, and a neighbor's driveway carved out. Flip on "show the math" and watch the crossings while the truck moves.</p></div>
+  <div><h3>Circle test — one distance check</h3><p>Measure the ping's distance to the fence center and compare it to the radius: <code>d &lt; r = inside</code>. On a real globe that distance comes from the haversine formula on lat/lon; this sandbox projects everything onto a flat local plane in meters first — which is exactly what production geofence engines do before testing millions of pings.</p></div>
+  <div><h3>Why anyone cares</h3><p>A fence that fires from the freeway inflates dwell time, corrupts detention data, and buries dispatchers in alerts they learn to ignore. Shrinking the radius doesn't fix it — it just trades false arrivals for missed ones (try the slider). The fix is a boundary that follows the property line. And a hand-drawn polygon is only as good as the hand that drew it — <b>drag a green corner into the freeway and watch it start lying too.</b></p></div>
+</div>
+<nav class="onward" aria-label="More"><a href="/#tools">All tools</a><a class="next" data-kind="tools" href="/windhover/">Next: Windhover</a></nav>
+</div>
 </main>
-
-<footer class="site-foot">
-  <div class="foot-grid">
-    <div>
-      <div class="foot-name">Let's talk ball.</div>
-      <p class="foot-sub">Interested in what I'm building here? Drop a line — I answer.</p>
-    </div>
-    <div class="foot-links">
-      <a href="mailto:mscottjones24@gmail.com">mscottjones24@gmail.com</a>
-      <a href="https://linkedin.com/in/mattjoneshtx">linkedin.com/in/mattjoneshtx</a>
-      <a href="/calendar/">Book a time →</a>
-    </div>
-  </div>
-  <div class="credit">A weekend build by <b>Matt Jones</b> · moving to Austin, TX in October 2026 — sibling of <b>Windhover</b>, the geofence QA/QC simulator.</div>
-  <div class="copyright">© Matt Jones, 2026 — A website about nothing.</div>
-</footer>
-
+<footer class="site"><div class="wrap">
+  <div><h2>Made by Matt Jones</h2>
+  <p>I'm an AI designer. If you'd like a game, tool or widget like these for your own product, get in touch.</p></div>
+  <ul>
+    <li><a href="mailto:mscottjones24@gmail.com">mscottjones24@gmail.com</a></li>
+    <li><a href="https://www.linkedin.com/in/mattjoneshtx">LinkedIn</a></li>
+    <li><a href="/calendar/">Book a time</a></li>
+  </ul>
+  <p class="legal">© Matt Jones, 2026. Designed and built with Claude.</p>
+</div></footer>
 <script>
 "use strict";
 /* ============================================================
@@ -838,4 +769,5 @@ document.getElementById('field').addEventListener('touchstart', function (e) {
   if (e.target.getAttribute && e.target.getAttribute('data-handle')) e.preventDefault();
 }, { passive: false });
 </script>
-</body></html>
+</body>
+</html>

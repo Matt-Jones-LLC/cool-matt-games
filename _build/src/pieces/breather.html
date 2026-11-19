@@ -1,0 +1,79 @@
+<!--lede:A breathing pacer. Pick a pattern, press start, and follow the circle: in as it grows, out as it shrinks.-->
+<style>
+  .br { display: grid; grid-template-columns: minmax(220px, 340px) 1fr; gap: clamp(20px, 4vw, 44px); align-items: center; }
+  @media (max-width: 720px) { .br { grid-template-columns: 1fr; } }
+  .br-ring { position: relative; aspect-ratio: 1; width: 100%; max-width: 340px; margin: 0 auto; display: grid; place-items: center; border-radius: 50%; border: 1.5px dashed var(--line); }
+  .br-ball { width: 94%; aspect-ratio: 1; border-radius: 50%; transform: scale(.5); background: var(--k); border: 1.5px solid var(--ink); display: grid; place-items: center; text-align: center; color: #1A1840; transition: transform 1s ease-in-out; }
+  .br-ball b { display: block; font-variation-settings: var(--v-head); font-weight: 900; font-size: 2.6rem; line-height: 1; }
+  .br-ball span { font-variation-settings: var(--v-num); font-size: 3.2rem; font-weight: 700; }
+  .br-pick { display: flex; flex-wrap: wrap; gap: 8px; }
+  .br-desc { color: var(--muted); margin-top: 14px; min-height: 3.2em; }
+  .br-tally { display: flex; gap: 32px; margin-top: 22px; }
+  .br-tally div { color: var(--muted); font-size: .92rem; }
+  .br-tally b { display: block; font-variation-settings: var(--v-num); font-size: 1.9rem; color: var(--ink); line-height: 1.1; }
+</style>
+
+<div class="stage">
+  <div class="stage-top"><span>Breather</span><span id="brState">Ready</span></div>
+  <div class="stage-body br">
+    <div class="br-ring"><div class="br-ball" id="brBall" aria-hidden="true"><div><b id="brPhase">Ready</b><span id="brCount">–</span></div></div></div>
+    <div>
+      <div class="br-pick" role="group" aria-label="Pattern" id="brPick"></div>
+      <p class="br-desc" id="brDesc"></p>
+      <div class="controls">
+        <button class="btn primary" type="button" id="brGo">Start</button>
+        <button class="btn" type="button" id="brReset">Reset count</button>
+      </div>
+      <div class="br-tally"><div><b id="brRounds">0</b>breaths</div><div><b id="brClock">0:00</b>time</div></div>
+      <p class="sr" id="brLive" aria-live="polite"></p>
+    </div>
+  </div>
+</div>
+<p class="fine">A pacing aid, not medical advice. If a pattern feels uncomfortable, stop and breathe normally.</p>
+
+<div class="notes">
+  <div><h3>Box</h3><p>In for four, hold four, out for four, hold four. The same on every side, which makes it easy to keep going.</p></div>
+  <div><h3>4-7-8</h3><p>In for four, a long hold for seven, and a longer breath out for eight. Slow on purpose.</p></div>
+  <div><h3>Five and five</h3><p>No holds. In for five, out for five. The easiest one to keep up for several minutes.</p></div>
+</div>
+
+<script>
+(function () {
+  var PATTERNS = {
+    box:  { name: 'Box',           desc: 'In 4, hold 4, out 4, hold 4.', steps: [['In', 4, 1], ['Hold', 4, 1], ['Out', 4, .5], ['Hold', 4, .5]] },
+    slow: { name: '4-7-8',         desc: 'In 4, hold 7, out 8.',         steps: [['In', 4, 1], ['Hold', 7, 1], ['Out', 8, .5]] },
+    even: { name: 'Five and five', desc: 'In 5, out 5. No holds.',       steps: [['In', 5, 1], ['Out', 5, .5]] }
+  };
+  var $ = function (id) { return document.getElementById(id); };
+  var ball = $('brBall'), go = $('brGo'), cur = 'box', running = false, timer = null, step = 0, left = 0, rounds = 0, secs = 0;
+  Object.keys(PATTERNS).forEach(function (k) {
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.textContent = PATTERNS[k].name; b.dataset.k = k;
+    b.addEventListener('click', function () { stop(); cur = k; pick(); });
+    $('brPick').appendChild(b);
+  });
+  function pick() {
+    Array.prototype.forEach.call($('brPick').children, function (b) { b.setAttribute('aria-pressed', String(b.dataset.k === cur)); });
+    $('brDesc').textContent = PATTERNS[cur].desc;
+  }
+  function fmt(s) { return Math.floor(s / 60) + ':' + ('0' + (s % 60)).slice(-2); }
+  function enter(i) {
+    var s = PATTERNS[cur].steps[i]; step = i; left = s[1];
+    $('brPhase').textContent = s[0]; $('brCount').textContent = left;
+    ball.style.transitionDuration = s[1] + 's'; ball.style.transform = 'scale(' + s[2] + ')';
+    $('brLive').textContent = s[0] + ' for ' + s[1];
+  }
+  function tick() {
+    secs++; left--; $('brClock').textContent = fmt(secs);
+    if (left <= 0) { var n = step + 1; if (n >= PATTERNS[cur].steps.length) { n = 0; rounds++; $('brRounds').textContent = rounds; } enter(n); }
+    else $('brCount').textContent = left;
+  }
+  function start() { running = true; go.textContent = 'Pause'; $('brState').textContent = 'Breathing'; enter(0); timer = setInterval(tick, 1000); }
+  function stop() {
+    running = false; clearInterval(timer); go.textContent = 'Start'; $('brState').textContent = 'Ready';
+    $('brPhase').textContent = 'Ready'; $('brCount').textContent = '–'; ball.style.transitionDuration = '.6s'; ball.style.transform = 'scale(.5)';
+  }
+  go.addEventListener('click', function () { running ? stop() : start(); });
+  $('brReset').addEventListener('click', function () { rounds = 0; secs = 0; $('brRounds').textContent = '0'; $('brClock').textContent = '0:00'; });
+  pick();
+})();
+</script>

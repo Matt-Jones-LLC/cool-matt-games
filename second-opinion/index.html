@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Second Opinion | Cool Matt Games</title>
+<meta name="description" content="Second Opinion: a calibration game. Grade nine customer support replies, then compare your calls with a reviewer&#x27;s."><link rel="canonical" href="https://matt-jones.org/second-opinion/"><meta property="og:type" content="website"><meta property="og:site_name" content="Cool Matt Games"><meta property="og:title" content="Second Opinion | Cool Matt Games"><meta property="og:description" content="Second Opinion: a calibration game. Grade nine customer support replies, then compare your calls with a reviewer&#x27;s."><meta property="og:url" content="https://matt-jones.org/second-opinion/"><meta property="og:image" content="https://matt-jones.org/assets/og.png"><meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#ECEEF8" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#121130" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="/favicon.svg"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<script>try{var t=localStorage.getItem('mj-theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Recursive:slnt,wght,CASL,CRSV,MONO@-15..0,300..1000,0..1,0..1,0..1&display=swap">
+<link rel="stylesheet" href="/assets/site.css">
+<script src="/assets/site.js" defer></script>
+<style>
+  .so-meta { display: flex; gap: 18px; flex-wrap: wrap; } .so-meta b { font-variation-settings: var(--v-num); }
+  .so-dots { display: flex; gap: 5px; align-items: center; }
+  .so-dots i { width: 13px; height: 13px; border-radius: 50%; border: 1.5px solid var(--ink); }
+  .so-dots i.agree { background: var(--ok); } .so-dots i.close { background: var(--warn); } .so-dots i.far { background: var(--bad); } .so-dots i.now { outline: 2px solid var(--ink); outline-offset: 2px; }
+  .so-ticket h2 { font-size: 1.5rem; font-weight: 850; } .so-ticket h2 small { font-size: .95rem; font-weight: 600; color: var(--muted); margin-left: 8px; font-variation-settings: var(--v-body); }
+  .so-msg { margin-top: 16px; max-width: 70ch; } .so-msg.agent { margin-left: auto; }
+  .so-msg span { font-weight: 700; font-size: .9rem; display: block; margin-bottom: 4px; }
+  .so-msg p { border: 1.5px solid var(--ink); border-radius: 4px 16px 16px 16px; padding: 12px 16px; background: var(--paper); }
+  .so-msg.agent p { border-radius: 16px 4px 16px 16px; background: color-mix(in srgb, var(--tools) 12%, var(--card)); }
+  .so-ask { margin-top: 26px; font-weight: 700; }
+  .so-calls { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px; }
+  @media (max-width: 720px) { .so-calls { grid-template-columns: repeat(2, 1fr); } }
+  .so-call { border: 1.5px solid var(--ink); background: var(--card); border-radius: 14px; padding: 12px; text-align: left; display: grid; gap: 2px; }
+  .so-call b { font-size: 1.05rem; } .so-call span { color: var(--muted); font-size: .9rem; } .so-call kbd { font: inherit; font-size: .8rem; color: var(--muted); font-variation-settings: var(--v-num); }
+  .so-call:hover:not(:disabled) { background: color-mix(in srgb, var(--k) 18%, var(--card)); }
+  .so-call.picked { background: var(--ink); color: var(--paper); } .so-call.picked span, .so-call.picked kbd { color: inherit; opacity: .8; }
+  .so-call:disabled { cursor: default; } .so-call:disabled:not(.picked) { opacity: .5; }
+  .so-rev { display: none; margin-top: 22px; border-top: 1.5px solid var(--ink); padding-top: 18px; } .so-rev.show { display: block; }
+  .so-verdict { font-variation-settings: var(--v-head); font-weight: 900; font-size: 1.5rem; }
+  .so-verdict.agree { color: var(--ok); } .so-verdict.close { color: var(--warn); } .so-verdict.far { color: var(--bad); }
+  .so-rev p { margin-top: 8px; max-width: 72ch; } .so-flag { color: var(--bad); font-weight: 700; }
+  .so-final { display: none; } .so-final.show { display: block; }
+  .so-final h2 { font-size: clamp(1.8rem, 5vw, 2.6rem); font-weight: 900; }
+  .so-table { width: 100%; border-collapse: collapse; margin-top: 18px; font-size: .98rem; }
+  .so-table th, .so-table td { text-align: left; padding: 9px 10px; border-bottom: 1.5px solid var(--line); vertical-align: top; }
+  .so-table td:first-child { font-weight: 650; } .so-table td.agree { color: var(--ok); font-weight: 700; } .so-table td.close { color: var(--warn); font-weight: 700; } .so-table td.far { color: var(--bad); font-weight: 700; }
+  .so-scroll { overflow-x: auto; }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="bar"><div class="wrap">
+  <a class="mark" href="/">Cool Matt Games</a>
+  <nav aria-label="Site"><a href="/#games" data-kind="games" aria-current="true">Games</a><a href="/#tools" data-kind="tools">Tools</a><a href="/#toys" data-kind="toys">Toys</a><a href="/#widgets" data-kind="widgets">Widgets</a><a href="/about/">About</a><a class="book" href="/calendar/">Book a time</a></nav>
+  <button class="theme" type="button" aria-label="Switch colours"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg></button>
+</div></header>
+<main id="main" data-kind="games">
+<div class="wrap">
+<header class="piece-head"><a class="kind" href="/#games">Games</a><h1>Second Opinion</h1><p class="lede">Nine customer support replies. Grade each one, then see how a reviewer graded the same reply and why. The point is the gap between you: where two careful people disagree is where the interesting cases are.</p></header>
+
+<div class="stage">
+  <div class="stage-top"><span id="soWhere">Reply 1 of 9</span>
+    <span class="so-meta"><span class="so-dots" id="soDots" aria-hidden="true"></span><span>Agreed <b id="soAgree">0</b></span><span>Streak <b id="soStreak">0</b></span></span></div>
+  <div class="stage-body">
+    <div class="so-ticket" id="soTicket">
+      <h2 id="soTitle"></h2>
+      <div id="soMsgs"></div>
+      <p class="so-ask" id="soAsk">How good is the agent's reply?</p>
+      <div class="so-calls" id="soCalls"></div>
+      <div class="so-rev" id="soRev" aria-live="polite">
+        <div class="so-verdict" id="soVerdict"></div>
+        <p id="soBoth"></p><p id="soWhy"></p><p class="so-flag" id="soFlag"></p>
+        <div class="controls"><button class="btn primary" type="button" id="soNext">Next reply</button></div>
+      </div>
+    </div>
+    <div class="so-final" id="soFinal">
+      <h2 id="soScore"></h2><p id="soSum" class="fine"></p>
+      <div class="so-scroll"><table class="so-table" id="soTable"></table></div>
+      <div class="controls"><button class="btn primary" type="button" id="soAgain">Play again with new replies</button></div>
+    </div>
+  </div>
+</div>
+<p class="fine">Keys: <code>1</code> to <code>4</code> to grade, <code>Enter</code> for the next reply. Every customer, company and ticket here is made up, and the transcripts were written with Claude for this game.</p>
+
+<div class="notes">
+  <div><h3>One grade, four choices</h3><p>Real quality rubrics score five or six categories per ticket. They mostly collapse to this: a model answer, good enough to send, needs work, or should never have been sent. One call per reply keeps the game quick.</p></div>
+  <div><h3>You grade first</h3><p>The reviewer's grade stays hidden until you commit. If you saw it first you would drift towards it. The same order works when an AI model does the first pass of quality review: the person decides, then compares.</p></div>
+  <div><h3>Friendly isn't the same as right</h3><p>A few replies are warm, apologetic and badly wrong: a refund outside policy, a password used, personal data read out. Tone hides those. They are the ones worth catching.</p></div>
+</div>
+<nav class="onward" aria-label="More"><a href="/#games">All games</a><a class="next" data-kind="games" href="/llmadness/">Next: LLMAdness</a></nav>
+</div>
+</main>
+<footer class="site"><div class="wrap">
+  <div><h2>Made by Matt Jones</h2>
+  <p>I'm an AI designer. If you'd like a game, tool or widget like these for your own product, get in touch.</p></div>
+  <ul>
+    <li><a href="mailto:mscottjones24@gmail.com">mscottjones24@gmail.com</a></li>
+    <li><a href="https://www.linkedin.com/in/mattjoneshtx">LinkedIn</a></li>
+    <li><a href="/calendar/">Book a time</a></li>
+  </ul>
+  <p class="legal">© Matt Jones, 2026. Designed and built with Claude.</p>
+</div></footer>
+<script>
+(function () {
+  "use strict";
+  var CALLS = [
+    { v: 4, name: 'Model answer', desc: 'Nothing to fix' },
+    { v: 3, name: 'Good enough', desc: 'Fine to send as it is' },
+    { v: 2, name: 'Needs work', desc: 'A miss that can be fixed' },
+    { v: 1, name: 'Never send', desc: 'Breaks policy or trust' }
+  ];
+  var PLAYS = [
+  { t:"The Double Charge", cat:"Billing",
+    c:"Hi — I just got charged twice for my subscription this month. $29.99 on the 1st AND the 3rd. Can someone fix this?",
+    a:"Hi Jordan! You're right, I can see both charges on my end — that second one on the 3rd shouldn't be there. I've refunded it just now; you'll see it back on your card in 3–5 business days, and I've added a note so it can't recur next cycle. I'm sorry we made you do the math on this one. Anything else I can check while I'm in your account?",
+    rev:4, why:"Verified before promising, fixed the root cause, gave a concrete timeline, owned the mistake without groveling." },
+  { t:"The Vanishing Export", cat:"Bug report",
+    c:"The CSV export button does nothing. I click it, the page blinks, no file. I'm on Chrome. This worked last week.",
+    a:"Thanks for reporting! Have you tried clearing your cache and cookies? That usually fixes it. Let us know!",
+    rev:2, why:"Cache-clearing as a reflex, no reproduction attempt, no browser/version details collected, no ticket reference. It's not rude — it's just a shrug in sentence form. Fixable miss." },
+  { t:"The Refund That Isn't", cat:"Refund policy",
+    c:"I bought the annual plan 4 months ago and I want a full refund. Your product didn't work out for us.",
+    a:"Totally understand! I've gone ahead and processed a full refund of $588 for you. Sorry it didn't work out — hope to see you back someday!",
+    rev:1, why:"The friendliest policy breach you'll ever see. Policy caps refunds at 30 days; the agent invented $588 the company doesn't owe. Warm tone doesn't launder a commitment the business can't keep.", flag:"Automatic fail: made a financial commitment outside policy." },
+  { t:"The Locked-Out Admin", cat:"Account access",
+    c:"Our admin left the company and nobody else can access the workspace. We need control transferred TODAY, we have payroll running through this.",
+    a:"I hear the urgency — payroll is not something to gamble with. For security I can't just hand over the workspace, but here's the fast lane: reply from your company domain with a signed ownership-transfer form (attached) and a copy of your business registration, and I'll walk it straight to our verification team with an urgent flag. That's typically same-day. I'll stay on this thread until you're in.",
+    rev:4, why:"Held the security line under pressure AND built the customer a fast path through it. 'I'll stay on this thread' is the sentence every locked-out admin needs to read." },
+  { t:"The Pasted Password", cat:"Security",
+    c:"I can't log in!! Here's my password so you can try it: Tr0ub4dor&3. Just tell me if it works??",
+    a:"It works on my end! I logged in fine with it just now, so it must be something on your side — maybe try a different browser?",
+    rev:1, why:"The agent USED the customer's password. The right move: never touch it, tell them not to share credentials, trigger a reset, and have the exposed password rotated. This is the one they show in training videos, as a warning.", flag:"Automatic fail: mishandled customer credentials." },
+  { t:"The Angry All-Caps", cat:"Escalation",
+    c:"THIS IS THE THIRD TIME I'M WRITING IN. YOUR APP DELETED MY PROJECT. THREE WEEKS OF WORK. I WANT ANSWERS NOT A TEMPLATE.",
+    a:"You're right to be angry, and you shouldn't have had to write in three times — that's on us. I've pulled your two earlier tickets so you don't repeat anything. First, recovery: deleted projects are soft-deleted for 30 days, and I can see 'Q3 Campaign' in your archive right now — I've restored it, please confirm you see it. Second, I've escalated why you got template replies twice; you'll hear from my lead by tomorrow. What else did you lose besides that project?",
+    rev:4, why:"Validated without groveling, killed the repeat-yourself problem, led with recovery instead of apology theater, and named the systemic failure. Textbook." },
+  { t:"The Feature That Isn't", cat:"How-to",
+    c:"How do I set up automatic weekly PDF reports to email to my team? I can't find it anywhere.",
+    a:"Great question! That's not something we support right now — reports have to be exported manually from the dashboard. I know that's not the answer you were hoping for, so two things: here's a 3-step way to make the manual export take under a minute (link), and I've logged your request with our product team — weekly scheduled reports is one of our most-requested features and your +1 genuinely moves it up the list.",
+    rev:3, why:"Honest no, useful workaround, real product-feedback loop. A model answer would have offered to tell them when it ships. A small miss in a good reply." },
+  { t:"The Copy-Paste Special", cat:"How-to",
+    c:"Quick one — does the mobile app work offline? I'm about to get on a 14-hour flight.",
+    a:"Thank you for contacting support! We appreciate your patience. Our team is committed to providing you with the best possible experience. Please consult our comprehensive documentation portal for information regarding application functionality. Is there anything else I can help you with today?",
+    rev:2, why:"Twenty-nine words of corporate lorem ipsum and zero answer to a yes/no question from someone boarding a plane. Not a policy breach, but no help either." },
+  { t:"The Wrong Customer", cat:"Security",
+    c:"Can you confirm what card we have on file? I need the last 4 digits for our expense report.",
+    a:"Sure! You have a Visa ending 4482, expiring 09/27, under the name Daniela M. Reyes, billing address 1140 Crestview Dr. Anything else?",
+    rev:1, why:"The last 4 was a legitimate ask. The expiration, full cardholder name, and home address were not — and there's no sign the agent verified who they were talking to first. One question, three unnecessary disclosures.", flag:"Automatic fail: over-disclosed payment and personal data." },
+  { t:"The Polite Ghost", cat:"Bug report",
+    c:"Following up on ticket #8841 from 12 days ago about the sync failures — any update? This is blocking our whole team.",
+    a:"Hi! Yes, ticket #8841 is still open with our engineering team. I don't have an update yet, but I've bumped the ticket and flagged that it's team-blocking. I'm also setting a reminder to update you by Thursday even if the news is 'still working on it' — no more silence. In the meantime, some teams unblock with a manual sync (Settings → Sync → Force): not a fix, but it may get you moving today.",
+    rev:3, why:"Can't fake a fix that doesn't exist, but killed the silence, set a proactive update cadence, and offered a bridge. The missing piece for top marks: an honest ETA or escalation path after 12 days." },
+  { t:"The Accidental Upsell", cat:"Billing",
+    c:"Why did my bill jump from $29 to $79 this month?? I didn't change anything.",
+    a:"Looks like you were moved to the Pro plan — honestly it's a way better deal for a team your size! You get advanced analytics, priority support, and 5x the storage. Most customers who try Pro never go back. Want me to send over what's included?",
+    rev:2, why:"The customer asked WHY they were charged without consent; the agent answered with a brochure. No investigation of how the plan changed, no offer to revert or refund. Reads like sales wearing a support badge — but it didn't cross a policy line.", },
+  { t:"The 2 a.m. Outage", cat:"Escalation",
+    c:"Your whole platform is down and we have a product launch in 6 hours. Status page says 'all systems operational.' It is not.",
+    a:"Confirmed — you're right and the status page is wrong. We have a partial outage affecting logins in your region; status page update is publishing now. What I can tell you straight: engineering was paged 22 minutes ago, mitigation is in progress, and current internal ETA is under 2 hours — well before your launch. I've subscribed you to the incident so every update hits your inbox, and I'm flagging your launch timing to the incident commander. I'll personally confirm here the moment you're back up.",
+    rev:4, why:"Told the truth against the company's own status page, gave real numbers instead of vibes, connected the customer's stakes to the incident team. This is what trust looks like at 2 a.m." },
+  { t:"The Oversharer", cat:"Account access",
+    c:"My teammate is on vacation and I need into her account to grab one file. Can you just reset her password and send it to me? She won't mind, we're on the same team.",
+    a:"I get it — vacation lockouts are the worst timing. I can't reset her password for you though, even same-team: her account is hers alone, that one's carved in stone. What I CAN do: if the file lives in a shared workspace, your admin can grant you access in about two minutes — here's how. If it's in her private space, the answer is a quick message to her; a one-tap approval from her phone and you're in. Want me to loop in your workspace admin?",
+    rev:4, why:"Refused the exact request, solved the actual problem, kept it human. 'That one's carved in stone' does more policy work than a paragraph of legalese." },
+  { t:"The Mystery Discount", cat:"Refund policy",
+    c:"My friend said he got 40% off for complaining on Twitter. I want the same discount or I'm cancelling.",
+    a:"I'll be straight with you: I can't match a discount I can't verify, and 'complain publicly, get 40%' isn't a program we run — if someone got that, it was a one-off I can't see. What I can actually do: you're eligible for our annual-plan rate, which works out to 25% less than what you're paying monthly, no Twitter required. If that doesn't move you, I'd rather help you cancel cleanly than have you feel strong-armed. Which way do you want to go?",
+    rev:3, why:"Didn't cave to discount blackmail, offered a real alternative, respected the customer's leverage without rewarding it. A model answer would have checked the friend's claim before dismissing it — 'I can't see it' came a beat too fast." }
+];
+  var $ = function (id) { return document.getElementById(id); };
+  var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+  var deck, at, results, streak, best, locked;
+  function shuffle(a) { var x = a.slice(); for (var i = x.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = x[i]; x[i] = x[j]; x[j] = t; } return x; }
+  function name(v) { return CALLS.filter(function (c) { return c.v === v; })[0].name; }
+  function newGame() {
+    deck = shuffle(PLAYS).slice(0, 9); at = 0; results = []; streak = 0; best = 0;
+    $('soFinal').classList.remove('show'); $('soTicket').style.display = ''; show();
+  }
+  function strip() {
+    $('soWhere').textContent = at < 9 ? 'Reply ' + (at + 1) + ' of 9' : 'Results';
+    $('soAgree').textContent = results.filter(function (r) { return r.g === 'agree'; }).length; $('soStreak').textContent = streak;
+    var h = ''; for (var i = 0; i < 9; i++) h += '<i class="' + (results[i] ? results[i].g : i === at ? 'now' : '') + '"></i>'; $('soDots').innerHTML = h;
+  }
+  function show() {
+    locked = false; var p = deck[at];
+    $('soTitle').innerHTML = esc(p.t) + '<small>' + esc(p.cat) + '</small>';
+    $('soMsgs').innerHTML = '<div class="so-msg"><span>Customer</span><p>' + esc(p.c) + '</p></div><div class="so-msg agent"><span>Agent</span><p>' + esc(p.a) + '</p></div>';
+    var box = $('soCalls'); box.innerHTML = '';
+    CALLS.forEach(function (c, i) {
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'so-call';
+      b.innerHTML = '<b>' + c.name + '</b><span>' + c.desc + '</span><kbd>' + (i + 1) + '</kbd>';
+      b.addEventListener('click', function () { call(c.v, b); }); box.appendChild(b);
+    });
+    $('soRev').classList.remove('show'); strip();
+  }
+  function call(v, btn) {
+    if (locked) return; locked = true;
+    Array.prototype.forEach.call(document.querySelectorAll('.so-call'), function (b) { b.disabled = true; if (b === btn) b.classList.add('picked'); });
+    var p = deck[at], diff = Math.abs(v - p.rev), g = diff === 0 ? 'agree' : diff === 1 ? 'close' : 'far';
+    if (g === 'agree') { streak++; best = Math.max(best, streak); } else streak = 0;
+    results[at] = { p: p, you: v, g: g };
+    var ve = $('soVerdict'); ve.className = 'so-verdict ' + g;
+    ve.textContent = g === 'agree' ? 'You agree' : g === 'close' ? 'One grade apart' : 'A long way apart';
+    $('soBoth').innerHTML = 'You said <b>' + name(v) + '</b>. The reviewer said <b>' + name(p.rev) + '</b>.';
+    $('soWhy').textContent = p.why; $('soFlag').textContent = p.flag || '';
+    $('soNext').textContent = at === 8 ? 'See the results' : 'Next reply';
+    $('soRev').classList.add('show'); strip(); $('soNext').focus({ preventScroll: true });
+  }
+  function next() { if (!results[at]) return; if (at === 8) return finish(); at++; show(); $('soTicket').scrollIntoView({ block: 'nearest' }); }
+  function finish() {
+    at = 9; $('soTicket').style.display = 'none';
+    var agree = results.filter(function (r) { return r.g === 'agree'; }).length, close = results.filter(function (r) { return r.g === 'close'; }).length;
+    $('soScore').textContent = 'You agreed on ' + agree + ' of 9';
+    $('soSum').textContent = close + ' more were one grade apart, and ' + (9 - agree - close) + ' were further off. Best streak: ' + best + '. The rows where you split are the ones a team would talk through.';
+    $('soTable').innerHTML = '<thead><tr><th>Reply</th><th>You</th><th>Reviewer</th><th>Why</th></tr></thead><tbody>' + results.map(function (r) {
+      return '<tr><td>' + esc(r.p.t) + '</td><td class="' + r.g + '">' + name(r.you) + '</td><td>' + name(r.p.rev) + '</td><td>' + esc(r.p.why) + '</td></tr>';
+    }).join('') + '</tbody>';
+    $('soFinal').classList.add('show'); strip();
+  }
+  $('soNext').addEventListener('click', next); $('soAgain').addEventListener('click', newGame);
+  document.addEventListener('keydown', function (e) {
+    if (e.target.closest('input, textarea') || e.metaKey || e.ctrlKey) return;
+    if (e.key >= '1' && e.key <= '4' && !locked && at < 9) { var b = document.querySelectorAll('.so-call')[+e.key - 1]; if (b) call(CALLS[+e.key - 1].v, b); }
+  });
+  newGame();
+})();
+</script>
+</body>
+</html>

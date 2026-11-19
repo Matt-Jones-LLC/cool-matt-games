@@ -1,7 +1,7 @@
 name: Check site
 
 # Runs on every pull request: links and anchors resolve, pages carry their metadata,
-# and the generated pages match what the _build scripts produce.
+# and the generated pages match what _build/site.py produces.
 on:
   pull_request:
 
@@ -17,6 +17,5 @@ jobs:
         run: python3 _build/check.py
       - name: Generated pages are up to date
         run: |
-          python3 _build/meta.py
-          python3 _build/build.py
+          python3 _build/site.py
           git diff --exit-code

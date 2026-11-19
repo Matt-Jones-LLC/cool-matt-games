@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Context Budget | Cool Matt Games</title>
+<meta name="description" content="Context Budget: plan a model&#x27;s context window. Split it between prompt, tools, documents and history, and see when it fills."><link rel="canonical" href="https://matt-jones.org/context-budget/"><meta property="og:type" content="website"><meta property="og:site_name" content="Cool Matt Games"><meta property="og:title" content="Context Budget | Cool Matt Games"><meta property="og:description" content="Context Budget: plan a model&#x27;s context window. Split it between prompt, tools, documents and history, and see when it fills."><meta property="og:url" content="https://matt-jones.org/context-budget/"><meta property="og:image" content="https://matt-jones.org/assets/og.png"><meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#ECEEF8" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#121130" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="/favicon.svg"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<script>try{var t=localStorage.getItem('mj-theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Recursive:slnt,wght,CASL,CRSV,MONO@-15..0,300..1000,0..1,0..1,0..1&display=swap">
+<link rel="stylesheet" href="/assets/site.css">
+<script src="/assets/site.js" defer></script>
+<style>
+  .cb-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: clamp(20px, 3vw, 36px); }
+  @media (max-width: 860px) { .cb-grid { grid-template-columns: 1fr; } }
+  .cb-win { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 20px; }
+  .cb-win label { font-weight: 650; margin-right: 4px; }
+  .cb-win input { width: 130px; }
+  .cb-row { display: grid; grid-template-columns: 14px minmax(0, 1fr) 118px; gap: 4px 12px; align-items: center; padding: 12px 0; border-top: 1.5px solid var(--line); }
+  .cb-row i { width: 14px; height: 14px; border-radius: 4px; border: 1.5px solid var(--ink); }
+  .cb-row label { font-weight: 650; }
+  .cb-row small { grid-column: 2 / 4; color: var(--muted); font-size: .9rem; }
+  .cb-row input[type="number"] { width: 100%; text-align: right; font-variation-settings: var(--v-num); }
+  .cb-row input[type="range"] { grid-column: 2 / 4; width: 100%; }
+  .cb-bar { display: flex; height: 54px; border: 1.5px solid var(--ink); border-radius: 12px; overflow: hidden; background: var(--paper); }
+  .cb-bar span { height: 100%; min-width: 0; border-right: 1.5px solid var(--ink); transition: flex-basis .2s ease; }
+  .cb-bar span:last-child { border-right: 0; }
+  .cb-bar .free { background: repeating-linear-gradient(135deg, transparent 0 7px, color-mix(in srgb, var(--ink) 10%, transparent) 7px 8px); flex: 1 1 0; border-right: 0; }
+  .cb-over { margin-top: 10px; padding: 10px 14px; border-radius: 10px; border: 1.5px solid var(--bad); color: var(--bad); font-weight: 650; display: none; }
+  .cb-over.show { display: block; }
+  .cb-facts { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 20px; margin-top: 20px; }
+  .cb-facts div { border-top: 3px solid var(--k); padding-top: 8px; }
+  .cb-facts b { display: block; font-size: clamp(1.5rem, 4vw, 2.1rem); font-weight: 800; font-variation-settings: var(--v-num); line-height: 1.1; }
+  .cb-facts span { color: var(--muted); font-size: .92rem; }
+  .cb-est { margin-top: 26px; border-top: 1.5px solid var(--line); padding-top: 18px; }
+  .cb-est h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 8px; }
+  .cb-est textarea { width: 100%; min-height: 110px; resize: vertical; }
+  .cb-est p { margin-top: 8px; color: var(--muted); font-size: .95rem; }
+  .cb-est .controls { margin-top: 10px; }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="bar"><div class="wrap">
+  <a class="mark" href="/">Cool Matt Games</a>
+  <nav aria-label="Site"><a href="/#games" data-kind="games">Games</a><a href="/#tools" data-kind="tools" aria-current="true">Tools</a><a href="/#toys" data-kind="toys">Toys</a><a href="/#widgets" data-kind="widgets">Widgets</a><a href="/about/">About</a><a class="book" href="/calendar/">Book a time</a></nav>
+  <button class="theme" type="button" aria-label="Switch colours"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg></button>
+</div></header>
+<main id="main" data-kind="tools">
+<div class="wrap">
+<header class="piece-head"><a class="kind" href="/#tools">Tools</a><h1>Context Budget</h1><p class="lede">A model's context window is a fixed budget, and the prompt, the tools, the documents and the conversation all spend from it. Set the numbers for your project and see what's left and how long a conversation can run.</p></header>
+
+<div class="stage">
+  <div class="stage-top"><span>Context budget</span><span id="cbState" class="num"></span></div>
+  <div class="stage-body cb-grid">
+    <div>
+      <div class="cb-win" role="group" aria-label="Context window size">
+        <label for="cbWin">Window, in tokens</label>
+        <input type="number" id="cbWin" min="1000" step="1000" value="200000">
+        <button class="chip" type="button" data-w="8000">8k</button><button class="chip" type="button" data-w="32000">32k</button><button class="chip" type="button" data-w="128000">128k</button><button class="chip" type="button" data-w="200000">200k</button><button class="chip" type="button" data-w="1000000">1M</button>
+      </div>
+      <div id="cbRows"></div>
+      <div class="cb-row" style="grid-template-columns: minmax(0,1fr) 118px">
+        <label for="cbTurn">One turn of conversation</label><input type="number" id="cbTurn" min="1" step="50" value="700">
+        <small style="grid-column:1/3">A question plus its answer, in tokens. Used to work out how many turns fit.</small>
+      </div>
+    </div>
+    <div>
+      <div class="cb-bar" id="cbBar" role="img" aria-label="How the window is split"></div>
+      <div class="cb-over" id="cbOver" role="status"></div>
+      <div class="cb-facts">
+        <div><b id="cbUsed">0</b><span>tokens spent before anyone says a word</span></div>
+        <div><b id="cbFree">0</b><span>tokens left for the conversation</span></div>
+        <div><b id="cbTurns">0</b><span>turns before the window is full</span></div>
+        <div><b id="cbPct">0%</b><span>of the window is fixed overhead</span></div>
+      </div>
+      <div class="controls"><button class="btn" type="button" id="cbCopy">Copy a link to this budget</button><button class="btn" type="button" id="cbReset">Reset</button></div>
+      <div class="cb-est">
+        <h3><label for="cbText">Don't know the size of something? Paste it.</label></h3>
+        <textarea id="cbText" placeholder="Paste a system prompt, a document, a tool description…"></textarea>
+        <p id="cbEst">About 0 tokens.</p>
+        <div class="controls" id="cbApply"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<p class="fine">Token counts here are estimates: about four characters of English per token. Real tokenizers differ by model and by language, and code and non-English text usually cost more. For an exact figure, use the token counter that comes with the model you're using.</p>
+
+<div class="notes">
+  <div><h3>Everything is sent every time</h3><p>A model doesn't remember the system prompt from the last turn. The whole prompt, every tool definition and every earlier message is sent again with each new message, so fixed overhead is paid on every turn.</p></div>
+  <div><h3>Leave room for the answer</h3><p>The reply comes out of the same window. If the input fills it, the model has nowhere to write. Reserve the longest reply you expect, and more if the model thinks before it answers.</p></div>
+  <div><h3>What to do when it fills</h3><p>Three options, usually combined: drop the oldest turns, replace them with a summary, or fetch documents only when a question needs them. This planner shows when you'll have to choose.</p></div>
+</div>
+<nav class="onward" aria-label="More"><a href="/#tools">All tools</a><a class="next" data-kind="tools" href="/cry-wolf/">Next: Cry Wolf</a></nav>
+</div>
+</main>
+<footer class="site"><div class="wrap">
+  <div><h2>Made by Matt Jones</h2>
+  <p>I'm an AI designer. If you'd like a game, tool or widget like these for your own product, get in touch.</p></div>
+  <ul>
+    <li><a href="mailto:mscottjones24@gmail.com">mscottjones24@gmail.com</a></li>
+    <li><a href="https://www.linkedin.com/in/mattjoneshtx">LinkedIn</a></li>
+    <li><a href="/calendar/">Book a time</a></li>
+  </ul>
+  <p class="legal">© Matt Jones, 2026. Designed and built with Claude.</p>
+</div></footer>
+<script>
+(function () {
+  var PARTS = [
+    { id: 'sys',  name: 'System prompt', help: 'Instructions, persona, rules, examples.', v: 2500, max: 20000, c: 'var(--tools)' },
+    { id: 'tool', name: 'Tool definitions', help: 'Names, descriptions and schemas of every tool the model can call.', v: 4000, max: 40000, c: 'var(--widgets)' },
+    { id: 'docs', name: 'Documents', help: 'Files, search results or retrieved passages added to the prompt.', v: 20000, max: 400000, c: 'var(--toys)' },
+    { id: 'out',  name: 'Reserved for the reply', help: 'The longest answer you expect, including any thinking.', v: 8000, max: 64000, c: 'var(--games)' }
+  ];
+  var DEF = { win: 200000, turn: 700 }; PARTS.forEach(function (p) { DEF[p.id] = p.v; });
+  var $ = function (id) { return document.getElementById(id); };
+  var fmt = function (n) { return Math.round(n).toLocaleString('en-US'); };
+  var rows = $('cbRows'), bar = $('cbBar');
+  PARTS.forEach(function (p) {
+    var d = document.createElement('div'); d.className = 'cb-row';
+    d.innerHTML = '<i style="background:' + p.c + '"></i><label for="cb-' + p.id + '">' + p.name + '</label><input type="number" id="cb-' + p.id + '" min="0" step="100">' +
+      '<input type="range" id="cbr-' + p.id + '" min="0" max="' + p.max + '" step="100" aria-label="' + p.name + ', in tokens"><small>' + p.help + '</small>';
+    rows.appendChild(d);
+    var n = d.querySelector('input[type=number]'), r = d.querySelector('input[type=range]');
+    n.addEventListener('input', function () { r.value = n.value; paint(); });
+    r.addEventListener('input', function () { n.value = r.value; paint(); });
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.textContent = 'Use for ' + p.name.toLowerCase();
+    b.addEventListener('click', function () { n.value = estimate(); r.value = n.value; paint(); });
+    $('cbApply').appendChild(b);
+  });
+  function val(id) { return Math.max(0, +$(id).value || 0); }
+  function set(state) {
+    $('cbWin').value = state.win; $('cbTurn').value = state.turn;
+    PARTS.forEach(function (p) { $('cb-' + p.id).value = state[p.id]; $('cbr-' + p.id).value = state[p.id]; });
+    paint();
+  }
+  function state() { var s = { win: val('cbWin'), turn: val('cbTurn') }; PARTS.forEach(function (p) { s[p.id] = val('cb-' + p.id); }); return s; }
+  function estimate() { return Math.ceil($('cbText').value.length / 4); }
+  function paint() {
+    var s = state(), win = Math.max(1, s.win), used = 0;
+    bar.innerHTML = '';
+    PARTS.forEach(function (p) {
+      used += s[p.id];
+      var seg = document.createElement('span'); seg.style.background = p.c; seg.style.flex = '0 0 ' + (s[p.id] / Math.max(win, 1) * 100) + '%'; seg.title = p.name + ': ' + fmt(s[p.id]) + ' tokens';
+      bar.appendChild(seg);
+    });
+    var free = win - used, over = free < 0;
+    if (!over) { var f = document.createElement('span'); f.className = 'free'; f.title = 'Free: ' + fmt(free) + ' tokens'; bar.appendChild(f); }
+    else Array.prototype.forEach.call(bar.children, function (seg, i) { seg.style.flex = s[PARTS[i].id] + ' 1 0'; });
+    var turns = over ? 0 : Math.floor(free / Math.max(1, s.turn));
+    $('cbUsed').textContent = fmt(used); $('cbFree').textContent = over ? '0' : fmt(free);
+    $('cbTurns').textContent = fmt(turns); $('cbPct').textContent = Math.round(used / win * 100) + '%';
+    $('cbState').textContent = fmt(used) + ' of ' + fmt(win) + ' tokens';
+    var o = $('cbOver'); o.classList.toggle('show', over);
+    if (over) o.textContent = 'Over budget by ' + fmt(-free) + ' tokens. This would be rejected before the first message. Cut a row or pick a larger window.';
+    bar.setAttribute('aria-label', PARTS.map(function (p) { return p.name + ' ' + fmt(s[p.id]); }).join(', ') + ', free ' + fmt(Math.max(0, free)) + ' tokens');
+    Array.prototype.forEach.call(document.querySelectorAll('.cb-win .chip'), function (c) { c.setAttribute('aria-pressed', String(+c.dataset.w === s.win)); });
+    var q = Object.keys(s).map(function (k) { return k + '=' + s[k]; }).join('&');
+    try { history.replaceState(null, '', '#' + q); } catch (e) {}
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('.cb-win .chip'), function (c) {
+    c.addEventListener('click', function () { $('cbWin').value = c.dataset.w; paint(); });
+  });
+  $('cbWin').addEventListener('input', paint); $('cbTurn').addEventListener('input', paint);
+  $('cbText').addEventListener('input', function () {
+    var t = $('cbText').value; $('cbEst').textContent = 'About ' + fmt(estimate()) + ' tokens (' + fmt(t.length) + ' characters, ' + fmt(t.trim() ? t.trim().split(/\s+/).length : 0) + ' words).';
+  });
+  $('cbReset').addEventListener('click', function () { set(DEF); });
+  $('cbCopy').addEventListener('click', function () {
+    var b = $('cbCopy'), done = function (msg) { b.textContent = msg; setTimeout(function () { b.textContent = 'Copy a link to this budget'; }, 1800); };
+    if (navigator.clipboard) navigator.clipboard.writeText(location.href).then(function () { done('Link copied'); }, function () { done('Copy it from the address bar'); });
+    else done('Copy it from the address bar');
+  });
+  var start = Object.assign({}, DEF);
+  location.hash.slice(1).split('&').forEach(function (kv) { var p = kv.split('='); if (p[0] in start && isFinite(+p[1]) && +p[1] >= 0) start[p[0]] = +p[1]; });
+  set(start);
+})();
+</script>
+</body>
+</html>

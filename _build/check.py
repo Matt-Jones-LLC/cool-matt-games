@@ -3,6 +3,8 @@ anchor exists, and every page has a title, description and the shared assets."""
 import pathlib, re, sys
 root = pathlib.Path(__file__).parent.parent
 pages = [root / "index.html", root / "404.html"] + sorted(p for p in root.glob("*/index.html") if p.parent.name != "_build")
+pages = [p for p in pages if 'http-equiv="refresh"' not in p.read_text()]   # skip the redirect stubs
+STANDALONE = {"hibob"}   # carries its own styles instead of the shared ones
 errors = []
 
 def target(url):
@@ -15,8 +17,9 @@ for p in pages:
     s = p.read_text(); name = str(p.relative_to(root))
     if not re.search(r"<title>[^<]+</title>", s): errors.append(f"{name}: no <title>")
     if p.name != "404.html" and 'name="description"' not in s: errors.append(f"{name}: no meta description")
-    for asset in ("/assets/site.css", "/assets/site.js"):
-        if asset not in s: errors.append(f"{name}: does not load {asset}")
+    if p.parent.name not in STANDALONE:
+        for asset in ("/assets/site.css", "/assets/site.js"):
+            if asset not in s: errors.append(f"{name}: does not load {asset}")
     for attr, url in re.findall(r'\b(href|src)="([^"]+)"', s):
         if url.startswith(("http:", "https:", "mailto:", "tel:", "data:", "javascript:")): continue
         if url.startswith("#"):

@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Goldfish | Cool Matt Games</title>
+<meta name="description" content="Goldfish: a memory game about context windows. Words stream past and you say which ones are still in context."><link rel="canonical" href="https://matt-jones.org/goldfish/"><meta property="og:type" content="website"><meta property="og:site_name" content="Cool Matt Games"><meta property="og:title" content="Goldfish | Cool Matt Games"><meta property="og:description" content="Goldfish: a memory game about context windows. Words stream past and you say which ones are still in context."><meta property="og:url" content="https://matt-jones.org/goldfish/"><meta property="og:image" content="https://matt-jones.org/assets/og.png"><meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#ECEEF8" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#121130" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="/favicon.svg"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<script>try{var t=localStorage.getItem('mj-theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Recursive:slnt,wght,CASL,CRSV,MONO@-15..0,300..1000,0..1,0..1,0..1&display=swap">
+<link rel="stylesheet" href="/assets/site.css">
+<script src="/assets/site.js" defer></script>
+<style>
+  .gf-meta { display: flex; gap: 22px; flex-wrap: wrap; }
+  .gf-meta b { font-variation-settings: var(--v-num); }
+  .gf-play { display: grid; gap: 22px; justify-items: center; text-align: center; min-height: 330px; align-content: center; }
+  .gf-word { font-variation-settings: var(--v-head); font-weight: 900; font-size: clamp(2.4rem, 9vw, 4.6rem); line-height: 1; min-height: 1.1em; letter-spacing: -.02em; }
+  .gf-word.ask { background: linear-gradient(transparent 58%, var(--k) 58% 88%, transparent 88%); padding: 0 .1em; }
+  .gf-say { color: var(--muted); min-height: 1.6em; max-width: 44ch; }
+  .gf-slots { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; align-items: center; min-height: 48px; }
+  .gf-slot { min-width: 56px; height: 44px; padding: 0 12px; border-radius: 10px; border: 1.5px dashed var(--line); display: grid; place-items: center; font-weight: 650; font-size: .95rem; }
+  .gf-slot.full { border: 1.5px solid var(--ink); background: var(--paper); }
+  .gf-slot.full:empty::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--ink); }
+  .gf-slot.gone { border: 1.5px dashed var(--line); color: var(--muted); text-decoration: line-through; }
+  .gf-slot.target { background: var(--k); border-color: var(--ink); color: #1A1840; text-decoration: none; }
+  .gf-edge { font-size: .85rem; color: var(--muted); padding: 0 4px; }
+  .gf-answers { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+  .gf-answers .btn { min-width: 150px; justify-content: center; }
+  .gf-lives i { display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: var(--k); margin-left: 5px; border: 1.5px solid var(--ink); }
+  .gf-lives i.off { background: transparent; }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="bar"><div class="wrap">
+  <a class="mark" href="/">Cool Matt Games</a>
+  <nav aria-label="Site"><a href="/#games" data-kind="games" aria-current="true">Games</a><a href="/#tools" data-kind="tools">Tools</a><a href="/#toys" data-kind="toys">Toys</a><a href="/#widgets" data-kind="widgets">Widgets</a><a href="/about/">About</a><a class="book" href="/calendar/">Book a time</a></nav>
+  <button class="theme" type="button" aria-label="Switch colours"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg></button>
+</div></header>
+<main id="main" data-kind="games">
+<div class="wrap">
+<header class="piece-head"><a class="kind" href="/#games">Games</a><h1>Goldfish</h1><p class="lede">You are a language model with a very short memory. Words arrive one at a time, and the oldest ones fall out as new ones come in. Then you get one question: is this word still in your context?</p></header>
+
+<div class="stage">
+  <div class="stage-top"><span>Goldfish</span>
+    <span class="gf-meta"><span>Context: <b id="gfN">3</b> words</span><span>Score: <b id="gfScore">0</b></span><span>Best: <b id="gfBest">0</b></span>
+    <span class="gf-lives" id="gfLives" aria-label="Lives left"></span></span></div>
+  <div class="stage-body gf-play">
+    <div class="gf-word" id="gfWord" aria-live="assertive"></div>
+    <p class="gf-say" id="gfSay" aria-live="polite">Your context holds the last 3 words you saw. Everything older is gone.</p>
+    <div class="gf-slots" id="gfSlots" aria-hidden="true"></div>
+    <div class="gf-answers" id="gfAnswers">
+      <button class="btn primary" type="button" id="gfStart">Start</button>
+    </div>
+  </div>
+</div>
+<p class="fine">Keys: <code>Y</code> or <code>←</code> for still in context, <code>N</code> or <code>→</code> for forgotten, <code>Space</code> to continue. Your best score is kept in this browser only.</p>
+
+<div class="notes">
+  <div><h3>What a context window is</h3><p>A language model reads a fixed amount of text at once. In a long conversation, the oldest text has to be dropped or summarised to make room. The model isn't being careless when it loses track of something from an hour ago. That text is no longer in front of it.</p></div>
+  <div><h3>Why it gets harder</h3><p>Each right answer in a row adds to your score, and every third one makes the window a word longer and the stream a little faster. A bigger window means more to hold, and the word that just fell off the end is the one you're most likely to get wrong.</p></div>
+  <div><h3>What the game leaves out</h3><p>Real windows are measured in tokens, not words, and hold many thousands of them. Real models also don't answer yes or no about their own context. The sliding behaviour is the real part.</p></div>
+</div>
+<nav class="onward" aria-label="More"><a href="/#games">All games</a><a class="next" data-kind="games" href="/second-opinion/">Next: Second Opinion</a></nav>
+</div>
+</main>
+<footer class="site"><div class="wrap">
+  <div><h2>Made by Matt Jones</h2>
+  <p>I'm an AI designer. If you'd like a game, tool or widget like these for your own product, get in touch.</p></div>
+  <ul>
+    <li><a href="mailto:mscottjones24@gmail.com">mscottjones24@gmail.com</a></li>
+    <li><a href="https://www.linkedin.com/in/mattjoneshtx">LinkedIn</a></li>
+    <li><a href="/calendar/">Book a time</a></li>
+  </ul>
+  <p class="legal">© Matt Jones, 2026. Designed and built with Claude.</p>
+</div></footer>
+<script>
+(function () {
+  var WORDS = 'anchor apple arrow basket bell bridge button candle canyon carpet castle cherry clock cloud comet copper coral cricket curtain dagger daisy desert dolphin drum eagle ember engine falcon feather fiddle forest fossil garden ginger glacier hammer harbor hazel helmet honey island ivory jacket jungle kettle kitten ladder lantern lemon lizard magnet maple marble meadow mirror mitten needle nickel oyster paddle pebble pepper piano pillow pocket puddle quartz rabbit radio ribbon river rocket saddle salmon shadow silver spider sponge stable sunset tablet thimble thunder ticket tiger tulip tunnel turtle velvet violin wagon walnut whistle willow window winter zipper'.split(' ');
+  var $ = function (id) { return document.getElementById(id); };
+  var word = $('gfWord'), say = $('gfSay'), slots = $('gfSlots'), answers = $('gfAnswers');
+  var calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var N, score, lives, streak, stream, target, truth, phase = 'idle', timers = [];
+  var best = 0; try { best = +localStorage.getItem('gf-best') || 0; } catch (e) {}
+  $('gfBest').textContent = best;
+
+  function later(fn, ms) { timers.push(setTimeout(fn, ms)); }
+  function clear() { timers.forEach(clearTimeout); timers = []; }
+  function pick(n) { var a = WORDS.slice(), out = []; while (out.length < n) out.push(a.splice(Math.floor(Math.random() * a.length), 1)[0]); return out; }
+  function hud() {
+    $('gfN').textContent = N; $('gfScore').textContent = score;
+    $('gfLives').innerHTML = [0, 1, 2].map(function (i) { return '<i class="' + (i < lives ? '' : 'off') + '"></i>'; }).join('');
+  }
+  function drawSlots(filled) {
+    slots.innerHTML = '';
+    for (var i = 0; i < N; i++) { var s = document.createElement('span'); s.className = 'gf-slot' + (i >= N - filled ? ' full' : ''); slots.appendChild(s); }
+  }
+  function buttons(list) {
+    answers.innerHTML = '';
+    list.forEach(function (b) {
+      var el = document.createElement('button'); el.type = 'button'; el.className = 'btn' + (b[2] ? ' primary' : ''); el.textContent = b[0];
+      el.addEventListener('click', b[1]); answers.appendChild(el);
+    });
+    if (list.length === 1) answers.firstChild.focus({ preventScroll: true });
+  }
+  function newGame() { N = 3; score = 0; lives = 3; streak = 0; round(); }
+  function round() {
+    clear(); phase = 'stream'; hud();
+    var extra = 1 + Math.floor(Math.random() * 3);
+    stream = pick(N + extra);
+    truth = Math.random() < .5;
+    // "yes" asks about a word in the window; "no" asks about one that has just fallen out
+    target = truth ? stream[stream.length - 1 - Math.floor(Math.random() * N)] : stream[stream.length - N - 1 - Math.floor(Math.random() * Math.min(extra, 2))];
+    word.className = 'gf-word'; word.textContent = ''; say.textContent = 'Watch the words.'; answers.innerHTML = '';
+    drawSlots(0);
+    var gap = Math.max(calm ? 900 : 520, 1150 - (N - 3) * 110), i = 0;
+    (function next() {
+      if (i >= stream.length) { word.textContent = ''; later(ask, 350); return; }
+      word.textContent = stream[i]; drawSlots(Math.min(i + 1, N)); i++;
+      later(function () { word.textContent = ''; later(next, 90); }, gap);
+    })();
+  }
+  function ask() {
+    phase = 'ask'; word.className = 'gf-word ask'; word.textContent = target;
+    say.textContent = 'Is this word still in your context?';
+    buttons([['Still in context', function () { answer(true); }], ['Forgotten', function () { answer(false); }]]);
+  }
+  function answer(guess) {
+    if (phase !== 'ask') return;
+    phase = 'reveal';
+    var right = guess === truth;
+    slots.innerHTML = '';
+    stream.forEach(function (w, i) {
+      var inWin = i >= stream.length - N;
+      if (i === stream.length - N) { var e = document.createElement('span'); e.className = 'gf-edge'; e.textContent = 'context starts here'; slots.appendChild(e); }
+      var s = document.createElement('span'); s.className = 'gf-slot ' + (inWin ? 'full' : 'gone') + (w === target ? ' target' : ''); s.textContent = w; slots.appendChild(s);
+    });
+    var where = truth ? 'It was one of your last ' + N + ' words.' : 'It had already fallen out of your context.';
+    if (right) {
+      score++; streak++;
+      var grew = streak % 3 === 0 && N < 8; if (grew) N++;
+      say.textContent = 'Right. ' + where + (grew ? ' Your context is now ' + N + ' words.' : '');
+    } else {
+      lives--; streak = 0;
+      say.textContent = 'Not quite. ' + where;
+    }
+    if (score > best) { best = score; try { localStorage.setItem('gf-best', best); } catch (e) {} $('gfBest').textContent = best; }
+    hud(); word.className = 'gf-word'; word.textContent = right ? '✓' : '✕';
+    if (lives <= 0) {
+      phase = 'over';
+      say.textContent += ' That was your last life. You scored ' + score + '.';
+      buttons([['Play again', newGame, true]]);
+    } else buttons([['Next round', round, true]]);
+  }
+  $('gfStart').addEventListener('click', newGame);
+  drawSlots(0); N = 3; score = 0; lives = 3; hud(); drawSlots(0);
+  document.addEventListener('keydown', function (e) {
+    if (e.target.closest('input, textarea')) return;
+    var k = e.key.toLowerCase();
+    if (phase === 'ask') {
+      if (k === 'y' || k === 'arrowleft') { e.preventDefault(); answer(true); }
+      if (k === 'n' || k === 'arrowright') { e.preventDefault(); answer(false); }
+    }
+  });
+})();
+</script>
+</body>
+</html>

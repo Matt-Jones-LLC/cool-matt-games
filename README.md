@@ -1,41 +1,79 @@
-# website
+# Cool Matt Games
 
-The whole of matt-jones.org (www.matt-jones.org redirects to it). Every page is a plain HTML file in this repo, served by
-GitHub Pages. To change the site, edit a file and push to `main`. It's live a minute later.
+The whole of matt-jones.org (www.matt-jones.org redirects to it): a small portal of games, tools, toys and widgets
+by Matt Jones. Plain HTML, CSS and JavaScript, served by GitHub Pages. Pushing to `main` deploys it a minute later.
 
-| URL                | File                         | Source artifact                                      |
-|--------------------|------------------------------|------------------------------------------------------|
-| `/`                | `index.html`                 | https://claude.ai/artifact/TGhtdA8T1X5fsLt4jXsJY4     |
-| `/about/`          | `about/index.html`           | https://claude.ai/artifact/JqRqbw3dcAUc5vTABHmDZh     |
-| `/portfolio/`      | `portfolio/index.html`       | https://claude.ai/artifact/WuMVcF6xXq8CiN2TXFhn5F     |
-| `/llmadness/`      | `llmadness/index.html`       | https://claude.ai/artifact/UVouknyBkNFhi2xJ7BNXG4     |
-| `/cry-wolf/`       | `cry-wolf/index.html`        | https://claude.ai/artifact/So6Z9AVdLh8bn3wAcnXend     |
-| `/the-bullzen/`    | `the-bullzen/index.html`     | https://claude.ai/artifact/UWu1gzHTaLhJ2v7jcKv8xF     |
-| `/windhover/`      | `windhover/index.html`       | https://claude.ai/artifact/7nmwCHQEbXMEfrC3Y3txc4     |
-| `/box-score/`      | `box-score/index.html`       | https://claude.ai/artifact/UXTCNygjkXYcrWgoy5waL8     |
-| `/magic-number/`   | `magic-number/index.html`    | https://claude.ai/artifact/HznnrVY3diFQ8kEpBujQmP     |
-| `/black-ink/`      | `black-ink/index.html`       | https://claude.ai/artifact/KLV6u3oNPKcVYjJmamTFfM     |
-| `/scouting-report/`| `scouting-report/index.html` | https://claude.ai/artifact/3Fr6gd1HEpu54tweJqJvbH     |
-| `/calendar/`       | `calendar/index.html`        | https://claude.ai/artifact/JsQ4mVArGFjEv2Nu2maNrx     |
-| `/hibob/`          | `hibob/index.html`           | Built in the repo (Follow the Sun, HiBob styling)     |
+## Changing the site
 
-All pages share the home page's navigation. Links between pages are root-relative (`/about/`),
-and the Software/Baseball menu items go to each project's own page.
+Don't edit the pages at the top level by hand. They are written by the build:
 
-Deploys run from `.github/workflows/pages.yml` on every push to `main`
-(Settings → Pages → Source: **GitHub Actions**).
+```bash
+python3 _build/site.py
+```
 
-Every page loads `assets/site.css` and `assets/site.js`: the theme toggle, the phone menu, the current-page
-highlight, the scroll progress bar and shared polish. Change those two files to change all pages at once.
+| To change…                         | Edit                                                    |
+|------------------------------------|---------------------------------------------------------|
+| A game, tool, toy or widget        | `_build/src/pieces/<slug>.html`                         |
+| The home page                      | `_build/src/home.html`                                  |
+| The about page, the 404 page       | `_build/src/about.html`, `_build/src/404.html`          |
+| What's on the site, names, blurbs  | the `PIECES` list at the top of `_build/site.py`        |
+| Header, footer, page metadata      | `_build/site.py`                                        |
+| Colours, type, shared components   | `assets/site.css`                                       |
+| The light/dark switch              | `assets/site.js`                                        |
 
-The LLMAdness, Bullzen and Windhover demos are edited in `_build/<page>.html` and written into their pages
-with `python3 _build/build.py`, which also writes `404.html`. Black Ink and Scouting Report came from the `calendar` repo.
+A piece file is an optional `<style>`, then markup, then a `<script>`. The build wraps it in the shared header
+and footer and adds its title and description from `PIECES`. The first line can be `<!--lede: … -->` to set the
+paragraph under the title.
 
-`python3 _build/meta.py` writes each page's description and share tags (edit the text in that file), plus
-`sitemap.xml` and `robots.txt`. `/hibob/` is left out of the sitemap. `assets/og.png` is the share image.
+To add a piece: write `_build/src/pieces/<slug>.html`, add a row to `PIECES`, run the build, then retake the
+thumbnails (below). The home page shelves, the sitemap and the "next" links all follow from `PIECES`.
 
-Other files: `CNAME` (records the custom domain; the live setting is in Settings → Pages), `.nojekyll` (serve files as-is),
-`favicon.svg`. DNS and email setup is in `dns/records.md`.
+## What's here
+
+| Shelf   | Pieces                                                        |
+|---------|---------------------------------------------------------------|
+| Games   | Slick Shift, Goldfish, Second Opinion, LLMAdness              |
+| Tools   | Context Budget, Cry Wolf, Windhover                           |
+| Toys    | Thermostat, Downhill, Breather                                |
+| Widgets | Follow the Sun, Book a time (`/calendar/`)                    |
+
+`/hibob/` is a standalone page with its own styles. It isn't built by `site.py` and isn't in the sitemap.
+
+Old addresses (`/box-score/`, `/the-bullzen/`, `/portfolio/`, `/magic-number/`, `/black-ink/`,
+`/scouting-report/`) are redirect stubs, listed in `REDIRECTS` in `_build/site.py`.
+
+## Slick Shift levels
+
+The twelve levels are chosen by a program, not drawn by hand:
+
+```bash
+node _build/levels.js
+```
+
+It makes thousands of random floor plans per level, solves each with the game's own solver, keeps the one with
+the longest shortest solution, and writes the result into `_build/src/pieces/slick-shift.html`. The level list
+(sizes, ingredients, target length) is `SPEC` at the top of that script. The random numbers are seeded, so the
+same levels come out each time unless `SPEC` or the seed changes.
+
+## Thumbnails and share image
+
+Home-page thumbnails are screenshots of the real pieces in `assets/shots/`. To retake them (needs Playwright):
+
+```bash
+python3 -m http.server 8123 &
+```
+
+```bash
+node _build/shots.js
+```
+
+`assets/og.png` is the image shown when a link is shared. `assets/apple-touch-icon.png` and `favicon.svg` are the icons.
+
+## Checks and deploys
 
 `python3 _build/check.py` checks every internal link, anchor and page's metadata. It runs on each pull request
-(`.github/workflows/check.yml`), which also fails if a generated page was edited by hand instead of through `_build/`.
+(`.github/workflows/check.yml`), which also fails if a built page doesn't match what `_build/site.py` produces.
+
+Deploys run from `.github/workflows/pages.yml` on every push to `main` (Settings → Pages → Source: **GitHub Actions**).
+
+Other files: `CNAME` (the custom domain), `.nojekyll` (serve files as-is), `dns/records.md` (DNS and email setup).

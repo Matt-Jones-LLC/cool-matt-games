@@ -1,384 +1,46 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}</style><title>Page not found | Matt Jones</title><meta name="robots" content="noindex">
-<link rel="icon" href="/favicon.svg"></head><body>
-
-<style>
-  :root {
-    --paper:   #F2F4EC;
-    --card:    #FBFCF7;
-    --ink:     #171A12;
-    --muted:   #5B6152;
-    --line:    #C9CFBE;
-    --stitch:  #CC3B2E;
-    --grass:   #2F6B45;
-    --shadow:  0 1px 0 rgba(23,26,18,.04), 0 12px 30px -18px rgba(23,26,18,.35);
-    --maxw: 1080px;
-    --f-display: "Helvetica Neue", "Arial Narrow", Arial, sans-serif;
-    --f-body: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    --f-mono: ui-monospace, "SF Mono", "Cascadia Mono", "Roboto Mono", Menlo, Consolas, monospace;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --paper:  #0D1310;
-      --card:   #141B14;
-      --ink:    #EDEFE6;
-      --muted:  #9AA394;
-      --line:   #2A3326;
-      --stitch: #E4573F;
-      --grass:  #4E9E6A;
-      --shadow: 0 1px 0 rgba(0,0,0,.3), 0 18px 40px -22px rgba(0,0,0,.8);
-    }
-  }
-  :root[data-theme="light"] {
-    --paper:#F2F4EC; --card:#FBFCF7; --ink:#171A12; --muted:#5B6152;
-    --line:#C9CFBE; --stitch:#CC3B2E; --grass:#2F6B45;
-    --shadow:0 1px 0 rgba(23,26,18,.04), 0 12px 30px -18px rgba(23,26,18,.35);
-  }
-  :root[data-theme="dark"] {
-    --paper:#0D1310; --card:#141B14; --ink:#EDEFE6; --muted:#9AA394;
-    --line:#2A3326; --stitch:#E4573F; --grass:#4E9E6A;
-    --shadow:0 1px 0 rgba(0,0,0,.3), 0 18px 40px -22px rgba(0,0,0,.8);
-  }
-
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    background: var(--paper);
-    color: var(--ink);
-    font-family: var(--f-body);
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
-  }
-  .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
-
-  a { color: inherit; }
-  a:focus-visible, button:focus-visible {
-    outline: 2px solid var(--stitch);
-    outline-offset: 3px;
-    border-radius: 2px;
-  }
-
-  .mono { font-family: var(--f-mono); }
-  .tnum { font-variant-numeric: tabular-nums; }
-
-  /* ---- Stitch: the signature detail (baseball lacing) ---- */
-  .stitch {
-    height: 0;
-    border-top: 2px dashed var(--stitch);
-    opacity: .8;
-  }
-
-  /* ---- Top bar ---- */
-  header.bar {
-    position: sticky; top: 0; z-index: 20;
-    background: color-mix(in srgb, var(--paper) 88%, transparent);
-    backdrop-filter: saturate(1.1) blur(8px);
-    border-bottom: 1px solid var(--line);
-  }
-  .bar .wrap {
-    display: flex; align-items: center; justify-content: space-between;
-    height: 60px;
-  }
-  .wordmark {
-    font-family: var(--f-display);
-    font-weight: 800; letter-spacing: .14em; text-transform: uppercase;
-    font-size: .95rem; text-decoration: none;
-    display: inline-flex; align-items: center; gap: .5em;
-  }
-  .wordmark .ball {
-    width: 15px; height: 15px; border-radius: 50%;
-    background: var(--card);
-    border: 1.5px solid var(--stitch);
-    position: relative; display: inline-block;
-  }
-  .wordmark .ball::before, .wordmark .ball::after {
-    content:""; position:absolute; inset:2px 4px;
-    border:1px solid var(--stitch); border-top:0; border-bottom:0;
-    border-radius: 50%;
-  }
-  nav.top { display: flex; gap: 22px; }
-  nav.top a {
-    font-family: var(--f-mono); font-size: .72rem; letter-spacing: .12em;
-    text-transform: uppercase; text-decoration: none; color: var(--muted);
-    padding: 6px 0; border-bottom: 2px solid transparent; transition: color .15s, border-color .15s;
-  }
-  nav.top a:hover { color: var(--ink); border-color: var(--stitch); }
-  @media (max-width: 620px){ nav.top { display: none; } }
-
-  /* ---- Nav dropdowns (Software / Baseball) ---- */
-  nav.top .menu { position: relative; display: flex; align-items: center; }
-  nav.top .menu > a .caret { font-size: .85em; color: var(--stitch); }
-  nav.top .menu-list {
-    position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
-    min-width: 200px; padding: 6px 0;
-    background: var(--card); border: 1px solid var(--line);
-    border-top: 2px dashed var(--stitch); border-radius: 0 0 6px 6px;
-    box-shadow: var(--shadow);
-    display: none; flex-direction: column;
-  }
-  nav.top .menu:hover .menu-list,
-  nav.top .menu:focus-within .menu-list { display: flex; }
-  nav.top .menu-list a {
-    display: block; padding: 10px 16px; border-bottom: 0;
-    white-space: nowrap;
-  }
-  nav.top .menu-list a:hover {
-    color: var(--ink);
-    background: color-mix(in srgb, var(--grass) 9%, transparent);
-  }
-
-  /* ---- Hero ---- */
-  .hero { padding: clamp(52px, 9vw, 104px) 0 clamp(40px,6vw,64px); }
-  .eyebrow {
-    font-family: var(--f-mono); font-size: .74rem; letter-spacing: .22em;
-    text-transform: uppercase; color: var(--grass); margin: 0 0 18px;
-    display: flex; align-items: center; gap: 12px;
-  }
-  .eyebrow::after { content:""; flex:1; height:1px; background: var(--line); }
-  h1.name {
-    font-family: var(--f-display);
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: -0.01em;
-    line-height: .9;
-    margin: 0;
-    font-size: clamp(3.4rem, 15vw, 9.2rem);
-    text-wrap: balance;
-  }
-  .tagline {
-    margin: 18px 0 0;
-    font-family: var(--f-display);
-    font-weight: 700; font-style: italic;
-    font-size: clamp(1.25rem, 3.2vw, 2rem);
-    color: var(--stitch);
-    letter-spacing: -.01em;
-  }
-  .lede {
-    max-width: 46ch; margin: 22px 0 0; font-size: 1.075rem; color: var(--muted);
-  }
-  .cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
-  .btn {
-    font-family: var(--f-mono); font-size: .78rem; letter-spacing: .08em;
-    text-transform: uppercase; text-decoration: none;
-    padding: 12px 18px; border-radius: 2px; border: 1.5px solid var(--ink);
-    display: inline-flex; align-items: center; gap: .55em;
-    transition: transform .12s ease, background .15s, color .15s;
-  }
-  .btn:hover { transform: translateY(-2px); }
-  .btn.primary { background: var(--stitch); border-color: var(--stitch); color: #fff; }
-  .btn.primary:hover { background: color-mix(in srgb, var(--stitch) 88%, #000); }
-  .btn.ghost:hover { background: var(--ink); color: var(--paper); }
-
-  /* ---- Section shell ---- */
-  section { padding: clamp(46px, 7vw, 82px) 0; }
-  .sec-head { display: flex; align-items: baseline; gap: 16px; margin-bottom: 8px; }
-  .sec-kicker {
-    font-family: var(--f-mono); font-size: .72rem; letter-spacing: .2em;
-    text-transform: uppercase; color: var(--muted);
-  }
-  h2.sec-title {
-    font-family: var(--f-display); font-weight: 800; text-transform: uppercase;
-    letter-spacing: -.01em; line-height: 1; margin: 6px 0 0;
-    font-size: clamp(1.9rem, 5vw, 3.1rem); text-wrap: balance;
-  }
-  .sec-sub { color: var(--muted); margin: 14px 0 0; max-width: 54ch; }
-
-  /* ---- Lineup card (scorecard) ---- */
-  .card {
-    margin-top: 30px; background: var(--card);
-    border: 1px solid var(--line); border-radius: 6px;
-    box-shadow: var(--shadow); overflow: hidden;
-  }
-  .card-top {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 14px 20px; border-bottom: 2px dashed var(--stitch);
-    font-family: var(--f-mono); font-size: .72rem; letter-spacing: .16em;
-    text-transform: uppercase; color: var(--muted);
-  }
-  ul.lineup { list-style: none; margin: 0; padding: 4px 0; }
-  ul.lineup li a {
-    display: grid;
-    grid-template-columns: 46px 1fr auto 28px;
-    align-items: center; gap: 16px;
-    padding: 15px 20px; text-decoration: none;
-    border-bottom: 1px solid var(--line);
-    transition: background .14s;
-  }
-  ul.lineup li:last-child a { border-bottom: 0; }
-  ul.lineup li a:hover { background: color-mix(in srgb, var(--grass) 9%, transparent); }
-  .pos {
-    font-family: var(--f-mono); font-weight: 700; font-size: 1.05rem;
-    color: var(--stitch); text-align: center;
-  }
-  .player { font-family: var(--f-display); font-weight: 700; text-transform: uppercase;
-    letter-spacing: .01em; font-size: 1.16rem; }
-  .side {
-    font-family: var(--f-mono); font-size: .66rem; letter-spacing: .14em;
-    text-transform: uppercase; color: var(--muted);
-    border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; white-space: nowrap;
-  }
-  .arrow { color: var(--muted); text-align: center; transition: transform .14s, color .14s; }
-  ul.lineup li a:hover .arrow { color: var(--stitch); transform: translateX(3px); }
-  @media (max-width: 560px){
-    ul.lineup li a { grid-template-columns: 34px 1fr 26px; }
-    .side { display: none; }
-  }
-
-  /* ---- Snapshots ---- */
-  .snaps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 30px; }
-  @media (max-width: 760px){ .snaps { grid-template-columns: 1fr; } }
-  .snap {
-    background: var(--card); border: 1px solid var(--line); border-radius: 6px;
-    padding: 22px; box-shadow: var(--shadow);
-    display: flex; flex-direction: column; gap: 10px; text-decoration: none;
-    transition: transform .12s, border-color .15s;
-  }
-  .snap:hover { transform: translateY(-3px); border-color: var(--stitch); }
-  .snap .tag { font-family: var(--f-mono); font-size: .68rem; letter-spacing: .16em;
-    text-transform: uppercase; color: var(--grass); }
-  .snap h3 { margin: 2px 0 0; font-family: var(--f-display); font-weight: 700;
-    text-transform: uppercase; font-size: 1.15rem; letter-spacing: -.005em; }
-  .snap p { margin: 0; color: var(--muted); font-size: .95rem; }
-  .snap .more { margin-top: auto; font-family: var(--f-mono); font-size: .72rem;
-    letter-spacing: .1em; text-transform: uppercase; color: var(--stitch); }
-
-  /* ---- Footer ---- */
-  footer {
-    border-top: 2px dashed var(--stitch);
-    padding: 48px 0 60px; margin-top: 20px;
-  }
-  .foot-grid { display: flex; justify-content: space-between; align-items: flex-end; gap: 28px; flex-wrap: wrap; }
-  .foot-name { font-family: var(--f-display); font-weight: 800; text-transform: uppercase;
-    font-size: clamp(1.6rem, 5vw, 2.4rem); letter-spacing: -.01em; line-height: 1; }
-  .foot-links { display: flex; flex-direction: column; gap: 8px; }
-  .foot-links a { font-family: var(--f-mono); font-size: .82rem; letter-spacing: .04em;
-    color: var(--muted); text-decoration: none; }
-  .foot-links a:hover { color: var(--stitch); }
-  .copyright { margin-top: 26px; font-family: var(--f-mono); font-size: .72rem;
-    letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
-
-  /* ---- Reveal motion ---- */
-  .reveal { opacity: 0; transform: translateY(14px); transition: opacity .6s ease, transform .6s ease; }
-  .reveal.in { opacity: 1; transform: none; }
-  @media (prefers-reduced-motion: reduce) {
-    .reveal { opacity: 1; transform: none; transition: none; }
-    .btn:hover, .snap:hover, ul.lineup li a:hover .arrow { transform: none; }
-  }
-
-  /* ---- Subpage adjustments ---- */
-  .hero h1.name { font-size: clamp(2.6rem, 10vw, 6.5rem); }
-
-  /* ---- Roster / profile card ---- */
-  ul.roster { list-style: none; margin: 0; padding: 4px 0; }
-  ul.roster li {
-    display: grid; grid-template-columns: 170px 1fr; gap: 16px;
-    padding: 15px 20px; border-bottom: 1px solid var(--line);
-  }
-  ul.roster li:last-child { border-bottom: 0; }
-  ul.roster .k {
-    font-family: var(--f-mono); font-size: .7rem; letter-spacing: .16em;
-    text-transform: uppercase; color: var(--muted); align-self: center;
-  }
-  ul.roster .v {
-    font-family: var(--f-display); font-weight: 700; text-transform: uppercase;
-    letter-spacing: .01em; font-size: 1.08rem;
-  }
-  ul.roster .v small {
-    display: block; font-family: var(--f-body); font-weight: 400;
-    text-transform: none; color: var(--muted); font-size: .92rem; letter-spacing: 0;
-  }
-  @media (max-width: 560px){ ul.roster li { grid-template-columns: 1fr; gap: 4px; } }
-</style>
-
-<style data-demo>
-  .k-zone { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; width: min(240px, 60vw); aspect-ratio: 3/4; margin-top: 30px; }
-  .k-zone span { border: 1px dashed var(--line); border-radius: 3px; }
-  .k-zone-wrap { position: relative; display: inline-block; }
-  .k-ball { position: absolute; right: -64px; bottom: -22px; width: 34px; height: 34px; border-radius: 50%;
-    background: var(--card); border: 2px solid var(--stitch); box-shadow: var(--shadow); }
-</style>
-<link rel="stylesheet" href="/assets/site.css"><script src="/assets/site.js"></script>
-<header class="bar">
-  <div class="wrap">
-    <a class="wordmark" href="/"><span class="ball" aria-hidden="true"></span> Matt Jones</a>
-    <nav class="top" aria-label="Primary">
-      <a href="/">Home</a>
-      <a href="/about/">About</a>
-      <a href="/portfolio/">Portfolio</a>
-      <div class="menu">
-        <a href="/portfolio/#software" aria-haspopup="true">Software <span class="caret" aria-hidden="true">▾</span></a>
-        <div class="menu-list">
-          <a href="/llmadness/">LLMAdness</a>
-          <a href="/cry-wolf/">Cry Wolf</a>
-          <a href="/the-bullzen/">The Bullzen</a>
-          <a href="/windhover/">Windhover</a>
-        </div>
-      </div>
-      <div class="menu">
-        <a href="/portfolio/#baseball" aria-haspopup="true">Baseball <span class="caret" aria-hidden="true">▾</span></a>
-        <div class="menu-list">
-          <a href="/magic-number/">Magic Number</a>
-          <a href="/black-ink/">Black Ink</a>
-          <a href="/scouting-report/">Scouting Report</a>
-        </div>
-      </div>
-      <a href="/box-score/">Box Score</a>
-      <a href="/calendar/">Book a time</a>
-    </nav>
-  </div>
-</header>
-
-<main>
-  <section class="hero">
-    <div class="wrap">
-      <p class="eyebrow reveal">Error 404 &nbsp;·&nbsp; Strike three</p>
-      <h1 class="name reveal">Swing and a miss</h1>
-      <p class="tagline reveal">That page isn't in the lineup.</p>
-      <p class="lede reveal">The link you followed is low and outside — the page was moved, renamed, or never made the roster. Head back to the dugout and pick another at-bat.</p>
-      <div class="cta-row reveal">
-        <a class="btn primary" href="/">Back to home plate <span aria-hidden="true">→</span></a>
-        <a class="btn ghost" href="/portfolio/">See the lineup</a>
-      </div>
-      <div class="k-zone-wrap reveal" aria-hidden="true">
-        <div class="k-zone"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
-        <div class="k-ball"></div>
-      </div>
-    </div>
-  </section>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Page not found | Cool Matt Games</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#ECEEF8" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#121130" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="/favicon.svg"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<script>try{var t=localStorage.getItem('mj-theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Recursive:slnt,wght,CASL,CRSV,MONO@-15..0,300..1000,0..1,0..1,0..1&display=swap">
+<link rel="stylesheet" href="/assets/site.css">
+<script src="/assets/site.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="bar"><div class="wrap">
+  <a class="mark" href="/">Cool Matt Games</a>
+  <nav aria-label="Site"><a href="/#games" data-kind="games">Games</a><a href="/#tools" data-kind="tools">Tools</a><a href="/#toys" data-kind="toys">Toys</a><a href="/#widgets" data-kind="widgets">Widgets</a><a href="/about/">About</a><a class="book" href="/calendar/">Book a time</a></nav>
+  <button class="theme" type="button" aria-label="Switch colours"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg></button>
+</div></header>
+<main id="main">
+<div class="wrap">
+  <header class="piece-head">
+    <h1>That page isn't here</h1>
+    <p class="lede">The address may be old, or mistyped. Everything on the site is listed below.</p>
+  </header>
+</div>
+<section class="shelf wrap" id="games" data-kind="games"><div class="shelf-head"><h2>Games</h2><p>Things with a score. Each one takes a couple of minutes.</p></div><div class="shelf-grid"><a class="item" href="/slick-shift/"><div class="shot"><img src="/assets/shots/slick-shift.jpg" alt="" loading="lazy" width="720" height="450"></div><div class="label"><h3>Slick Shift</h3><p>A sliding-robot puzzle on a freshly waxed floor. Twelve levels, seven kinds of trouble.</p></div></a><a class="item" href="/goldfish/"><div class="shot"><img src="/assets/shots/goldfish.jpg" alt="" loading="lazy" width="720" height="450"></div><div class="label"><h3>Goldfish</h3><p>You are a model with a very short memory. Words stream past; say which ones you still hold.</p></div></a><a class="item" href="/second-opinion/"><div class="shot"><img src="/assets/shots/second-opinion.jpg" alt="" loading="lazy" width="720" height="450"></div><div class="label"><h3>Second Opinion</h3><p>Grade nine support replies, then see how a reviewer graded the same ones.</p></div></a><a class="item" href="/llmadness/"><div class="shot"><img src="/assets/shots/llmadness.jpg" alt="" loading="lazy" width="720" height="450"></div><div class="label"><h3>LLMAdness</h3><p>A four-model comedy bracket. Same prompt to both sides, and you pick the funnier answer.</p></div></a></div></section>
+<section class="shelf wrap" id="tools" data-kind="tools"><div class="shelf-head"><h2>Tools</h2><p>Things that do a job: check a boundary, plan a prompt, find a time.</p></div><div class="shelf-grid"><a class="item" href="/context-budget/"><div class="shot"><img src="/assets/shots/context-budget.jpg" alt="" loading="lazy" width="720" height="450"></div><div class="label"><h3>Context Budget</h3><p>Plan what goes into a context window and see how many turns fit before it fills up.</p></div></a><a class="item" href="/cry-wolf/"><div class="shot"><img src="/assets/shots/cry-wolf.jpg" alt="" loading="lazy" width="720" height="450"></div><div class="label"><h3>Cry Wolf</h3><p>Drive a truck past a warehouse and compare what a circle fence and a polygon fence report.</p></div></a><a class="item" href="/windhover/"><div class="shot"><img src="/assets/shots/windhover.jpg" alt="" loading="lazy" width="720" height="450"></div><div class="label"><h3>Windhover</h3><p>Six geofences on a map, four checks each. Drag the corners until every fence passes.</p></div></a></div></section>
+<section class="shelf wrap" id="toys" data-kind="toys"><div class="shelf-head"><h2>Toys</h2><p>Nothing to win. Move a slider and see what happens.</p></div><div class="shelf-grid"><a class="item" href="/thermostat/"><div class="shot"><img src="/assets/shots/thermostat.jpg" alt="" loading="lazy" width="720" height="450"></div><div class="label"><h3>Thermostat</h3><p>A tiny language model with a temperature dial. Turn it up and watch the sentences come apart.</p></div></a><a class="item" href="/downhill/"><div class="shot"><img src="/assets/shots/downhill.jpg" alt="" loading="lazy" width="720" height="450"></div><div class="label"><h3>Downhill</h3><p>Drop marbles on a bumpy surface and watch gradient descent roll them into the valleys.</p></div></a><a class="item" href="/breather/"><div class="shot"><img src="/assets/shots/breather.jpg" alt="" loading="lazy" width="720" height="450"></div><div class="label"><h3>Breather</h3><p>A breathing pacer with three patterns. Follow the circle for a minute.</p></div></a></div></section>
+<section class="shelf wrap" id="widgets" data-kind="widgets"><div class="shelf-head"><h2>Widgets</h2><p>Small, single-purpose, and happy to sit in a corner of a screen.</p></div><div class="shelf-grid"><a class="item" href="/follow-the-sun/"><div class="shot"><img src="/assets/shots/follow-the-sun.jpg" alt="" loading="lazy" width="720" height="450"></div><div class="label"><h3>Follow the Sun</h3><p>Five support teams in five time zones. Drag the clock to see who is on shift and when work changes hands.</p></div></a><a class="item" href="/calendar/"><div class="shot"><img src="/assets/shots/calendar.jpg" alt="" loading="lazy" width="720" height="450"></div><div class="label"><h3>Book a time</h3><p>Pick a day and a window, and the email to me writes itself.</p></div></a></div></section>
 </main>
-
-<footer>
-  <div class="wrap">
-    <div class="stitch" aria-hidden="true" style="margin-bottom:34px;"></div>
-    <div class="foot-grid">
-      <div>
-        <div class="foot-name">Let's talk ball.</div>
-        <p class="sec-sub" style="margin-top:12px;">Interested in what I'm building here? Drop a line — I answer.</p>
-      </div>
-      <div class="foot-links">
-        <a href="mailto:mscottjones24@gmail.com">mscottjones24@gmail.com</a>
-        <a href="https://linkedin.com/in/mattjoneshtx">linkedin.com/in/mattjoneshtx</a>
-        <a href="/calendar/">Book a time →</a>
-      </div>
-    </div>
-    <div class="copyright">© Matt Jones, 2026 — A website about nothing.</div>
-  </div>
-</footer>
-
-<script>
-  (function () {
-    var els = document.querySelectorAll('.reveal');
-    if (!('IntersectionObserver' in window)) {
-      els.forEach(function (e) { e.classList.add('in'); });
-      return;
-    }
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (en) {
-        if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
-      });
-    }, { threshold: 0.12 });
-    els.forEach(function (e) { io.observe(e); });
-  })();
-</script>
-
-</body></html>
+<footer class="site"><div class="wrap">
+  <div><h2>Made by Matt Jones</h2>
+  <p>I'm an AI designer. If you'd like a game, tool or widget like these for your own product, get in touch.</p></div>
+  <ul>
+    <li><a href="mailto:mscottjones24@gmail.com">mscottjones24@gmail.com</a></li>
+    <li><a href="https://www.linkedin.com/in/mattjoneshtx">LinkedIn</a></li>
+    <li><a href="/calendar/">Book a time</a></li>
+  </ul>
+  <p class="legal">© Matt Jones, 2026. Designed and built with Claude.</p>
+</div></footer>
+</body>
+</html>

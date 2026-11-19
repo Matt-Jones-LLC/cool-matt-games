@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Thermostat | Cool Matt Games</title>
+<meta name="description" content="Thermostat: a tiny next-word model with a temperature dial. See how sampling temperature reshapes the odds."><link rel="canonical" href="https://matt-jones.org/thermostat/"><meta property="og:type" content="website"><meta property="og:site_name" content="Cool Matt Games"><meta property="og:title" content="Thermostat | Cool Matt Games"><meta property="og:description" content="Thermostat: a tiny next-word model with a temperature dial. See how sampling temperature reshapes the odds."><meta property="og:url" content="https://matt-jones.org/thermostat/"><meta property="og:image" content="https://matt-jones.org/assets/og.png"><meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#ECEEF8" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#121130" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="/favicon.svg"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<script>try{var t=localStorage.getItem('mj-theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Recursive:slnt,wght,CASL,CRSV,MONO@-15..0,300..1000,0..1,0..1,0..1&display=swap">
+<link rel="stylesheet" href="/assets/site.css">
+<script src="/assets/site.js" defer></script>
+<style>
+  .th-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(20px, 4vw, 44px); }
+  @media (max-width: 800px) { .th-grid { grid-template-columns: 1fr; } }
+  .th-out { font-variation-settings: var(--v-head); font-weight: 700; font-size: clamp(1.5rem, 3.6vw, 2.2rem); line-height: 1.3; min-height: 6.5em; }
+  .th-out span { border-bottom: 4px solid var(--c, var(--line)); margin-right: .28em; display: inline-block; }
+  .th-out .cursor { border: 0; width: .5em; height: 1em; background: var(--k); vertical-align: -.12em; animation: th-blink 1s steps(2) infinite; }
+  @keyframes th-blink { 50% { opacity: 0; } }
+  .th-key { display: flex; gap: 16px; flex-wrap: wrap; color: var(--muted); font-size: .9rem; margin-top: 12px; }
+  .th-key i { display: inline-block; width: 18px; height: 4px; vertical-align: middle; margin-right: 6px; }
+  .th-dial { display: grid; grid-template-columns: 1fr auto; gap: 4px 14px; align-items: center; margin-bottom: 18px; }
+  .th-dial label { font-weight: 650; }
+  .th-dial b { font-variation-settings: var(--v-num); font-size: 1.5rem; }
+  .th-dial input { grid-column: 1 / 3; width: 100%; }
+  .th-dial small { grid-column: 1 / 3; color: var(--muted); min-height: 1.5em; }
+  .th-bars { display: grid; gap: 5px; }
+  .th-bar { all: unset; cursor: pointer; display: grid; grid-template-columns: 96px minmax(0, 1fr) 52px; gap: 10px; align-items: center; padding: 3px 4px; border-radius: 8px; }
+  .th-bar:hover { background: color-mix(in srgb, var(--ink) 7%, transparent); }
+  .th-bar:focus-visible { outline: 2.5px solid var(--tools); }
+  .th-bar .w { font-weight: 650; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .th-bar .t { height: 16px; border-radius: 4px; background: color-mix(in srgb, var(--ink) 8%, transparent); overflow: hidden; }
+  .th-bar .t i { display: block; height: 100%; background: var(--ink); border-radius: 4px; transition: width .18s ease; }
+  .th-bar.picked .t i { background: var(--k); }
+  .th-bar .p { font-variation-settings: var(--v-num); font-size: .9rem; text-align: right; color: var(--muted); }
+  .th-rest { color: var(--muted); font-size: .9rem; margin-top: 6px; min-height: 1.4em; }
+  details.th-corpus { margin-top: 16px; color: var(--muted); font-size: .95rem; max-width: 76ch; }
+  details.th-corpus summary { cursor: pointer; font-weight: 650; color: var(--ink); }
+  details.th-corpus p { margin-top: 10px; }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="bar"><div class="wrap">
+  <a class="mark" href="/">Cool Matt Games</a>
+  <nav aria-label="Site"><a href="/#games" data-kind="games">Games</a><a href="/#tools" data-kind="tools">Tools</a><a href="/#toys" data-kind="toys" aria-current="true">Toys</a><a href="/#widgets" data-kind="widgets">Widgets</a><a href="/about/">About</a><a class="book" href="/calendar/">Book a time</a></nav>
+  <button class="theme" type="button" aria-label="Switch colours"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg></button>
+</div></header>
+<main id="main" data-kind="toys">
+<div class="wrap">
+<header class="piece-head"><a class="kind" href="/#toys">Toys</a><h1>Thermostat</h1><p class="lede">This is a very small language model. It has read 72 short sentences and it guesses the next word from the one before. The dial is temperature: low and it always says the likeliest thing, high and it will say almost anything.</p></header>
+
+<div class="stage">
+  <div class="stage-top"><span>Thermostat</span><span id="thState">Ready</span></div>
+  <div class="stage-body th-grid">
+    <div>
+      <div class="th-out" id="thOut" aria-live="polite"></div>
+      <div class="th-key"><span><i style="background:var(--ok)"></i>likely pick</span><span><i style="background:var(--warn)"></i>a stretch</span><span><i style="background:var(--bad)"></i>long shot</span></div>
+      <div class="controls">
+        <button class="btn primary" type="button" id="thNext">Next word</button>
+        <button class="btn" type="button" id="thAuto">Finish the sentence</button>
+        <button class="btn" type="button" id="thClear">Start over</button>
+      </div>
+    </div>
+    <div>
+      <div class="th-dial">
+        <label for="thT">Temperature</label><b id="thTv">1.0</b>
+        <input type="range" id="thT" min="0.1" max="2.5" step="0.1" value="1">
+        <small id="thTsay"></small>
+      </div>
+      <div class="th-bars" id="thBars" aria-label="Odds for the next word. Click one to choose it yourself."></div>
+      <p class="th-rest" id="thRest"></p>
+    </div>
+  </div>
+</div>
+<details class="th-corpus"><summary>Read everything this model has ever read</summary><p id="thCorpus"></p></details>
+
+<div class="notes">
+  <div><h3>What the bars are</h3><p>For the last word in the sentence, the model counts which words followed it in its reading. Those counts become odds. A real model does the same job with a neural network and the whole conversation in view, where this one only looks back one word.</p></div>
+  <div><h3>What temperature does</h3><p>Each count is raised to the power of one over the temperature before the odds are worked out. Below 1, the favourite pulls further ahead. Above 1, the gaps close and unlikely words get a real chance. Drag the dial and the bars change before you pick anything.</p></div>
+  <div><h3>Why it matters</h3><p>Low temperature suits work where you want the same answer every time, like pulling a date out of an email. Higher settings suit brainstorming. Past a point, variety turns into nonsense, and you can see that happen here around 2.</p></div>
+</div>
+<nav class="onward" aria-label="More"><a href="/#toys">All toys</a><a class="next" data-kind="toys" href="/downhill/">Next: Downhill</a></nav>
+</div>
+</main>
+<footer class="site"><div class="wrap">
+  <div><h2>Made by Matt Jones</h2>
+  <p>I'm an AI designer. If you'd like a game, tool or widget like these for your own product, get in touch.</p></div>
+  <ul>
+    <li><a href="mailto:mscottjones24@gmail.com">mscottjones24@gmail.com</a></li>
+    <li><a href="https://www.linkedin.com/in/mattjoneshtx">LinkedIn</a></li>
+    <li><a href="/calendar/">Book a time</a></li>
+  </ul>
+  <p class="legal">© Matt Jones, 2026. Designed and built with Claude.</p>
+</div></footer>
+<script>
+(function () {
+  var CORPUS = 'the cat watches the moon. the cat likes the old dog. the cat wants a sandwich. the cat sleeps on the roof. the dog watches the cat. the dog likes a good sandwich. the dog wants the moon. the dog sleeps in the garden. the robot watches the old movie. the robot likes the garden. the robot wants a good idea. the robot paints the moon. the moon watches the garden. the moon likes a quiet night. the moon is a good idea. the moon is old and quiet. a good dog likes the garden. a good idea is a quiet idea. a quiet cat is a good cat. a sandwich is a good idea. a robot is a quiet neighbor. my neighbor likes the old movie. my neighbor wants a robot. my neighbor paints the garden. my neighbor is a good cook. my cat is old and good. my dog is a good dog. my robot paints a quiet garden. my sandwich is on the roof. the old dog sleeps on the roof. the old robot wants a new idea. the old movie is a good movie. the old cook likes a new sandwich. the new robot likes the old cat. the new cook paints the roof. the new movie is quiet and old. the new neighbor wants the garden. the garden is quiet and good. the garden likes the moon. the garden is on the roof. the roof is old and quiet. the roof is a good idea. the cook wants a new garden. the cook likes the quiet dog. the cook watches the new movie. the cook is in the garden. the night is quiet and new. the night is a good movie. the night likes the old moon. the idea is old and good. the idea is on the roof. the idea wants a new cook. the sandwich is in the garden. the sandwich is old and quiet. the sandwich wants a cook. the movie is on the moon. the movie likes a good night. the neighbor watches the roof. the neighbor sleeps in the new garden. the neighbor is a quiet robot. a cat sleeps in the old garden. a dog paints the new roof. a cook is a good neighbor. a movie is a quiet night. a new idea is a good sandwich. a quiet night is a good night. my idea is a new robot. my garden is on the moon. my roof is a quiet garden. my movie is old and new. my cook wants the moon. my night is quiet and good.';
+  var sentences = CORPUS.split('. ').map(function (s) { return s.replace('.', ''); });
+  var model = {};
+  sentences.forEach(function (s) {
+    var w = ['^'].concat(s.split(' '), ['.']);
+    for (var i = 0; i < w.length - 1; i++) { model[w[i]] = model[w[i]] || {}; model[w[i]][w[i + 1]] = (model[w[i]][w[i + 1]] || 0) + 1; }
+  });
+  var $ = function (id) { return document.getElementById(id); };
+  $('thCorpus').textContent = sentences.join('. ') + '.';
+  var out = [], prev = '^', ended = 0, T = 1, auto = null;
+  function odds() {
+    var c = model[prev], sum = 0;
+    var list = Object.keys(c).map(function (k) { var v = Math.pow(c[k], 1 / T); sum += v; return [k, v]; });
+    list.forEach(function (x) { x[1] /= sum; });
+    return list.sort(function (a, b) { return b[1] - a[1]; });
+  }
+  function colour(p) { return p >= .25 ? 'var(--ok)' : p >= .08 ? 'var(--warn)' : 'var(--bad)'; }
+  function paint(picked) {
+    var o = $('thOut'); o.innerHTML = '';
+    out.forEach(function (x) {
+      var s = document.createElement('span'); s.textContent = x.w; s.style.setProperty('--c', colour(x.p));
+      s.title = Math.round(x.p * 100) + '% chance when it was picked'; o.appendChild(s);
+    });
+    var cur = document.createElement('span'); cur.className = 'cursor'; o.appendChild(cur);
+    var list = odds(), bars = $('thBars'); bars.innerHTML = '';
+    list.slice(0, 9).forEach(function (x) {
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'th-bar';
+      var name = x[0] === '.' ? 'end the sentence' : x[0], pct = x[1] * 100;
+      b.innerHTML = '<span class="w">' + name + '</span><span class="t"><i style="width:' + Math.max(1, pct) + '%"></i></span><span class="p">' + (pct < 1 ? '<1' : Math.round(pct)) + '%</span>';
+      b.setAttribute('aria-label', name + ', ' + Math.round(pct) + ' percent. Choose this word.');
+      b.addEventListener('click', function () { add(x[0], x[1]); });
+      bars.appendChild(b);
+    });
+    $('thRest').textContent = list.length > 9 ? 'and ' + (list.length - 9) + ' less likely words' : '';
+    $('thTv').textContent = T.toFixed(1);
+    $('thTsay').textContent = T <= .3 ? 'Nearly always the favourite. Run it twice and you get the same sentence.' : T < .9 ? 'Cautious. The favourite usually wins.' : T <= 1.2 ? 'The odds as the model learned them.' : T <= 1.8 ? 'Loose. Outsiders get picked often.' : 'Close to a coin toss between every word that could follow.';
+  }
+  function add(w, p) {
+    if (w === '.') {
+      if (out.length) out[out.length - 1].w += '.';
+      prev = '^'; ended++;
+    } else {
+      if (prev === '^' && ended >= 3) { out = []; ended = 0; }
+      out.push({ w: w, p: p }); prev = w;
+    }
+    paint();
+  }
+  function step() {
+    var list = odds(), r = Math.random(), i = 0;
+    while (r > list[i][1] && i < list.length - 1) { r -= list[i][1]; i++; }
+    add(list[i][0], list[i][1]); return list[i][0];
+  }
+  function stop() { clearInterval(auto); auto = null; $('thState').textContent = 'Ready'; }
+  $('thNext').addEventListener('click', step);
+  $('thAuto').addEventListener('click', function () {
+    if (auto) return;
+    var n = 0; $('thState').textContent = 'Writing…';
+    auto = setInterval(function () { if (step() === '.' || ++n > 40) stop(); }, 260);
+  });
+  $('thClear').addEventListener('click', function () { stop(); out = []; prev = '^'; ended = 0; paint(); });
+  $('thT').addEventListener('input', function () { T = +this.value; paint(); });
+  var guard = 0; while (step() !== '.' && ++guard < 40) {}
+})();
+</script>
+</body>
+</html>

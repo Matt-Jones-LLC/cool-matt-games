@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Breather | Cool Matt Games</title>
+<meta name="description" content="Breather: a breathing pacer with three patterns. Follow the circle in, hold, and out."><link rel="canonical" href="https://matt-jones.org/breather/"><meta property="og:type" content="website"><meta property="og:site_name" content="Cool Matt Games"><meta property="og:title" content="Breather | Cool Matt Games"><meta property="og:description" content="Breather: a breathing pacer with three patterns. Follow the circle in, hold, and out."><meta property="og:url" content="https://matt-jones.org/breather/"><meta property="og:image" content="https://matt-jones.org/assets/og.png"><meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#ECEEF8" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#121130" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="/favicon.svg"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<script>try{var t=localStorage.getItem('mj-theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Recursive:slnt,wght,CASL,CRSV,MONO@-15..0,300..1000,0..1,0..1,0..1&display=swap">
+<link rel="stylesheet" href="/assets/site.css">
+<script src="/assets/site.js" defer></script>
+<style>
+  .br { display: grid; grid-template-columns: minmax(220px, 340px) 1fr; gap: clamp(20px, 4vw, 44px); align-items: center; }
+  @media (max-width: 720px) { .br { grid-template-columns: 1fr; } }
+  .br-ring { position: relative; aspect-ratio: 1; width: 100%; max-width: 340px; margin: 0 auto; display: grid; place-items: center; border-radius: 50%; border: 1.5px dashed var(--line); }
+  .br-ball { width: 94%; aspect-ratio: 1; border-radius: 50%; transform: scale(.5); background: var(--k); border: 1.5px solid var(--ink); display: grid; place-items: center; text-align: center; color: #1A1840; transition: transform 1s ease-in-out; }
+  .br-ball b { display: block; font-variation-settings: var(--v-head); font-weight: 900; font-size: 2.6rem; line-height: 1; }
+  .br-ball span { font-variation-settings: var(--v-num); font-size: 3.2rem; font-weight: 700; }
+  .br-pick { display: flex; flex-wrap: wrap; gap: 8px; }
+  .br-desc { color: var(--muted); margin-top: 14px; min-height: 3.2em; }
+  .br-tally { display: flex; gap: 32px; margin-top: 22px; }
+  .br-tally div { color: var(--muted); font-size: .92rem; }
+  .br-tally b { display: block; font-variation-settings: var(--v-num); font-size: 1.9rem; color: var(--ink); line-height: 1.1; }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="bar"><div class="wrap">
+  <a class="mark" href="/">Cool Matt Games</a>
+  <nav aria-label="Site"><a href="/#games" data-kind="games">Games</a><a href="/#tools" data-kind="tools">Tools</a><a href="/#toys" data-kind="toys" aria-current="true">Toys</a><a href="/#widgets" data-kind="widgets">Widgets</a><a href="/about/">About</a><a class="book" href="/calendar/">Book a time</a></nav>
+  <button class="theme" type="button" aria-label="Switch colours"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg></button>
+</div></header>
+<main id="main" data-kind="toys">
+<div class="wrap">
+<header class="piece-head"><a class="kind" href="/#toys">Toys</a><h1>Breather</h1><p class="lede">A breathing pacer. Pick a pattern, press start, and follow the circle: in as it grows, out as it shrinks.</p></header>
+
+<div class="stage">
+  <div class="stage-top"><span>Breather</span><span id="brState">Ready</span></div>
+  <div class="stage-body br">
+    <div class="br-ring"><div class="br-ball" id="brBall" aria-hidden="true"><div><b id="brPhase">Ready</b><span id="brCount">–</span></div></div></div>
+    <div>
+      <div class="br-pick" role="group" aria-label="Pattern" id="brPick"></div>
+      <p class="br-desc" id="brDesc"></p>
+      <div class="controls">
+        <button class="btn primary" type="button" id="brGo">Start</button>
+        <button class="btn" type="button" id="brReset">Reset count</button>
+      </div>
+      <div class="br-tally"><div><b id="brRounds">0</b>breaths</div><div><b id="brClock">0:00</b>time</div></div>
+      <p class="sr" id="brLive" aria-live="polite"></p>
+    </div>
+  </div>
+</div>
+<p class="fine">A pacing aid, not medical advice. If a pattern feels uncomfortable, stop and breathe normally.</p>
+
+<div class="notes">
+  <div><h3>Box</h3><p>In for four, hold four, out for four, hold four. The same on every side, which makes it easy to keep going.</p></div>
+  <div><h3>4-7-8</h3><p>In for four, a long hold for seven, and a longer breath out for eight. Slow on purpose.</p></div>
+  <div><h3>Five and five</h3><p>No holds. In for five, out for five. The easiest one to keep up for several minutes.</p></div>
+</div>
+<nav class="onward" aria-label="More"><a href="/#toys">All toys</a><a class="next" data-kind="widgets" href="/follow-the-sun/">Next: Follow the Sun</a></nav>
+</div>
+</main>
+<footer class="site"><div class="wrap">
+  <div><h2>Made by Matt Jones</h2>
+  <p>I'm an AI designer. If you'd like a game, tool or widget like these for your own product, get in touch.</p></div>
+  <ul>
+    <li><a href="mailto:mscottjones24@gmail.com">mscottjones24@gmail.com</a></li>
+    <li><a href="https://www.linkedin.com/in/mattjoneshtx">LinkedIn</a></li>
+    <li><a href="/calendar/">Book a time</a></li>
+  </ul>
+  <p class="legal">© Matt Jones, 2026. Designed and built with Claude.</p>
+</div></footer>
+<script>
+(function () {
+  var PATTERNS = {
+    box:  { name: 'Box',           desc: 'In 4, hold 4, out 4, hold 4.', steps: [['In', 4, 1], ['Hold', 4, 1], ['Out', 4, .5], ['Hold', 4, .5]] },
+    slow: { name: '4-7-8',         desc: 'In 4, hold 7, out 8.',         steps: [['In', 4, 1], ['Hold', 7, 1], ['Out', 8, .5]] },
+    even: { name: 'Five and five', desc: 'In 5, out 5. No holds.',       steps: [['In', 5, 1], ['Out', 5, .5]] }
+  };
+  var $ = function (id) { return document.getElementById(id); };
+  var ball = $('brBall'), go = $('brGo'), cur = 'box', running = false, timer = null, step = 0, left = 0, rounds = 0, secs = 0;
+  Object.keys(PATTERNS).forEach(function (k) {
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.textContent = PATTERNS[k].name; b.dataset.k = k;
+    b.addEventListener('click', function () { stop(); cur = k; pick(); });
+    $('brPick').appendChild(b);
+  });
+  function pick() {
+    Array.prototype.forEach.call($('brPick').children, function (b) { b.setAttribute('aria-pressed', String(b.dataset.k === cur)); });
+    $('brDesc').textContent = PATTERNS[cur].desc;
+  }
+  function fmt(s) { return Math.floor(s / 60) + ':' + ('0' + (s % 60)).slice(-2); }
+  function enter(i) {
+    var s = PATTERNS[cur].steps[i]; step = i; left = s[1];
+    $('brPhase').textContent = s[0]; $('brCount').textContent = left;
+    ball.style.transitionDuration = s[1] + 's'; ball.style.transform = 'scale(' + s[2] + ')';
+    $('brLive').textContent = s[0] + ' for ' + s[1];
+  }
+  function tick() {
+    secs++; left--; $('brClock').textContent = fmt(secs);
+    if (left <= 0) { var n = step + 1; if (n >= PATTERNS[cur].steps.length) { n = 0; rounds++; $('brRounds').textContent = rounds; } enter(n); }
+    else $('brCount').textContent = left;
+  }
+  function start() { running = true; go.textContent = 'Pause'; $('brState').textContent = 'Breathing'; enter(0); timer = setInterval(tick, 1000); }
+  function stop() {
+    running = false; clearInterval(timer); go.textContent = 'Start'; $('brState').textContent = 'Ready';
+    $('brPhase').textContent = 'Ready'; $('brCount').textContent = '–'; ball.style.transitionDuration = '.6s'; ball.style.transform = 'scale(.5)';
+  }
+  go.addEventListener('click', function () { running ? stop() : start(); });
+  $('brReset').addEventListener('click', function () { rounds = 0; secs = 0; $('brRounds').textContent = '0'; $('brClock').textContent = '0:00'; });
+  pick();
+})();
+</script>
+</body>
+</html>

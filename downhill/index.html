@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Downhill | Cool Matt Games</title>
+<meta name="description" content="Downhill: drop marbles on a loss surface and watch gradient descent find the valleys. Learning rate and momentum included."><link rel="canonical" href="https://matt-jones.org/downhill/"><meta property="og:type" content="website"><meta property="og:site_name" content="Cool Matt Games"><meta property="og:title" content="Downhill | Cool Matt Games"><meta property="og:description" content="Downhill: drop marbles on a loss surface and watch gradient descent find the valleys. Learning rate and momentum included."><meta property="og:url" content="https://matt-jones.org/downhill/"><meta property="og:image" content="https://matt-jones.org/assets/og.png"><meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#ECEEF8" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#121130" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="/favicon.svg"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<script>try{var t=localStorage.getItem('mj-theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Recursive:slnt,wght,CASL,CRSV,MONO@-15..0,300..1000,0..1,0..1,0..1&display=swap">
+<link rel="stylesheet" href="/assets/site.css">
+<script src="/assets/site.js" defer></script>
+<style>
+  .dh-canvas { display: block; width: 100%; aspect-ratio: 16 / 10; cursor: crosshair; touch-action: manipulation; border-bottom: 1.5px solid var(--ink); }
+  .dh-panel { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px 28px; padding: 16px 18px 18px; align-items: start; }
+  .dh-panel label { font-weight: 650; display: flex; justify-content: space-between; gap: 10px; }
+  .dh-panel label b { font-variation-settings: var(--v-num); }
+  .dh-panel input[type="range"] { width: 100%; }
+  .dh-panel small { color: var(--muted); display: block; font-size: .9rem; min-height: 2.6em; }
+  .dh-panel .controls { margin-top: 0; }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="bar"><div class="wrap">
+  <a class="mark" href="/">Cool Matt Games</a>
+  <nav aria-label="Site"><a href="/#games" data-kind="games">Games</a><a href="/#tools" data-kind="tools">Tools</a><a href="/#toys" data-kind="toys" aria-current="true">Toys</a><a href="/#widgets" data-kind="widgets">Widgets</a><a href="/about/">About</a><a class="book" href="/calendar/">Book a time</a></nav>
+  <button class="theme" type="button" aria-label="Switch colours"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg></button>
+</div></header>
+<main id="main" data-kind="toys">
+<div class="wrap">
+<header class="piece-head"><a class="kind" href="/#toys">Toys</a><h1>Downhill</h1><p class="lede">Click anywhere on the map to drop a marble. Each one only knows which way is downhill from where it sits, and it keeps stepping that way. That is gradient descent, the method used to train neural networks.</p></header>
+
+<div class="stage">
+  <div class="stage-top"><span>Downhill</span><span id="dhStats">No marbles yet. Click the map.</span></div>
+  <canvas class="dh-canvas" id="dhCanvas" tabindex="0" aria-label="A contour map. Click to drop a marble; press Enter to drop one at random."></canvas>
+  <div class="dh-panel">
+    <div><label for="dhLr">Step size <b id="dhLrV"></b></label><input type="range" id="dhLr" min="1" max="100" value="22"><small id="dhLrSay"></small></div>
+    <div><label for="dhMo">Momentum <b id="dhMoV"></b></label><input type="range" id="dhMo" min="0" max="97" value="0"><small id="dhMoSay"></small></div>
+    <div class="controls"><button class="btn primary" type="button" id="dhRain">Drop 20 at random</button><button class="btn" type="button" id="dhClear">Clear</button><button class="btn" type="button" id="dhNew">New map</button></div>
+  </div>
+</div>
+<p class="fine">Darker means lower. The ring marks the lowest point on the map. A marble that stops anywhere else has found a valley, but not the deepest one.</p>
+
+<div class="notes">
+  <div><h3>What this has to do with AI</h3><p>Training a model means adjusting millions of numbers to make its error smaller. Think of the error as height on a landscape. Training walks downhill on it, one small step at a time, exactly as these marbles do, only in far more than two dimensions.</p></div>
+  <div><h3>Step size</h3><p>Called the learning rate. Small steps are safe and slow. Big steps cover ground fast, and past a point the marble overshoots the valley floor, bounces between the walls and can fly off the map. Turn it up and watch.</p></div>
+  <div><h3>Momentum</h3><p>With momentum a marble keeps some of its speed from the last step, like a real ball. That lets it roll through shallow dips that would trap a marble with none. Try the same map at 0 and at 0.9 and compare how many reach the ring.</p></div>
+</div>
+<nav class="onward" aria-label="More"><a href="/#toys">All toys</a><a class="next" data-kind="toys" href="/breather/">Next: Breather</a></nav>
+</div>
+</main>
+<footer class="site"><div class="wrap">
+  <div><h2>Made by Matt Jones</h2>
+  <p>I'm an AI designer. If you'd like a game, tool or widget like these for your own product, get in touch.</p></div>
+  <ul>
+    <li><a href="mailto:mscottjones24@gmail.com">mscottjones24@gmail.com</a></li>
+    <li><a href="https://www.linkedin.com/in/mattjoneshtx">LinkedIn</a></li>
+    <li><a href="/calendar/">Book a time</a></li>
+  </ul>
+  <p class="legal">© Matt Jones, 2026. Designed and built with Claude.</p>
+</div></footer>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var cv = $('dhCanvas'), ctx = cv.getContext('2d'), bg = document.createElement('canvas');
+  var hills = [], best = null, marbles = [], W = 0, H = 0, C = {}, dirty = true, lr, mo;
+  var calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function colours() {
+    var cs = getComputedStyle(document.documentElement);
+    ['paper', 'card', 'ink', 'toys', 'tools', 'games'].forEach(function (k) { C[k] = cs.getPropertyValue('--' + k).trim(); });
+    dirty = true;
+  }
+  document.addEventListener('mj-theme', colours); matchMedia('(prefers-color-scheme: dark)').addEventListener('change', colours);
+  /* the surface: a shallow bowl with several pits of different depths. x runs 0..1.6, y runs 0..1 */
+  function f(x, y) {
+    var h = .35 * ((x - .8) * (x - .8) * .5 + (y - .5) * (y - .5));
+    for (var i = 0; i < hills.length; i++) { var g = hills[i], dx = x - g.x, dy = y - g.y; h -= g.d * Math.exp(-(dx * dx + dy * dy) / g.s); }
+    return h;
+  }
+  function grad(x, y) { var e = .001; return [(f(x + e, y) - f(x - e, y)) / (2 * e), (f(x, y + e) - f(x, y - e)) / (2 * e)]; }
+  function newMap() {
+    hills = []; var n = 5 + Math.floor(Math.random() * 3);
+    for (var i = 0; i < n; i++) hills.push({ x: .15 + Math.random() * 1.3, y: .12 + Math.random() * .76, d: .25 + Math.random() * .55, s: .012 + Math.random() * .03 });
+    best = { h: 9 };
+    for (var y = 0; y <= 1; y += .01) for (var x = 0; x <= 1.6; x += .01) { var h = f(x, y); if (h < best.h) best = { x: x, y: y, h: h }; }
+    marbles = []; dirty = true; stats();
+  }
+  function hex(c) { var d = document.createElement('canvas').getContext('2d'); d.fillStyle = c; d.fillRect(0, 0, 1, 1); return d.getImageData(0, 0, 1, 1).data; }
+  function paintMap() {
+    var w = 240, h = 150; bg.width = w; bg.height = h;
+    var b = bg.getContext('2d'), img = b.createImageData(w, h), hi = hex(C.card), lo = hex(C.tools), ink = hex(C.ink), lowest = best.h, top = .25;
+    for (var y = 0; y < h; y++) for (var x = 0; x < w; x++) {
+      var v = (f(x / w * 1.6, y / h) - lowest) / (top - lowest); v = Math.max(0, Math.min(1, v));
+      var band = Math.floor(v * 14), t = 1 - band / 14, edge = (v * 14 - band) < .09, i = (y * w + x) * 4;
+      for (var k = 0; k < 3; k++) { var c = hi[k] + (lo[k] - hi[k]) * t * .85; img.data[i + k] = edge ? c + (ink[k] - c) * .35 : c; }
+      img.data[i + 3] = 255;
+    }
+    b.putImageData(img, 0, 0); dirty = false;
+  }
+  function drop(x, y) { marbles.push({ x: x, y: y, vx: 0, vy: 0, trail: [[x, y]], state: 'roll', still: 0 }); if (marbles.length > 120) marbles.shift(); }
+  function stats() {
+    var s = marbles.filter(function (m) { return m.state !== 'roll'; }), deep = s.filter(function (m) { return m.state === 'deep'; }).length, off = s.filter(function (m) { return m.state === 'off'; }).length;
+    $('dhStats').textContent = marbles.length ? deep + ' of ' + marbles.length + ' reached the lowest point' + (off ? ', ' + off + ' flew off the map' : '') : 'No marbles yet. Click the map.';
+  }
+  function step(m) {
+    var g = grad(m.x, m.y);
+    m.vx = mo * m.vx - lr * g[0]; m.vy = mo * m.vy - lr * g[1];
+    m.x += m.vx; m.y += m.vy; m.trail.push([m.x, m.y]); if (m.trail.length > 400) m.trail.shift();
+    if (m.x < -.05 || m.x > 1.65 || m.y < -.05 || m.y > 1.05) { m.state = 'off'; stats(); return; }
+    m.still = Math.hypot(m.vx, m.vy) < .00025 ? m.still + 1 : 0;
+    if (m.still > 25) { m.state = Math.hypot(m.x - best.x, m.y - best.y) < .05 ? 'deep' : 'stuck'; stats(); }
+  }
+  function frame() {
+    var r = cv.getBoundingClientRect(), dpr = Math.min(window.devicePixelRatio || 1, 2);
+    if (cv.width !== Math.round(r.width * dpr)) { cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr); }
+    W = r.width; H = r.height; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    if (dirty) paintMap();
+    ctx.imageSmoothingEnabled = true; ctx.drawImage(bg, 0, 0, W, H);
+    var sx = W / 1.6, sy = H;
+    ctx.strokeStyle = C.ink; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(best.x * sx, best.y * sy, 13, 0, 6.3); ctx.stroke();
+    ctx.setLineDash([4, 4]); ctx.beginPath(); ctx.arc(best.x * sx, best.y * sy, 20, 0, 6.3); ctx.stroke(); ctx.setLineDash([]);
+    marbles.forEach(function (m) {
+      if (m.state === 'roll') for (var k = 0; k < (calm ? 6 : 2); k++) if (m.state === 'roll') step(m);
+      ctx.strokeStyle = C.ink; ctx.globalAlpha = .55; ctx.lineWidth = 1.5; ctx.beginPath();
+      m.trail.forEach(function (p, i) { i ? ctx.lineTo(p[0] * sx, p[1] * sy) : ctx.moveTo(p[0] * sx, p[1] * sy); }); ctx.stroke(); ctx.globalAlpha = 1;
+      if (m.state === 'off') return;
+      ctx.fillStyle = m.state === 'deep' ? C.toys : m.state === 'stuck' ? C.card : C.games; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(m.x * sx, m.y * sy, 7, 0, 6.3); ctx.fill(); ctx.stroke();
+    });
+    requestAnimationFrame(frame);
+  }
+  function knobs() {
+    lr = Math.pow(+$('dhLr').value / 100, 2) * .12 + .0004; mo = +$('dhMo').value / 100;
+    $('dhLrV').textContent = (lr * 10).toFixed(2); $('dhMoV').textContent = mo.toFixed(2);
+    $('dhLrSay').textContent = lr < .003 ? 'Tiny steps. Safe, and slow.' : lr < .02 ? 'A sensible step.' : lr < .06 ? 'Big steps. Expect some bouncing.' : 'Huge steps. Most marbles will overshoot.';
+    $('dhMoSay').textContent = mo === 0 ? 'None. A marble stops in the first dip it finds.' : mo < .7 ? 'A little carry-over from the last step.' : mo < .93 ? 'Heavy. Rolls through shallow dips.' : 'Very heavy. Takes a long time to settle.';
+  }
+  cv.addEventListener('click', function (e) { var r = cv.getBoundingClientRect(); drop((e.clientX - r.left) / r.width * 1.6, (e.clientY - r.top) / r.height); stats(); });
+  cv.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); drop(Math.random() * 1.6, Math.random()); stats(); } });
+  $('dhRain').addEventListener('click', function () { for (var i = 0; i < 20; i++) drop(.05 + Math.random() * 1.5, .05 + Math.random() * .9); stats(); });
+  $('dhClear').addEventListener('click', function () { marbles = []; stats(); });
+  $('dhNew').addEventListener('click', newMap);
+  $('dhLr').addEventListener('input', knobs); $('dhMo').addEventListener('input', knobs);
+  colours(); knobs(); newMap(); requestAnimationFrame(frame);
+  window.__dh = { drop: drop };
+})();
+</script>
+</body>
+</html>
