@@ -45,3 +45,7 @@ setup is in `dns/records.md`.
 
 The previous site (portfolio, baseball pages, demos) was retired in November 2026. It is still in this
 repository's history, before the `cool-matt-games` branch.
+
+## Optional Datadog diagnostics
+
+Performance, error, and game-start monitoring is included but remains disabled until public RUM identifiers are configured. Visitors opt in through the diagnostics control; replay is off and browser privacy signals are respected. API/application keys never belong in browser code.
