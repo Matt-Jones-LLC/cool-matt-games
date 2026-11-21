@@ -50,6 +50,7 @@
   function wake() {
     if (!ac) { var AC = window.AudioContext || window.webkitAudioContext; if (AC) { try { ac = new AC(); } catch (e) { ac = null; } } }
     if (ac && ac.state === 'suspended') ac.resume();
+    if (CMG.sfx) CMG.sfx.wake(muted ? [] : SAMPLE_FILES);   // nothing is downloaded while sound is off
   }
   function tone(freq, dur, type, vol, slideTo, delay) {
     if (muted || !ac) return;
@@ -68,6 +69,19 @@
     strike: function () { tone(180, 0.28, 'sawtooth', 0.09, 70); },
     over: function () { [392, 330, 262, 196].forEach(function (f, i) { tone(f, 0.24, 'triangle', 0.1, 0, i * 0.15); }); }
   };
+
+  // Recorded sounds replace the beeps above once they have loaded; the beep stays as the fallback.
+  var SAMPLES = { bounce: 'corner-shot--bounce', hit: 'corner-shot--corner-ding', strike: 'corner-shot--near-miss-boing' };
+  var SAMPLE_FILES = Object.keys(SAMPLES).map(function (k) { return SAMPLES[k]; }).concat(['corner-shot--perfect-jingle']);
+  Object.keys(SAMPLES).forEach(function (k) {
+    var synth = sfx[k];
+    sfx[k] = function (arg) {
+      var name = k === 'hit' && arg === 3 ? 'corner-shot--perfect-jingle' : SAMPLES[k];
+      // The boing is recorded about 18 dB quieter than the ding, so it gets a boost and the ding a trim.
+      var opts = k === 'bounce' ? { rate: 0.9 + colorIdx * 0.06, volume: 0.3 } : k === 'strike' ? { volume: 2.5 } : { volume: 0.35 };
+      if (muted || !CMG.sfx || !CMG.sfx.play(name, opts)) synth(arg);
+    };
+  });
 
   /* ---------- aiming ---------- */
   // Distance from point (px, py) to the segment (x1, y1) -> (x2, y2).
@@ -321,6 +335,7 @@
   }
   function setMuted(m) {
     muted = m; CMG.store(MUTE_KEY, m ? '1' : '0');
+    if (m && CMG.sfx) CMG.sfx.stop();
     ui.btnSound.textContent = m ? 'Sound: off' : 'Sound: on';
     ui.btnSound.setAttribute('aria-pressed', m ? 'false' : 'true');
   }
@@ -340,7 +355,7 @@
   ui.btnAgain.addEventListener('click', start);
   ui.btnResume.addEventListener('click', resume);
   ui.btnPause.addEventListener('click', pause);
-  ui.btnSound.addEventListener('click', function () { wake(); setMuted(!muted); });
+  ui.btnSound.addEventListener('click', function () { setMuted(!muted); wake(); });
   document.addEventListener('keydown', function (e) {
     if (e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
     var key = e.key.toLowerCase();

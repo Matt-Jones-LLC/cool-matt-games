@@ -47,6 +47,8 @@
   function wake() {
     if (!ac) { var AC = window.AudioContext || window.webkitAudioContext; if (AC) { try { ac = new AC(); } catch (e) { ac = null; } } }
     if (ac && ac.state === 'suspended') ac.resume();
+    // Nothing is downloaded while sound is off, and the modem (the biggest file) only before dialing up.
+    if (CMG.sfx) CMG.sfx.wake(muted ? [] : S && S.started ? SAMPLE_FILES.filter(function (n) { return n !== SAMPLES.dial; }) : SAMPLE_FILES);
   }
   function tone(f, d, type, vol, slide, delay) {
     if (muted || !ac) return;
@@ -64,6 +66,31 @@
     cash: function () { [659, 784, 1047].forEach(function (f, i) { tone(f, 0.1, 'triangle', 0.09, 0, i * 0.07); }); },
     warp: function () { tone(120, 0.5, 'sawtooth', 0.07, 1600); },
     dial: function () { [1200, 2100, 980, 1650, 2400].forEach(function (f, i) { tone(f, 0.12, 'square', 0.035, 0, i * 0.11); }); }
+  };
+  // Recorded sounds replace the beeps above once they have loaded; the beep stays as the fallback.
+  var SAMPLES = { dial: 'thebomb--modem-dial', bad: 'thebomb--pc-error-beep', good: 'thebomb--typing', warp: 'thebomb--startup-chime' };
+  // solo: these are long recordings on repeatable actions, so a new one replaces the old instead of piling up.
+  var SAMPLE_OPTS = { dial: { volume: 0.3, solo: true }, good: { volume: 0.6, offset: 0.12, solo: true },
+                      warp: { offset: 0.2, solo: true }, bad: { volume: 1.4, offset: 0.08, solo: true } };
+  var SAMPLE_FILES = Object.keys(SAMPLES).map(function (k) { return SAMPLES[k]; });
+  Object.keys(SAMPLES).forEach(function (k) {
+    var synth = sfx[k];
+    sfx[k] = function () { if (muted || !CMG.sfx || !CMG.sfx.play(SAMPLES[k], SAMPLE_OPTS[k])) synth(); };
+  });
+  // Dialing up is the first click of the game, so the modem recording is still loading when it is
+  // asked for. Play what is ready at once (the short beeps, first time), then start the recording
+  // as soon as it has loaded. One timer only: a second dial or a reset cancels the first.
+  var dialNow = sfx.dial, dialTimer = 0;
+  sfx.dial = function () {
+    window.clearInterval(dialTimer);
+    dialNow();
+    if (muted || !CMG.sfx || CMG.sfx.ready(SAMPLES.dial)) return;
+    var tries = 0;
+    dialTimer = window.setInterval(function () {
+      tries++;
+      if (muted || !S.started || tries > 40) { window.clearInterval(dialTimer); return; }
+      if (CMG.sfx.play(SAMPLES.dial, SAMPLE_OPTS.dial)) window.clearInterval(dialTimer);
+    }, 100);
   };
 
   /* ---------- the four eras ---------- */
@@ -576,11 +603,14 @@
     } else if (b.hasAttribute('data-reset')) {
       if (!confirmReset) { confirmReset = true; renderMoney(); live(); return; }
       S = fresh(); tab = 'site'; confirmReset = false; elToast.textContent = '';
+      if (CMG.sfx) CMG.sfx.stop();
     }
     save(); renderAll();
   });
   btnSound.addEventListener('click', function () {
-    wake(); muted = !muted; CMG.store(MUTE_KEY, muted ? '1' : '0');
+    muted = !muted; CMG.store(MUTE_KEY, muted ? '1' : '0');
+    if (muted && CMG.sfx) CMG.sfx.stop();
+    wake();
     btnSound.textContent = muted ? 'Sound: off' : 'Sound: on';
     btnSound.setAttribute('aria-pressed', muted ? 'false' : 'true');
   });

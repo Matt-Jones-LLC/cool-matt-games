@@ -189,7 +189,7 @@ h1, h2, h3, p { margin: 0; }
 /* ---------- windows ---------- */
 .desk { display: grid; gap: 18px; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); align-items: start; }
 .desk > .wide { grid-column: 1 / -1; }
-.stack { display: grid; gap: 18px; }
+.stack { display: grid; gap: 18px; grid-template-columns: minmax(0, 1fr); }
 
 .win {
   border-radius: 14px;
@@ -370,6 +370,15 @@ a.cart:hover { box-shadow: 0 0 0 2px var(--aqua-1), 0 4px 12px rgba(8, 60, 110, 
 
 .plain-list { margin: 0; padding-left: 1.15em; }
 .plain-list li + li { margin-top: 6px; }
+
+/* ---------- credits table ---------- */
+.table-wrap { overflow-x: auto; }
+.credits { width: 100%; border-collapse: collapse; font-size: .94rem; }
+.credits th, .credits td { padding: 8px 10px 8px 0; text-align: left; vertical-align: top; border-top: 1px solid rgba(10, 47, 82, .14); }
+.credits thead th { border-top: 0; font-size: .86rem; color: var(--ink-2); font-weight: 700; }
+.credits tbody th { font-weight: 700; }
+.credits td:nth-child(2) { overflow-wrap: anywhere; }
+.credits thead th, .credits td:nth-child(3), .credits td:nth-child(4) { white-space: nowrap; }
 
 /* ---------- status bar ---------- */
 .status {

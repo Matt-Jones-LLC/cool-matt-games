@@ -64,6 +64,7 @@
   function wake() {
     if (!ac) { var AC = window.AudioContext || window.webkitAudioContext; if (AC) { try { ac = new AC(); } catch (e) { ac = null; } } }
     if (ac && ac.state === 'suspended') ac.resume();
+    if (CMG.sfx) CMG.sfx.wake(muted ? [] : SAMPLE_FILES);   // nothing is downloaded while sound is off
   }
   function tone(freq, dur, type, vol, slideTo, delay) {
     if (muted || !ac) return;
@@ -88,6 +89,22 @@
     win: function () { [523, 659, 784, 1047, 1319].forEach(function (f, i) { tone(f, 0.22, 'triangle', 0.12, 0, i * 0.13); }); },
     over: function () { [392, 330, 262, 196].forEach(function (f, i) { tone(f, 0.26, 'triangle', 0.11, 0, i * 0.16); }); }
   };
+
+  // Recorded sounds replace the beeps above once they have loaded; the beep stays as the fallback.
+  var SAMPLES = { pop: 'overnight-shift--pop', spam: 'overnight-shift--spam-error', coffee: 'overnight-shift--coffee',
+                  macro: 'overnight-shift--macro-whoosh', win: 'overnight-shift--shift-complete', over: 'overnight-shift--queue-won' };
+  // Levels and lead-in trims, set from measurements of each file (peak level and leading silence).
+  var SAMPLE_OPTS = { spam: { volume: 2 }, coffee: { offset: 0.06 }, win: { volume: 0.4 }, over: { volume: 0.7 } };
+  var SAMPLE_FILES = Object.keys(SAMPLES).map(function (k) { return SAMPLES[k]; }).concat(['overnight-shift--pop-alt']);
+  Object.keys(SAMPLES).forEach(function (k) {
+    var synth = sfx[k];
+    sfx[k] = function (special) {
+      var name = k === 'pop' && special ? 'overnight-shift--pop-alt' : SAMPLES[k];
+      // The alternate pop file opens with 0.22 s of silence, so skip most of it or the pop lands late.
+      var opts = k === 'pop' ? { rate: 1 + Math.min(combo, 40) * 0.012, offset: special ? 0.2 : 0 } : SAMPLE_OPTS[k];
+      if (muted || !CMG.sfx || !CMG.sfx.play(name, opts)) synth();
+    };
+  });
 
   /* ---------- skyline (same every time: a tiny seeded generator) ---------- */
   var seed = 24;
@@ -207,7 +224,7 @@
     b.hp--;
     if (b.hp > 0) { b.pulse = 1; b.y = Math.min(b.y + 24, H - 40); sfx.knock(); return; }
     bubbles.splice(hit, 1);
-    resolve(b); sfx.pop();
+    resolve(b); sfx.pop(b.type !== 'ticket');
   }
 
   function update(dt) {
@@ -508,6 +525,7 @@
 
   function setMuted(m) {
     muted = m; CMG.store(MUTE_KEY, m ? '1' : '0');
+    if (m && CMG.sfx) CMG.sfx.stop();
     ui.btnSound.textContent = m ? 'Sound: off' : 'Sound: on';
     ui.btnSound.setAttribute('aria-pressed', m ? 'false' : 'true');
   }
@@ -535,7 +553,7 @@
   ui.btnAgain.addEventListener('click', start);
   ui.btnResume.addEventListener('click', resume);
   ui.btnPause.addEventListener('click', pause);
-  ui.btnSound.addEventListener('click', function () { wake(); setMuted(!muted); });
+  ui.btnSound.addEventListener('click', function () { setMuted(!muted); wake(); });
 
   document.addEventListener('keydown', function (e) {
     if (e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;

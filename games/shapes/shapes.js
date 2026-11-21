@@ -95,6 +95,7 @@
   function wake() {
     if (!ac) { const AC = window.AudioContext || window.webkitAudioContext; if (AC) { try { ac = new AC(); } catch (e) { ac = null; } } }
     if (ac && ac.state === 'suspended') ac.resume();
+    if (CMG.sfx) CMG.sfx.wake(muted ? [] : SAMPLE_FILES);   // nothing is downloaded while sound is off
   }
   function tone(freq, dur, type, vol, slideTo, delay) {
     if (muted || !ac || testMode) return;
@@ -121,6 +122,19 @@
     click() { tone(660, 0.04, 'square', 0.04); },
     start() { tone(262, 0.08, 'square', 0.07, 523); tone(523, 0.16, 'square', 0.07, 1047, 0.08); }
   };
+
+  // Recorded sounds replace the beeps above once they have loaded; the beep stays as the fallback.
+  // Menu clicks and the ordinary win jingle stay synthesized: the click recording was near-silent and
+  // late, and the coin recording's source page has since been deleted, so neither is shipped.
+  const SAMPLES = { hit: 'shapes--hit', crit: 'shapes--hit', level: 'shapes--level-up', lose: 'shapes--flattened' };
+  const SAMPLE_OPTS = { crit: { rate: 1.35 }, lose: { volume: 1.5, offset: 0.06 } };
+  const SAMPLE_FILES = Array.from(new Set(Object.values(SAMPLES))).concat(['shapes--boss-beaten']);
+  Object.keys(SAMPLES).forEach((k) => {
+    const synth = sfx[k];
+    sfx[k] = () => { if (muted || testMode || !CMG.sfx || !CMG.sfx.play(SAMPLES[k], SAMPLE_OPTS[k])) synth(); };
+  });
+  // Returns true when the boss fanfare played, so the caller can skip the ordinary win jingle.
+  sfx.boss = () => !muted && !testMode && !!CMG.sfx && CMG.sfx.play('shapes--boss-beaten', { volume: 0.9 });
 
   /* ---------- save data ---------- */
   let account = null;   // { name, since }
@@ -323,7 +337,7 @@
       btn('snd', muted ? 'Sound: off' : 'Sound: on', { cls: 'alt' })
     ]) + '<p class="shp-note">' + esc(A.name) + '. You are a ' + shapeName() + ' with ' + S.gold + ' gold. Tap where you want to go, or use the arrow keys.</p>', {
       party: partyScreen, items() { itemScreen(null); }, acct: accountScreen,
-      snd() { muted = !muted; CMG.store(MUTE_KEY, muted ? '1' : '0'); worldPanel(msg); }
+      snd() { muted = !muted; CMG.store(MUTE_KEY, muted ? '1' : '0'); if (muted && CMG.sfx) CMG.sfx.stop(); wake(); worldPanel(msg); }
     });
   }
   function backToWorld(msg) { mode = 'world'; grace = 0.6; world.spots.forEach((s) => { if (dist(S, s) <= s.r + 6) s.armed = false; }); worldPanel(msg); }
@@ -755,7 +769,7 @@
       await wait(head('Flattened', 'Your ' + shapeName() + ' wakes up at the inn in ' + AREAS[S.area].name + ', ' + (lost ? lost + ' gold lighter' : 'no poorer') + ' and fully rested.'), 'Get back up');
       B = null; save(); enterWorld(false); return;
     }
-    sfx.win();
+    if (!(isBoss && sfx.boss())) sfx.win();
     let xp = 0, gold = 0;
     B.en.forEach((e) => { xp += Math.round((5 + 4 * e.lv) * (e.boss ? 6 : 1)); gold += Math.round((3 + 2 * e.lv) * (e.boss ? 8 : 1)); });
     S.gold += gold; S.wins++;

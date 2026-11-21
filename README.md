@@ -39,8 +39,10 @@ described below.
 | `games/<name>/index.html` | One game per folder, with its script (and stylesheet, if it has one) beside it |
 | `404.html` | The not-found page |
 | `assets/site.css` | The shared look: Frutiger Aero sky and glass, with Y2K window chrome |
-| `assets/site.js` | Background bubbles and the "games played on this device" counter |
+| `assets/site.js` | Background bubbles, the "games played on this device" counter, and the shared sound player (`CMG.sfx`) |
 | `assets/gifs/` | The moving pixel art, each with a still image for visitors who ask for reduced motion |
+| `assets/sounds/` | Recorded sound effects for the games. Each game falls back to its own synthesized beeps if a file has not loaded |
+| `credits/index.html` | Who made each sound, with its license and source |
 | `assets/monitoring.js`, `assets/monitoring-config.js` | The optional diagnostics |
 | `sitemap.xml`, `robots.txt`, `favicon.svg` | The usual |
 | `CNAME`, `.nojekyll` | The custom domain, and "serve these files as they are" |
@@ -121,3 +123,7 @@ the site as Cool Matt Games".
 ## License
 
 The code is under the Apache License 2.0; see `LICENSE`.
+
+The recordings in `assets/sounds/` are other people's work, found through Openverse and downloaded
+from Freesound. Fifteen are CC0 and four are CC BY 4.0; `credits/index.html` lists every one with
+its maker, license and source, and that page must stay published while the CC BY sounds are in use.
