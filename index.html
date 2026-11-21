@@ -30,9 +30,12 @@
   </header>
 
   <main id="main">
-    <div class="masthead">
-      <h1 class="wordmark">Cool Matt Games</h1>
-      <p class="tagline">Small free games for when the rest of the internet is too loud. No ads, no sign-up, no feed.</p>
+    <div class="masthead with-pal">
+      <div>
+        <h1 class="wordmark">Cool Matt Games</h1>
+        <p class="tagline">Small free games for when the rest of the internet is too loud. No ads, no sign-up, no feed.</p>
+      </div>
+      <picture class="pal"><source media="(prefers-reduced-motion: reduce) and (min-width: 1000px)" srcset="/assets/gifs/dancer.png"><source media="(prefers-reduced-motion: reduce)" srcset="/assets/gifs/dancer-2x.png"><source media="(min-width: 1000px)" srcset="/assets/gifs/dancer.gif"><img class="gif" src="/assets/gifs/dancer-2x.gif" alt="DJ Pixel, the site mascot, dancing in headphones" width="128" height="160"></picture>
     </div>
 
     <div class="desk">
@@ -103,7 +106,8 @@
                 <span class="cart-art corner" aria-hidden="true"></span>
                 <span><strong>Corner Shot</strong><span>One button. Tap when the bouncing logo hits a corner.</span></span>
               </a>
-              <a class="cart" href="/games/thebomb/">
+              <a class="cart is-new" href="/games/thebomb/">
+                <picture class="cart-new"><source media="(prefers-reduced-motion: reduce)" srcset="/assets/gifs/new-badge.png"><img class="gif" src="/assets/gifs/new-badge.gif" alt="New" width="64" height="64"></picture>
                 <span class="cart-art bomb" aria-hidden="true"></span>
                 <span><strong>TheBomb.com</strong><span>Conquer the internet in 1996, 2003, 2012 and 2028. A time machine is involved.</span></span>
               </a>
@@ -115,7 +119,7 @@
   </main>
 
   <footer class="status">
-    <p>Games played on this device <span class="lcd" data-plays>000000</span></p>
+    <p><picture><source media="(prefers-reduced-motion: reduce)" srcset="/assets/gifs/equalizer.png"><img class="gif" src="/assets/gifs/equalizer.gif" alt="" width="46" height="32"></picture>Games played on this device <span class="lcd" data-plays>000000</span></p>
     <p>Made in Houston, Texas by Matt Jones, 2026</p>
   </footer>
 </div>
