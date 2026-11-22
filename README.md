@@ -1,7 +1,22 @@
 # website
 
-The whole of matt-jones.org (www.matt-jones.org redirects to it). Every page is a plain HTML file in this repo, served by
-GitHub Pages. To change the site, edit a file and push to `main`. It's live a minute later.
+Matt Jones' personal site: a home page, about and portfolio pages, and one page per software or
+baseball project. Every page is a single self-contained HTML file (inline CSS and JavaScript, no
+build step, no dependencies), set up for GitHub Pages.
+
+These pages formerly served matt-jones.org from this repository's `main` branch. Since then:
+
+- matt-jones.org serves the Matt Jones, LLC company site from
+  [Matt-Jones-LLC/matt-jones.org](https://github.com/Matt-Jones-LLC/matt-jones.org).
+- This repository was renamed to
+  [matt-jones-org/cool-matt-games](https://github.com/matt-jones-org/cool-matt-games) (the old
+  `matt-jones-org/website` URL redirects), and its `main` branch is now the
+  [coolmatt.games](https://coolmatt.games) arcade.
+
+So the personal site lives on this branch, and nothing deploys it from here. The `CNAME` file
+still says `matt-jones.org` from the old setup.
+
+## Pages
 
 | URL                | File                         | Source artifact                                      |
 |--------------------|------------------------------|------------------------------------------------------|
@@ -21,10 +36,29 @@ GitHub Pages. To change the site, edit a file and push to `main`. It's live a mi
 | `/skills/`         | `skills/index.html`          | Built in the repo (scouting-report skills page)       |
 
 All pages share the home page's navigation. Links between pages are root-relative (`/about/`),
-and the Software/Baseball menu items go to each project's own page.
+and the Software/Baseball menu items go to each project's own page. The Follow the Sun map on the
+home page and on `/hibob/` is the same script; change both together.
 
-Deploys run from `.github/workflows/pages.yml` on every push to `main`
-(Settings → Pages → Source: **GitHub Actions**).
+## Previewing locally
 
-Other files: `CNAME` (records the custom domain; the live setting is in Settings → Pages), `.nojekyll` (serve files as-is),
-`favicon.svg`. DNS and email setup is in `dns/records.md`.
+Because links are root-relative, serve the repo root rather than opening files directly:
+
+```sh
+python3 -m http.server 8000
+# http://localhost:8000/
+```
+
+## Deploying
+
+The workflow on this branch, `.github/workflows/pages.yml`, deploys on push to `main` (Settings → Pages → Source:
+**GitHub Actions**). It copies everything except `README.md`, `LICENSE`, `dns/` and `.github/`
+into `_site` and publishes that. Since `main` is now the arcade, merging this branch there would
+replace the arcade; publishing the personal site again needs its own repo or Pages setup.
+
+## Other files
+
+- `CNAME`: left over from when this branch's content served matt-jones.org (see above).
+- `.nojekyll`: serve files as-is.
+- `favicon.svg`: shared icon.
+- `dns/records.md`, `dns/check.sh`: DNS and Google Workspace email records for matt-jones.org,
+  written when this repo served the domain, and a script that shows what public DNS returns.
