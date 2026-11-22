@@ -475,6 +475,8 @@
     var DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
     var MAIL = 'mscottjones24@gmail.com';
 
+    // Every Date here is local midnight, so getTime() equality means "same day".
+    // Booking is open for this month plus the next two.
     var today = new Date(); today.setHours(0, 0, 0, 0);
     var view = new Date(today.getFullYear(), today.getMonth(), 1);
     var minView = new Date(view);
@@ -497,6 +499,8 @@
       body.innerHTML = '';
       var first = new Date(view.getFullYear(), view.getMonth(), 1).getDay();
       var count = new Date(view.getFullYear(), view.getMonth() + 1, 0).getDate();
+      // Sunday-first grid: pad the first week, break rows after Saturday,
+      // then pad out the last week.
       var row = document.createElement('tr');
       for (var i = 0; i < first; i++) row.appendChild(blank());
       for (var d = 1; d <= count; d++) {
@@ -521,6 +525,7 @@
       b.type = 'button'; b.className = 'day';
       b.textContent = date.getDate();
       var dow = date.getDay();
+      // Weekdays only, nothing in the past.
       b.disabled = dow === 0 || dow === 6 || date < today;
       b.setAttribute('aria-pressed', selDate && date.getTime() === selDate.getTime() ? 'true' : 'false');
       b.setAttribute('aria-label', DAYS[dow] + ', ' + MONTHS[date.getMonth()] + ' ' + date.getDate());

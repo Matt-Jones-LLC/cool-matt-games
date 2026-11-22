@@ -357,6 +357,7 @@ const CALLS = [
   { v:1, ic:"🚫", name:"EJECTION", desc:"policy breach" }
 ];
 
+// booth = the reference call each play is graded against.
 const PLAYS = [
   { t:"THE DOUBLE CHARGE", cat:"BILLING",
     c:"Hi — I just got charged twice for my subscription this month. $29.99 on the 1st AND the 3rd. Can someone fix this?",
@@ -421,9 +422,11 @@ const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 let deck = [], inning = 0, results = [], streak = 0, best = 0, locked = false;
 
+// Fisher-Yates on a copy.
 function shuffle(a){ const x = a.slice(); for(let i=x.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [x[i],x[j]]=[x[j],x[i]]; } return x; }
 
 function newGame(){
+  // Nine random plays, one per inning, so replays differ.
   deck = shuffle(PLAYS).slice(0,9);
   inning = 0; results = []; streak = 0; best = 0;
   $("final").classList.remove("show");
@@ -476,6 +479,7 @@ function makeCall(v, btn){
   if(locked) return; locked = true;
   document.querySelectorAll(".callbtn").forEach(b=>{ b.disabled = true; if(b===btn) b.classList.add("picked"); });
   const p = deck[inning];
+  // Exact match agrees; one notch off on the 4-point scale is "close".
   const diff = Math.abs(v - p.booth);
   const grade = diff===0 ? "agree" : diff===1 ? "close" : "blown";
   if(grade==="agree"){ streak++; best=Math.max(best,streak); } else { streak=0; }
@@ -505,6 +509,7 @@ function finish(){
   $("booth").classList.remove("show");
   const agree = results.filter(r=>r.grade==="agree").length;
   const close = results.filter(r=>r.grade==="close").length;
+  // 2 per agree, 1 per close, so 18 is a perfect game.
   const pts = agree*2 + close;
   const rating = pts>=16 ? "COOPERSTOWN CALIBRATED" : pts>=12 ? "GOLD-STANDARD SCORER" : pts>=8 ? "SOLID CLUB SCORER" : "ROOKIE BALL — RUN IT BACK";
   $("fRating").textContent = "CALIBRATION "+Math.round(pts/18*100)+"% · BEST STREAK "+best+" · RATING: "+rating;
@@ -533,6 +538,7 @@ function finish(){
 
 $("nextBtn").addEventListener("click", nextPlay);
 $("againBtn").addEventListener("click", newGame);
+// Keys 1-4 pick a call (same order as the buttons), Enter moves on.
 document.addEventListener("keydown", e=>{
   if(e.key>="1" && e.key<="4" && !locked && !$("final").classList.contains("show")){
     const btns = document.querySelectorAll(".callbtn");

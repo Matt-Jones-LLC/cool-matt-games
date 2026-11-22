@@ -427,6 +427,7 @@
         note.textContent = 'Fill in all three numbers to run the math.';
         return;
       }
+      // Standard clinch formula; the +1 rules out the chaser finishing tied.
       var mn = G + 1 - W - L;
       if (mn <= 0) {
         out.textContent = '0';

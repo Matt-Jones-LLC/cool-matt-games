@@ -403,6 +403,7 @@ function samplePath(route, stepMeters){
 }
 
 /* score a run: per-column arrival/departure/dwell + false intervals per fence */
+// Not called anywhere at the moment; stepStates() does the same bookkeeping live.
 function scoreRun(samples, polyFence, circFence){
   const cols = { a:{arr:null,dep:null,fe:0}, p:{arr:null,dep:null,fe:0}, c:{arr:null,dep:null,fe:0} };
   const events = [];
@@ -585,6 +586,8 @@ function startRun(){
   }
   raf = requestAnimationFrame(frame);
 }
+// A fence visit (arrival to departure) that never overlapped a sample on the
+// actual property is a false visit. It costs 2: one bogus arrival, one bogus departure.
 function stepStates(pos){
   const inA = pip(pos.x, pos.y, PROP);
   const inP = $("ckPoly").checked && pip(pos.x, pos.y, polyFence);
@@ -664,7 +667,7 @@ function fillBoard(cols){
     put("dw", c, mins(dw), c !== "a" && dw !== null && cols.a.dwell !== undefined ? "" : "");
     put("fe", c, String(d.fe), d.fe > 0 ? "bad" : "good");
   });
-  // dwell coloring: compare fences to actual
+  // dwell coloring: compare fences to actual. More than 90s over actual dwell is flagged.
   const aDw = (cols.a.arr !== null && cols.a.dep !== null) ? cols.a.dep - cols.a.arr : null;
   ["p","c"].forEach(c => {
     const d = cols[c];
@@ -679,6 +682,7 @@ function fillBoard(cols){
 
 /* ------------ fence editing ------------ */
 let drag = null;
+// Screen px -> scene meters via the inverse CTM, so drags track at any rendered size.
 function svgPoint(evt){
   const pt = svg.createSVGPoint();
   pt.x = evt.clientX; pt.y = evt.clientY;
@@ -694,6 +698,7 @@ svg.addEventListener("pointermove", e => {
   if (!drag) return;
   const p = svgPoint(e);
   if (drag === "rad"){
+    // Snap to 10 m and clamp to the slider's 140-480 range so the two stay in sync.
     circFence.r = Math.max(140, Math.min(480, Math.round(dist(p.x, p.y, circFence.cx, circFence.cy) / 10) * 10));
     $("radSlider").value = circFence.r; $("radLbl").textContent = circFence.r + " m";
   } else if (drag.startsWith("v")){
@@ -734,11 +739,16 @@ $("fenceReset").addEventListener("click", () => {
 
 /* ------------ exports (local meters -> WGS-84) ------------ */
 const LAT0 = 29.7215, LON0 = -95.2810, X0 = 500, Y0 = 310;
+// Flat-earth approximation: ~111,320 m per degree of latitude, longitude degrees
+// shrink by cos(lat). Plenty accurate across a few hundred meters.
+// Returns [lon, lat], the GeoJSON/KML order.
 function toLL(x, y){
   const lat = LAT0 + (Y0 - y) / 111320;
   const lon = LON0 + (x - X0) / (111320 * Math.cos(LAT0 * Math.PI / 180));
   return [ +lon.toFixed(6), +lat.toFixed(6) ];
 }
+// GeoJSON and KML have no circle type, so export an n-gon. i runs to n inclusive
+// to close the ring.
 function circleRing(c, n){
   const ring = [];
   for (let i = 0; i <= n; i++){
