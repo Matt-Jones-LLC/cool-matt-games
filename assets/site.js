@@ -63,6 +63,7 @@
       if (!sfxCtx || !buffer) return false;
       opts = opts || {};
       var key = name + '@' + (opts.rate || 1), now = sfxCtx.currentTime;
+      // sfxLast[key] starts undefined, and NaN < 0.03 is false, so the first play always goes through.
       if (now - sfxLast[key] < 0.03) return true;   // the same sound just started; stacking copies only distorts
       sfxLast[key] = now;
       if (opts.solo) sfxStop(name);
@@ -99,6 +100,7 @@
   var counter = document.querySelector('[data-plays]');
   if (counter) {
     var n = String(window.CMG.plays());
+    // Six digits, like an old hit counter.
     while (n.length < 6) n = '0' + n;
     counter.textContent = n;
   }

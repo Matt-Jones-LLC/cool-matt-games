@@ -35,6 +35,7 @@
   }
   function pad6(n) { n = String(Math.floor(n)); while (n.length < 6) n = '0' + n; return n; }
   function era(i) { return S.eras[i]; }
+  // Traffic per second in era i: the built features, times whatever multipliers events applied.
   function rate(i) {
     var r = 0, E = era(i);
     for (var k = 0; k < E.built; k++) r += RATES[k];
@@ -94,6 +95,9 @@
   };
 
   /* ---------- the four eras ---------- */
+  // Each era has seven fill-in-the-blank features, gated by THRESH, and a list of events.
+  // An event fires once, when the era reaches `at` traffic or when cond() turns true. Its fx and
+  // its choices' fx change S directly. perHit is dollars per unit of traffic while pay is on.
   var ERAS = [
     {
       id: 'e96', year: '1996', web: 'Web 1.0', unit: 'hits', mult: 1, perHit: 0.5, file: 'index.html', cm: ['<!-- ', ' -->'],
@@ -127,6 +131,7 @@
             { label: 'Take $1,200,000 in cash instead', cond: function () { return !!S.flags.sawCrash; }, say: 'They think you are crazy to take less. You know something they do not.', fx: function () { S.flags.deal = 'cash'; S.cash += 1.2e6; S.flags.crashT = era(0).t + 12; } },
             { label: 'Turn them down', say: 'You stay independent. The banner money keeps coming. For now.', fx: function () { S.flags.deal = 'none'; S.flags.crashT = era(0).t + 12; } }
           ] },
+        // 12 seconds of 1996 play time after the MegaPortal offer, whichever way it went.
         { id: 'crash', cond: function () { return S.flags.crashT && era(0).t >= S.flags.crashT; }, from: 'NEWS',
           text: function () {
             var d = S.flags.deal;
@@ -139,6 +144,7 @@
             if (S.flags.deal !== 'cash') era(0).pay = 0;
             S.flags.sawCrash = true; era(0).done = true; unlock(1);
           } },
+        // Only reachable after the crash and a trip back to 1996 (travel() sets flags.returned).
         { id: 'loop', cond: function () { return S.flags.returned && S.flags.deal !== 'cash'; }, from: 'MegaPortal Corp',
           text: 'The fax arrives again, exactly as it did the first time. This time you know how March 2000 goes.',
           choices: [
@@ -265,6 +271,8 @@
     }
   ];
 
+  // see: eras unlocked before it appears in the Money window. sellEra: the earliest era it can be
+  // sold in. pets-by-mail.com is the joke one: free, and never sellable.
   var DOMAINS = [
     { id: 'pets', name: 'pets-by-mail.com', see: 1, sellEra: 9, price: 0 },
     { id: 'flash', name: 'flashgamez.com', see: 2, sellEra: 1, price: 40000 },
@@ -273,6 +281,8 @@
   ];
 
   /* ---------- state ---------- */
+  // Save format v1. load() throws away anything that does not match, so change v (and migrate)
+  // if this shape changes.
   function fresh() {
     var eras = [];
     for (var i = 0; i < 4; i++) eras.push({ hits: 0, built: 0, mul: 1, pay: i === 0 ? 0 : 1, t: 0, seen: {}, log: [], done: false });
@@ -287,6 +297,8 @@
   }
   function save() { CMG.store(SAVE_KEY, JSON.stringify(S)); sinceSave = 0; }
 
+  // Log entries: f sender (* for narration), t text, ev event id, c offered choice indices,
+  // p the index picked (-1 while waiting).
   function say(i, from, text) { era(i).log.push({ f: from, t: text, p: -1, c: null }); }
   function unlock(i) {
     if (S.unlocked < i + 1) {
@@ -320,6 +332,8 @@
     if (S.era === 2) return F.sold12 ? 'Acquired founder with a vesting schedule' : 'Founder and CEO, hoodie era';
     return F.ai === 'stock' ? 'Paper decabillionaire' : 'Prompt baron';
   }
+  // Eras you are not in keep running at a quarter of the speed. pay starts at 0 in 1996 and
+  // 1 everywhere else; events switch it on, off or up.
   function income() {
     var t = S.salary;
     for (var i = 0; i < S.unlocked; i++) t += rate(i) * (i === S.era ? 1 : 0.25) * ERAS[i].perHit * era(i).pay;
@@ -486,6 +500,8 @@
     root.className = 'bomb era-' + ERAS[S.era].id + (root.className.indexOf('warp') >= 0 ? ' warp' : '');
     renderDial(); renderBrowser(); renderChat(); renderMoney(); live();
   }
+  // Per-tick update. Only the [data-live] text changes; the markup around it is left alone so
+  // buttons do not get replaced under the cursor.
   function live() {
     elWorth.textContent = money(S.cash + S.paper);
     elTitle.textContent = title();
@@ -505,6 +521,7 @@
 
   /* ---------- the loop ---------- */
   function gain() { return 1 + rate(S.era) * 0.6; }
+  // At most one event per call, and none while a choice is waiting, so messages arrive one at a time.
   function checkEvents() {
     var i = S.era, ev = ERAS[i].events, E = era(i);
     if (pending(i)) return;
@@ -537,6 +554,7 @@
     era(S.era).t += dt;
     checkEvents();
     var Ec = era(S.era), key = S.era + ':' + Ec.built + ':' + (Ec.built < 7 && Ec.hits >= THRESH[Ec.built]);
+    // Rebuild the source view only when the next feature becomes writable or gets built.
     if (key !== availKey && tab === 'source') renderBrowser();
     availKey = key;
     live();
@@ -552,6 +570,7 @@
     if (i === 0 && S.flags.sawCrash) S.flags.returned = true;
     tab = 'site'; confirmReset = false;
     sfx.warp();
+    // Reading offsetWidth forces a reflow between remove and add, which restarts the CSS animation.
     root.classList.remove('warp'); void root.offsetWidth; root.classList.add('warp');
     toast('You arrive in ' + ERAS[i].year + '. Every other year is still running without you.');
     save(); renderAll();
@@ -621,6 +640,8 @@
   btnSound.setAttribute('aria-pressed', muted ? 'false' : 'true');
   renderAll();
 
+  // Nothing here animates per frame, so a 5 Hz timer drives the economy. dt is capped at 1 s, so
+  // a throttled background tab earns slower instead of catching up in one jump.
   var last = window.performance.now();
   window.setInterval(function () {
     var now = window.performance.now(), dt = Math.min(1, (now - last) / 1000);

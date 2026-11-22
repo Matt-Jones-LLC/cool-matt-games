@@ -88,6 +88,7 @@
   const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
 
   let fastMode = false, testMode = false;
+  // Battle pacing. Test mode skips the waits entirely; fast mode runs them at 45%.
   const sleep = (ms) => (testMode ? Promise.resolve() : new Promise((r) => setTimeout(r, fastMode ? ms * 0.45 : ms)));
 
   /* ---------- sound ---------- */
@@ -165,6 +166,7 @@
     return o;
   }
   function save() { if (S) { S.savedAt = Date.now(); CMG.store(SAVE_KEY, JSON.stringify(S)); } }
+  // btoa only takes Latin-1, hence the encodeURIComponent/unescape round trip (and the reverse in readCode).
   function saveCode() { return btoa(unescape(encodeURIComponent(JSON.stringify(S)))); }
   function readCode(code) {
     try { const o = JSON.parse(decodeURIComponent(escape(atob(String(code).trim())))); return validSave(o) ? normalize(o) : null; }
@@ -187,7 +189,9 @@
   function base(m, k) { const c = CLASSES[m.cls][k]; return Math.floor(c[0] + c[1] * (m.lv - 1)); }
   function maxHp(m) { return base(m, 'hp'); }
   function maxMp(m) { return base(m, 'mp'); }
+  // About 640 XP to go from level 10 to 11, and the curve steepens from there.
   function xpNeed(lv) { return Math.floor(18 * Math.pow(lv, 1.55)); }
+  // Per-member upgrade cap: two levels for each area reached, plus two per New Game Plus.
   function gearCap() { return (S.maxArea + 1) * 2 + S.ngp * 2; }
   function gearCost(tier) { return Math.round(30 * Math.pow(tier + 1, 1.8)); }
   function knows(m) { return CLASS_SKILLS[m.cls].filter((id) => m.lv >= SKILLS[id].lv); }
@@ -204,6 +208,8 @@
 
   /* ---------- panel plumbing ---------- */
   let handlers = {};
+  // Replace the panel. If focus was inside it, move focus to the first control so keyboard
+  // players are not dropped back to <body>.
   function ui(html, h) {
     const had = panel.contains(document.activeElement);
     panel.innerHTML = html;
@@ -287,9 +293,11 @@
   }
 
   /* ---------- world ---------- */
+  // grace: seconds of encounter immunity after entering an area or leaving a menu. The party blinks while it lasts.
   let world = null, dest = null, rot = 0, grace = 0, saveClock = 0, stepClock = 0;
   const keys = {};
 
+  // Numerical Recipes LCG. Each area has its own seed, so its scenery is the same every visit.
   function seeded(seed) { let s = seed >>> 0; return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; }
 
   function buildWorld(i) {
@@ -302,6 +310,7 @@
     if (i > 0) spots.push({ id: 'back', x: 36, y: 380, r: 28, label: 'To ' + AREAS[i - 1].name });
     if (i < AREAS.length - 1) spots.push({ id: 'next', x: MW - 36, y: 380, r: 28, label: 'To ' + AREAS[i + 1].name });
     if (!S.boss[i]) spots.push({ id: 'boss', x: MW - 180, y: 380, r: 44, label: A.boss.name });
+    // A spot only fires after you have stepped out of it, so arriving on top of one does not reopen it.
     spots.forEach((s) => { s.armed = dist(S, s) > s.r + 6; });
     const en = [];
     for (let n = 0; n < 8; n++) en.push(spawnEnemy(i, {}));
@@ -518,6 +527,8 @@
 
   function hit(att, tgt, pow, o) {
     o = o || {};
+    // Damage: attack x power, +/-12%, scaled by 100 / (100 + 2.5 x defense). Pierce ignores defense,
+    // guarding halves it, and 8% of hits crit for 1.6x. Dealing a hit charges the shape meter 7, taking one 10.
     let dmg = atkOf(att) * pow * rand(0.88, 1.12) * 100 / (100 + (o.pierce ? 0 : defOf(tgt)) * 2.5);
     const crit = Math.random() < 0.08;
     if (crit) dmg *= 1.6;
@@ -540,6 +551,7 @@
   function battleHead(text) { return log(text) + partyRows() + '<p class="shp-meter"><span class="shp-bar sh"><i style="width:' + Math.floor(S.meter) + '%"></i><b>Shape ' + Math.floor(S.meter) + '%</b></span></p>'; }
   function show(text) { ui(battleHead(text), {}); }
 
+  // Resolves with the target, or null on Back. A tap on the canvas can also pick, via B.pick.
   function pickTarget(list, prompt, back) {
     return new Promise((resolve) => {
       if (list.length === 1) { resolve(list[0]); return; }
@@ -551,6 +563,8 @@
     });
   }
 
+  // The command menu as a promise: it resolves once with the chosen action. Back buttons
+  // redraw a menu instead of resolving.
   function choose(c) {
     return new Promise((resolve) => {
       const m = c.m, foes = () => B.en.filter(alive), pals = () => B.pa.filter(alive);
@@ -703,6 +717,7 @@
 
   async function runBattle(group, isBoss, mapEnemy) {
     mode = 'battle'; dest = null;
+    // Duplicate names get A, B, C suffixes so the target buttons can tell them apart.
     const letters = {};
     group.forEach((g) => { letters[g.name] = (letters[g.name] || 0) + 1; });
     const seen = {};
@@ -715,6 +730,7 @@
       await sleep(800);
       let result = null;
       while (!result) {
+        // Turn order is rerolled every round: speed with +/-15% jitter.
         const order = B.pa.concat(B.en).filter(alive).map((c) => ({ c, s: spdOf(c) * rand(0.85, 1.15) })).sort((a, b) => b.s - a.s).map((o) => o.c);
         for (const c of order) {
           if (!alive(c)) continue;
@@ -777,6 +793,7 @@
     let leveled = false;
     S.party.forEach((m) => {
       const down = m.hp <= 0, before = knows(m).length;
+      // Downed members earn half XP and get back up with 1 HP.
       const ups = gainXp(m, down ? Math.floor(xp / 2) : xp);
       if (m.hp <= 0) m.hp = 1;
       if (ups) {
@@ -789,6 +806,7 @@
     });
     if (!isBoss && Math.random() < 0.25) { S.items.potion++; lines.push('They dropped a Potion.'); }
     if (leveled) sfx.level();
+    // dead is a respawn timer in seconds; updateWorld respawns it somewhere new.
     if (mapEnemy) mapEnemy.dead = 22;
 
     if (isBoss) {
@@ -1000,6 +1018,8 @@
       for (let i = B.fx.length - 1; i >= 0; i--) { B.fx[i].life -= dt; B.fx[i].y -= 26 * dt; if (B.fx[i].life <= 0) B.fx.splice(i, 1); }
     }
   }
+  // This loop never stops; it idles while the tab is hidden. Menus and battle turns run on
+  // promises and DOM events, so the loop only animates and moves the party.
   function frame(now) {
     const dt = Math.min(0.05, (now - last) / 1000 || 0);
     last = now;
@@ -1017,6 +1037,8 @@
   }
 
   /* ---------- input ---------- */
+  // Canvas point in view units. The handlers add the camera offset (the same clamp drawWorld uses)
+  // to get map coordinates.
   function point(e) { const r = cv.getBoundingClientRect(); return { x: (e.clientX - r.left) / r.width * VW, y: (e.clientY - r.top) / r.height * VH }; }
   let dragging = false;
   cv.addEventListener('pointerdown', (e) => {
@@ -1046,6 +1068,7 @@
     if (k && mode === 'world') { keys[k] = true; e.preventDefault(); }
   });
   document.addEventListener('keyup', (e) => { const k = KEYMAP[e.key.toLowerCase()]; if (k) keys[k] = false; });
+  // Drop held keys on blur, or the party keeps walking after an alt-tab.
   window.addEventListener('blur', () => { Object.keys(keys).forEach((k) => { keys[k] = false; }); });
   document.addEventListener('visibilitychange', () => { if (document.hidden && S && mode !== 'title') save(); });
   window.addEventListener('pagehide', () => { if (S && mode !== 'title' && mode !== 'battle') save(); });

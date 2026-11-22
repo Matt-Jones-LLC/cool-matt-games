@@ -57,6 +57,7 @@
     return (h === 0 ? 12 : h) + ':' + (m < 10 ? '0' : '') + m + ' AM';
   }
   function csat() { var n = resolved + escaped; return n ? Math.round(resolved / n * 100) : 100; }
+  // Score multiplier: one step per 8 pops in a row, up to x5.
   function mult() { return Math.min(5, 1 + Math.floor(combo / 8)); }
 
   /* ---------- sound (starts on the first tap, as browsers require) ---------- */
@@ -108,6 +109,7 @@
 
   /* ---------- skyline (same every time: a tiny seeded generator) ---------- */
   var seed = 24;
+  // Numerical Recipes LCG. Fixed seed, so the skyline is the same on every visit.
   function srand() { seed = (seed * 1664525 + 1013904223) % 4294967296; return seed / 4294967296; }
   var buildings = [], windows = [], stars = [];
   (function () {
@@ -133,6 +135,8 @@
     bubbles.length = 0; parts.length = 0; texts.length = 0;
   }
 
+  // Weighted pick from a table that grows by the hour. Coffee and macros wait out a cooldown
+  // (seconds since the last one) so they stay rare. Coffee is likelier when you are down to two hearts.
   function pickType() {
     var hour = Math.floor(t / HOUR);
     var table = [['ticket', 60]];
@@ -152,12 +156,14 @@
     var type = pickType(), def = TYPES[type], p = t / SHIFT;
     var r = rand(def.r[0], def.r[1]);
     var x, tries = 0;
+    // Keep each spawn at least 56 px from the last so bubbles do not stack. Give up after 8 tries.
     do { x = rand(r + 8, W - r - 8); tries++; } while (Math.abs(x - lastX) < 56 && tries < 8);
     lastX = x;
     if (type === 'coffee') sinceCoffee = 0;
     if (type === 'macro') sinceMacro = 0;
     bubbles.push({
       type: type, x: x, y: H + r, r: r, hp: def.hp,
+      // px per second, ramping from 42 to 84 over the shift
       vy: lerp(42, 84, p) * def.speed * rand(0.9, 1.12),
       phase: rand(0, TAU), sway: rand(6, 16), pulse: 0
     });
@@ -193,6 +199,8 @@
   }
 
   function tap(x, y) {
+    // Fingers get a wider hit radius than a mouse. Search from the top of the draw order so
+    // overlapping bubbles pop the one you can see.
     var pad = coarse ? 11 : 6, hit = -1, i, b;
     for (i = bubbles.length - 1; i >= 0; i--) {
       b = bubbles[i];
@@ -222,12 +230,15 @@
       return;
     }
     b.hp--;
+    // Escalations take three hits, and each one knocks the bubble back down a little.
     if (b.hp > 0) { b.pulse = 1; b.y = Math.min(b.y + 24, H - 40); sfx.knock(); return; }
     bubbles.splice(hit, 1);
     resolve(b); sfx.pop(b.type !== 'ticket');
   }
 
   function update(dt) {
+    // k is the coffee slow-mo factor. It slows spawns and bubbles but not the clock, so the
+    // shift still ends on time.
     var k = slowT > 0 ? 0.45 : 1, i, b;
     if (slowT > 0) slowT -= dt;
     t += dt; sinceCoffee += dt; sinceMacro += dt;
@@ -242,6 +253,8 @@
       b.phase += dt * 1.7;
       b.x = clamp(b.x + Math.sin(b.phase) * b.sway * dt, b.r + 4, W - b.r - 4);
       if (b.pulse > 0) b.pulse = Math.max(0, b.pulse - dt * 5);
+      // Gone once it is mostly under the HUD. Only real tickets cost a heart; spam and power-ups
+      // can float away for free.
       if (b.y < HUD - b.r * 0.35) {
         bubbles.splice(i, 1);
         if (b.type === 'ticket' || b.type === 'vip' || b.type === 'esc') {
@@ -272,6 +285,7 @@
     [0.85, '#27408f', '#f2906b'],
     [1.00, '#58b4f5', '#ffe7a6']
   ];
+  // SKY rows are [progress, top colour, bottom colour]. Blend the two rows either side of p.
   function drawSky(p) {
     var i = 0;
     while (i < SKY.length - 2 && p > SKY[i + 1][0]) i++;
@@ -473,6 +487,7 @@
   /* ---------- loop and screens ---------- */
   function frame(now) {
     if (mode !== 'play') return;
+    // Cap the step at 50 ms so a slow frame or a resumed tab cannot jump the game forward.
     var dt = Math.min(0.05, (now - last) / 1000 || 0);
     last = now;
     update(dt);
@@ -533,6 +548,7 @@
   function resize() {
     var rect = canvas.getBoundingClientRect();
     if (!rect.width) return;
+    // Backing store in device pixels (capped at 3x). Drawing stays in playfield units via scale.
     var dpr = Math.min(window.devicePixelRatio || 1, 3);
     canvas.width = Math.round(rect.width * dpr);
     canvas.height = Math.round(rect.width * dpr * H / W);

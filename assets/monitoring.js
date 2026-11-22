@@ -21,10 +21,13 @@
     button.hidden = !configured || !allowedHost || blocked;
     button.setAttribute('aria-pressed', String(consent));
   }
+  // Keep origin and path only. Query strings and fragments never leave the browser.
   function cleanURL(value) {
     if (typeof value !== 'string') return value;
     try { const url = new URL(value); return url.origin + url.pathname; } catch (_) { return ''; }
   }
+  // Returning false drops the event. Consent is checked again here in case it was withdrawn
+  // after the SDK loaded.
   function beforeSend(event) {
     if (!consent || blocked) return false;
     if (event.view) {
@@ -62,6 +65,7 @@
     if (consent) load();
     paint();
   }
+  // Only these actions, and only these values, are ever sent. Anything else is ignored.
   function track(name, value) {
     if (!state.enabled) return;
     const context = {};
@@ -85,10 +89,14 @@
   button.style.cssText = 'font:inherit;color:inherit;background:transparent;border:1px solid currentColor;border-radius:4px;padding:5px 10px;margin:6px;cursor:pointer';
   button.addEventListener('click', () => setConsent(!consent));
   bar.appendChild(label); bar.appendChild(button); document.body.appendChild(bar);
+  // Every game calls CMG.countPlay() when a run starts, so wrapping it reports game_start without
+  // touching game code. This file is deferred, so site.js (a plain script at the end of <body>)
+  // has already defined CMG.
   if (window.CMG && typeof window.CMG.countPlay === 'function') {
     const original = window.CMG.countPlay;
     window.CMG.countPlay = function (...args) { const result = original.apply(this, args); track('game_start'); return result; };
   }
+  // The lab homepage's background and renderer selects. Other pages have neither.
   for (const [id, name] of [['theme','background_change'], ['renderer','renderer_change']]) {
     const input = document.getElementById(id);
     if (input) input.addEventListener('change', () => track(name, input.value));

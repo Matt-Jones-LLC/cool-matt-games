@@ -38,10 +38,14 @@
   function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
   function rand(a, b) { return a + Math.random() * (b - a); }
   function gcd(a, b) { while (b) { var t = a % b; a = b; b = t; } return a; }
+  // A bouncing path is a straight line through mirrored copies of the room. fold() maps a point
+  // on that unfolded line back into the real room. aim() works entirely in unfolded space.
   function fold(v, size) { var m = ((v % (2 * size)) + 2 * size) % (2 * size); return m <= size ? m : 2 * size - m; }
 
   // How close to the corner moment a tap has to land, in seconds. It tightens as you go.
   function win() { return 0.21 - 0.10 * Math.min(1, corners / 18); }
+  // Decoy runs aim 15 to 32 px off a corner. None before the third catch, and aim() never
+  // allows more than two in a row.
   function nearChance() { return corners < 3 ? 0 : Math.min(0.42, 0.26 + corners * 0.012); }
   function nearOffset() { return Math.max(15, 32 - corners * 0.8); }
 
@@ -124,13 +128,17 @@
         var ux = vx / len, uy = vy / len;
         if (Math.abs(ux) < 0.28 || Math.abs(uy) < 0.28) continue;            // too flat to be fun
         if ((x < 0.5 && ux <= 0) || (x > A - 0.5 && ux >= 0) || (y < 0.5 && uy <= 0) || (y > B - 0.5 && uy >= 0)) continue;
+        // Leaving a corner, a run of (p, q) rooms with a common factor would pass through an earlier
+        // corner first. gcd 1 means the target is the first corner on the line.
         if (atCorner && kind === 'corner' && gcd(Math.round(Math.abs(vx / A)), Math.round(Math.abs(vy / B))) !== 1) continue;
         if (grazes(tx, ty, i, j)) continue;
+        // Lower wins. 1 - dot is how far the heading has to turn from the current one.
         var s = free ? Math.random() : (1 - (ux * dx + uy * dy)) + Math.random() * 0.002;
         if (s < bestS) { bestS = s; bestC = { ux: ux, uy: uy, len: len, tx: tx, ty: ty }; }
       }
     }
     if (!bestC) {
+      // Nothing fit. Relax the rules in order: drop the decoy, then stop preferring the closest heading.
       if (!forceCorner) { aim(free, true); return; }
       if (!free) { aim(true, true); return; }
       // Last resort: straight at the far corner.
@@ -140,6 +148,7 @@
     }
     nearRun = kind === 'near' ? nearRun + 1 : 0;
     dx = bestC.ux; dy = bestC.uy;
+    // plan.t is seconds until the logo reaches the target. It counts down in update().
     plan = { kind: kind, t: bestC.len / speed, tx: bestC.tx, ty: bestC.ty, claimed: false };
   }
 
@@ -179,6 +188,8 @@
 
   function tap() {
     if (mode !== 'play') return;
+    // A tap can be early (the corner is still ahead in plan) or late (it just passed and is in prev).
+    // Either way it scores if it lands within win() seconds.
     if (plan.kind === 'corner' && !plan.claimed && plan.t <= win()) {
       plan.claimed = true;
       award(plan.t, fold(plan.tx, A), fold(plan.ty, B));
@@ -193,6 +204,7 @@
   }
 
   function arrive() {
+    // plan.t overshot zero by up to a frame. Carry that into prev.age so late taps are timed fairly.
     var over = -plan.t;
     x = fold(plan.tx, A); y = fold(plan.ty, B);
     if (x < 0.5) dx = Math.abs(dx); else if (x > A - 0.5) dx = -Math.abs(dx);
@@ -211,6 +223,7 @@
     if (shake > 0) shake -= dt;
     for (i = parts.length - 1; i >= 0; i--) { var p = parts[i]; p.life -= dt; if (p.life <= 0) { parts.splice(i, 1); continue; } p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 240 * dt; }
     for (i = texts.length - 1; i >= 0; i--) { texts[i].life -= dt; texts[i].y -= 24 * dt; if (texts[i].life <= 0) texts.splice(i, 1); }
+    // Hit-stop after a catch: effects keep animating while the logo holds still.
     if (freeze > 0) { freeze -= dt; return; }
 
     var step = speed * dt;
@@ -219,10 +232,13 @@
     if (x < 0) { x = -x; dx = -dx; bounced = true; } else if (x > A) { x = 2 * A - x; dx = -dx; bounced = true; }
     if (y < 0) { y = -y; dy = -dy; bounced = true; } else if (y > B) { y = 2 * B - y; dy = -dy; bounced = true; }
     plan.t -= dt;
+    // Walls passed on the way get a colour change and a bounce sound. The one that lands with
+    // arrival is left to arrive(), so it is not played twice.
     if (bounced && plan.t > 0.02) { colorIdx = (colorIdx + 1) % COLORS.length; sfx.bounce(); }
 
     if (prev) {
       prev.age += dt;
+      // strike() can end the game, so stop here if it did.
       if (prev.kind === 'corner' && !prev.claimed && prev.age > win()) { prev.claimed = true; strike('Missed it'); if (mode !== 'play') return; }
     }
     if (plan.t <= 0) arrive();
@@ -306,6 +322,7 @@
   /* ---------- loop and screens ---------- */
   function frame(now) {
     if (mode !== 'play') return;
+    // Cap the step at 50 ms so a slow frame or a resumed tab cannot jump the game forward.
     var dt = Math.min(0.05, (now - last) / 1000 || 0);
     last = now;
     update(dt); draw();
@@ -342,6 +359,7 @@
   function resize() {
     var rect = canvas.getBoundingClientRect();
     if (!rect.width) return;
+    // Backing store in device pixels (capped at 3x). Drawing stays in playfield units via scale.
     var dpr = Math.min(window.devicePixelRatio || 1, 3);
     canvas.width = Math.round(rect.width * dpr); canvas.height = Math.round(rect.width * dpr * H / W);
     scale = canvas.width / W;

@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Shows what public DNS returns for the records the site and email depend on.
+# Asks 8.8.8.8 directly so a stale local resolver cache does not hide a change.
 for q in "NS matt-jones.org" "A matt-jones.org" "AAAA matt-jones.org" "CNAME www.matt-jones.org" \
          "MX matt-jones.org" "TXT matt-jones.org" "TXT google._domainkey.matt-jones.org" "TXT _dmarc.matt-jones.org"; do
   set -- $q; printf '%-6s %-36s ' "$1" "$2"; dig +short "$1" "$2" @8.8.8.8 | tr '\n' ' '; echo
