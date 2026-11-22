@@ -4,7 +4,9 @@ Free browser games at **[coolmatt.games](https://coolmatt.games)**. No ads, no s
 Made by Matt Jones in Houston, Texas.
 
 It is a nod to the math-games site that got a lot of us through the school day: somewhere you go on
-purpose, play for five minutes, and leave feeling a little better. This repository is the whole site.
+purpose, play for five minutes, and leave feeling a little better. This repository is the whole site:
+plain HTML, CSS and JavaScript with no build step. Run it with `python3 -m http.server 4175`; every
+push to `main` deploys to GitHub Pages.
 
 ## The games
 
@@ -46,7 +48,7 @@ described below.
 | `assets/monitoring.js`, `assets/monitoring-config.js` | The optional diagnostics |
 | `sitemap.xml`, `robots.txt`, `favicon.svg` | The usual |
 | `CNAME`, `.nojekyll` | The custom domain, and "serve these files as they are" |
-| `dns/` | Notes on the DNS records |
+| `dns/` | DNS notes and a lookup script for matt-jones.org, from before the move to coolmatt.games |
 
 ## Optional diagnostics
 
@@ -67,6 +69,9 @@ python3 -m http.server 4175
 ```
 
 Then open http://localhost:4175. Links are root-relative, so use a server and not a file path.
+
+Each game puts a small hook on `window` (`OvernightShift`, `Shapes`, `CornerShot`, `TheBomb`) for
+reading state and stepping time by hand from the browser console.
 
 ## Add a game
 
