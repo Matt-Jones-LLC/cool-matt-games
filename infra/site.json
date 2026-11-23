@@ -1,0 +1,6 @@
+{
+  "domain": "coolmatt.games",
+  "source": ".",
+  "service": "cool-matt-games",
+  "env": "production"
+}
