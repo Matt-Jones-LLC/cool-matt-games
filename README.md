@@ -23,7 +23,7 @@ browser.
 ## Who made this
 
 Matt Jones has spent five years on the technical side of customer experience and builds websites
-after hours. There is more at [coolmatt.games/about](https://coolmatt.games/about/). Overnight Shift
+after hours. There is more at [matt-jones.org](https://matt-jones.org/). Overnight Shift
 is based on his real job.
 
 ## How it is built
@@ -37,7 +37,7 @@ described below.
 | Path | What it is |
 |------|------------|
 | `index.html` | The arcade: featured game and the shelf of all games |
-| `about/index.html` | About Matt |
+| `about/index.html` | A redirect to the About section at matt-jones.org |
 | `games/<name>/index.html` | One game per folder, with its script (and stylesheet, if it has one) beside it |
 | `404.html` | The not-found page |
 | `assets/site.css` | The shared look: Frutiger Aero sky and glass, with Y2K window chrome |
