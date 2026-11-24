@@ -89,7 +89,7 @@ reading state and stepping time by hand from the browser console.
 ## How it is published
 
 GitHub Pages serves the site from this repository at the custom domain `coolmatt.games`.
-`www.coolmatt.games` and `coolmattgames.io` both redirect to it.
+`www.coolmatt.games` redirects to it. `coolmattgames.io` is the separate experimental lab.
 
 - Every push to `main` runs `.github/workflows/pages.yml`, which copies the site into the Pages
   artifact and deploys it. It is live about a minute later.
