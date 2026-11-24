@@ -10,7 +10,7 @@ player experience.
 
 | Path | What it is |
 | --- | --- |
-| `index.html`, `about/`, `credits/`, `404.html` | The arcade pages |
+| `index.html`, `credits/`, `404.html` | The arcade pages. `about/` is only a redirect stub: the About section lives at matt-jones.org, and every "About" link points there. |
 | `games/<name>/` | One game per folder, with its script and stylesheet beside its `index.html` |
 | `assets/site.css`, `assets/site.js` | The shared look, the play counter, and the sound player (`CMG.sfx`) |
 | `assets/gifs/`, `assets/sounds/` | Pixel art and recorded sound effects |
