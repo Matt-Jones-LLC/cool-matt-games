@@ -1,1 +1,4 @@
 .DS_Store
+
+# Staged public AWS deployment artifact
+_aws_site/
