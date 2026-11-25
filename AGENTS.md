@@ -29,6 +29,14 @@ out only `README.md`, `LICENSE`, `dns/`, and `.github/`.
 
 ## Releasing
 
+**Held back since 2026-11-24.** coolmatt.games is not ready to be public. GitHub Pages serves the
+`pages` branch, which holds only a page that sends every address to https://matt-jones.org/. The
+"Deploy to GitHub Pages" workflow is disabled, so a push to `main` publishes nothing. The games and
+pages stay in this repository. Do not put them back until Matt asks. To restore: set Settings →
+Pages → Source back to GitHub Actions, enable the workflow, and run it once.
+
+When the arcade is live again:
+
 **Every push to `main` deploys to coolmatt.games** through `.github/workflows/pages.yml`. Merging a
 pull request is a production release, so never push to `main` directly.
 
